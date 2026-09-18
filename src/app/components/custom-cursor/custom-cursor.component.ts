@@ -51,7 +51,12 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     });
 
     this.ngZone.runOutsideAngular(() => {
-      window.addEventListener('mousemove', this.onMouseMove);
+      window.addEventListener('mousemove', this.onMouseMove, { capture: true, passive: true });
+      document.addEventListener('mousemove', this.onMouseMove, { capture: true, passive: true });
+      window.addEventListener('pointermove', this.onMouseMove, { capture: true, passive: true });
+      document.addEventListener('pointermove', this.onMouseMove, { capture: true, passive: true });
+      window.addEventListener('dragover', this.onMouseMove, { capture: true, passive: true });
+      window.addEventListener('pointerdown', this.onMouseMove, { capture: true, passive: true });
       window.addEventListener('mouseleave', this.onMouseLeave);
       window.addEventListener('mouseenter', this.onMouseEnter);
 
@@ -69,7 +74,12 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     if (this.themeSub) {
       this.themeSub.unsubscribe();
     }
-    window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('mousemove', this.onMouseMove, { capture: true } as any);
+    document.removeEventListener('mousemove', this.onMouseMove, { capture: true } as any);
+    window.removeEventListener('pointermove', this.onMouseMove, { capture: true } as any);
+    document.removeEventListener('pointermove', this.onMouseMove, { capture: true } as any);
+    window.removeEventListener('dragover', this.onMouseMove, { capture: true } as any);
+    window.removeEventListener('pointerdown', this.onMouseMove, { capture: true } as any);
     window.removeEventListener('mouseleave', this.onMouseLeave);
     window.removeEventListener('mouseenter', this.onMouseEnter);
 
@@ -78,7 +88,7 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onMouseMove = (e: MouseEvent) => {
+  private onMouseMove = (e: MouseEvent | PointerEvent) => {
     this.coords.x = e.clientX;
     this.coords.y = e.clientY;
     this.isHidden = false;

@@ -398,10 +398,9 @@ async fn seleccionar_directorio_dialogo() -> Result<Option<String>, String> {
 
 #[tauri::command]
 async fn actualizar_menu_tray(
+    lbl_acerca: Option<String>,
+    lbl_ayuda: Option<String>,
     lbl_abrir: Option<String>,
-    lbl_nueva: Option<String>,
-    lbl_pausar: Option<String>,
-    lbl_reanudar: Option<String>,
     lbl_panel: Option<String>,
     lbl_ajustes: Option<String>,
     lbl_salir: Option<String>,
@@ -412,75 +411,67 @@ async fn actualizar_menu_tray(
 
     let id_lang = idioma.as_deref().unwrap_or("es");
 
-    let (def_abrir, def_nueva, def_pausar, def_reanudar, def_panel, def_ajustes, def_salir) = match id_lang {
+    let (def_acerca, def_ayuda, def_abrir, def_panel, def_ajustes, def_salir) = match id_lang {
         "en" => (
-            "Open Andromeda Suite",
-            "➕ New Download...",
-            "⏸️ Pause All Downloads",
-            "▶️ Resume All Downloads",
-            "📊 Floating Task Panel",
+            "ℹ️ About Andromeda",
+            "❓ Help & Guide",
+            "🚀 Open Andromeda",
+            "📊 Show Quick Panel",
             "⚙️ Settings",
-            "❌ Exit Andromeda",
+            "❌ Exit",
         ),
         "ru" => (
-            "Открыть Andromeda Suite",
-            "➕ Новая загрузка...",
-            "⏸️ Приостановить все",
-            "▶️ Возобновить все",
-            "📊 Панель задач",
+            "ℹ️ О программе",
+            "❓ Справка",
+            "🚀 Открыть Andromeda",
+            "📊 Показать панель",
             "⚙️ Настройки",
             "❌ Выход",
         ),
         "de" => (
-            "Andromeda Suite öffnen",
-            "➕ Neuer Download...",
-            "⏸️ Alle pausieren",
-            "▶️ Alle fortsetzen",
-            "📊 Schnelles Dashboard",
+            "ℹ️ Über Andromeda",
+            "❓ Hilfe",
+            "🚀 Andromeda öffnen",
+            "📊 Panel anzeigen",
             "⚙️ Einstellungen",
             "❌ Beenden",
         ),
         "fr" => (
-            "Ouvrir Andromeda Suite",
-            "➕ Nouveau téléchargement...",
-            "⏸️ Tout suspendre",
-            "▶️ Tout reprendre",
-            "📊 Panneau flottant",
+            "ℹ️ À propos",
+            "❓ Aide",
+            "🚀 Ouvrir Andromeda",
+            "📊 Afficher le panneau",
             "⚙️ Paramètres",
             "❌ Quitter",
         ),
         _ => (
-            "Abrir Andromeda Suite",
-            "➕ Nueva Descarga...",
-            "⏸️ Pausar Todas las Descargas",
-            "▶️ Reanudar Todas las Descargas",
-            "📊 Panel Rápido Flotante",
-            "⚙️ Configuración del Sistema",
-            "❌ Salir de Andromeda",
+            "ℹ️ Acerca de",
+            "❓ Ayuda",
+            "🚀 Abrir Andromeda",
+            "📊 Mostrar Panel",
+            "⚙️ Ajustes",
+            "❌ Salir",
         ),
     };
 
+    let txt_acerca = lbl_acerca.as_deref().unwrap_or(def_acerca);
+    let txt_ayuda = lbl_ayuda.as_deref().unwrap_or(def_ayuda);
     let txt_abrir = lbl_abrir.as_deref().unwrap_or(def_abrir);
-    let txt_nueva = lbl_nueva.as_deref().unwrap_or(def_nueva);
-    let txt_pausar = lbl_pausar.as_deref().unwrap_or(def_pausar);
-    let txt_reanudar = lbl_reanudar.as_deref().unwrap_or(def_reanudar);
     let txt_panel = lbl_panel.as_deref().unwrap_or(def_panel);
     let txt_ajustes = lbl_ajustes.as_deref().unwrap_or(def_ajustes);
     let txt_salir = lbl_salir.as_deref().unwrap_or(def_salir);
 
+    let acerca_i = MenuItem::with_id(&app, "acerca_de", txt_acerca, true, None::<&str>).map_err(|e| e.to_string())?;
+    let ayuda_i = MenuItem::with_id(&app, "guia", txt_ayuda, true, None::<&str>).map_err(|e| e.to_string())?;
     let open_i = MenuItem::with_id(&app, "open", txt_abrir, true, None::<&str>).map_err(|e| e.to_string())?;
-    let nueva_i = MenuItem::with_id(&app, "nueva_descarga", txt_nueva, true, None::<&str>).map_err(|e| e.to_string())?;
-    let pausar_i = MenuItem::with_id(&app, "pausar_todas", txt_pausar, true, None::<&str>).map_err(|e| e.to_string())?;
-    let reanudar_i = MenuItem::with_id(&app, "reanudar_todas", txt_reanudar, true, None::<&str>).map_err(|e| e.to_string())?;
     let panel_i = MenuItem::with_id(&app, "tray_panel", txt_panel, true, None::<&str>).map_err(|e| e.to_string())?;
     let ajustes_i = MenuItem::with_id(&app, "ajustes", txt_ajustes, true, None::<&str>).map_err(|e| e.to_string())?;
     let quit_i = MenuItem::with_id(&app, "quit", txt_salir, true, None::<&str>).map_err(|e| e.to_string())?;
 
     let menu = Menu::with_items(&app, &[
+        &acerca_i,
+        &ayuda_i,
         &open_i,
-        &nueva_i,
-        &pausar_i,
-        &reanudar_i,
         &panel_i,
         &ajustes_i,
         &quit_i,
@@ -562,47 +553,50 @@ pub fn run() {
                     });
                 }
 
-                let open_i = MenuItem::with_id(app, "open", "Abrir Andromeda Suite", true, None::<&str>)?;
-                let nueva_i = MenuItem::with_id(app, "nueva_descarga", "➕ Nueva Descarga...", true, None::<&str>)?;
-                let pausar_i = MenuItem::with_id(app, "pausar_todas", "⏸️ Pausar Todas", true, None::<&str>)?;
-                let reanudar_i = MenuItem::with_id(app, "reanudar_todas", "▶️ Reanudar Todas", true, None::<&str>)?;
-                let panel_i = MenuItem::with_id(app, "tray_panel", "📊 Panel Rápido Flotante", true, None::<&str>)?;
-                let ajustes_i = MenuItem::with_id(app, "ajustes", "⚙️ Configuración del Sistema", true, None::<&str>)?;
-                let quit_i = MenuItem::with_id(app, "quit", "❌ Salir de Andromeda", true, None::<&str>)?;
+                let acerca_i = MenuItem::with_id(app, "acerca_de", "ℹ️ Acerca de", true, None::<&str>)?;
+                let ayuda_i = MenuItem::with_id(app, "guia", "❓ Ayuda", true, None::<&str>)?;
+                let open_i = MenuItem::with_id(app, "open", "🚀 Abrir Andromeda", true, None::<&str>)?;
+                let panel_i = MenuItem::with_id(app, "tray_panel", "📊 Mostrar Panel", true, None::<&str>)?;
+                let ajustes_i = MenuItem::with_id(app, "ajustes", "⚙️ Ajustes", true, None::<&str>)?;
+                let quit_i = MenuItem::with_id(app, "quit", "❌ Salir", true, None::<&str>)?;
 
                 let menu = Menu::with_items(app, &[
+                    &acerca_i,
+                    &ayuda_i,
                     &open_i,
-                    &nueva_i,
-                    &pausar_i,
-                    &reanudar_i,
                     &panel_i,
                     &ajustes_i,
                     &quit_i,
                 ])?;
 
-                let gestor_menu = gestor_setup.clone();
+                let _gestor_menu = gestor_setup.clone();
                 let mut tray_builder = TrayIconBuilder::with_id("tray_andromeda")
                     .menu(&menu)
                     .tooltip("Andromeda Download Suite - En espera")
                     .show_menu_on_left_click(false)
                     .on_menu_event(move |app, event| {
                         match event.id.as_ref() {
+                            "acerca_de" => {
+                                if let Some(window) = app.get_webview_window("main") {
+                                    let _ = window.show();
+                                    let _ = window.unminimize();
+                                    let _ = window.set_focus();
+                                    let _ = window.emit("abrir_acerca_de", ());
+                                }
+                            }
+                            "guia" => {
+                                if let Some(window) = app.get_webview_window("main") {
+                                    let _ = window.show();
+                                    let _ = window.unminimize();
+                                    let _ = window.set_focus();
+                                    let _ = window.emit("abrir_guia", ());
+                                }
+                            }
                             "open" => {
                                 if let Some(window) = app.get_webview_window("main") {
                                     let _ = window.show();
                                     let _ = window.unminimize();
                                     let _ = window.set_focus();
-                                }
-                            }
-                            "nueva_descarga" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                    let _ = window.emit("abrir_nueva_descarga", serde_json::json!({
-                                        "url": "",
-                                        "nombre": ""
-                                    }));
                                 }
                             }
                             "tray_panel" => {
@@ -623,30 +617,6 @@ pub fn run() {
                                         let _ = win.set_focus();
                                     }
                                 }
-                            }
-                            "pausar_todas" => {
-                                let g = gestor_menu.clone();
-                                tauri::async_runtime::spawn(async move {
-                                    let tareas = g.tareas.read().await;
-                                    for t in tareas.values() {
-                                        t.pausado.store(true, std::sync::atomic::Ordering::SeqCst);
-                                        let mut it = t.item.write().await;
-                                        if it.estado == "Descargando" {
-                                            it.estado = "Pausado".to_string();
-                                            it.velocidad = "0.00 B/s".to_string();
-                                            it.velocidad_bps = 0.0;
-                                        }
-                                    }
-                                });
-                            }
-                            "reanudar_todas" => {
-                                let g = gestor_menu.clone();
-                                tauri::async_runtime::spawn(async move {
-                                    let tareas = g.tareas.read().await;
-                                    for (id, _) in tareas.iter() {
-                                        g.reanudar(id).await;
-                                    }
-                                });
                             }
                             "ajustes" => {
                                 if let Some(window) = app.get_webview_window("main") {

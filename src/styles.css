@@ -378,24 +378,28 @@ html, body, app-root {
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
+    cursor: none !important;
 }
 ::-webkit-scrollbar-track {
     background: transparent;
+    cursor: none !important;
 }
 ::-webkit-scrollbar-thumb {
     background: #26344A;
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: padding-box;
-    cursor: default;
+    cursor: none !important;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #38BDF8;
     background-clip: padding-box;
+    cursor: none !important;
 }
 ::-webkit-scrollbar-thumb:active {
     background: var(--accent-green, #10E761);
     background-clip: padding-box;
+    cursor: none !important;
 }
 [data-theme="light"] ::-webkit-scrollbar-thumb,
 [data-theme="white"] ::-webkit-scrollbar-thumb {
@@ -2713,7 +2717,8 @@ select.form-input option {
    ========================================================================== */
 
 /* Ocultar completamente la flecha de puntero nativo para lucir únicamente el cursor fluido */
-*, *::before, *::after, html, body, button, a, input, select, textarea, div, span, svg {
+*, *::before, *::after, html, body, button, a, input, select, textarea, div, span, svg,
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb, ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner, ::-webkit-resizer {
     cursor: none !important;
 }
 
@@ -4403,7 +4408,7 @@ body.tray-mode .tray-flyout-card {
 }
 
 /* ==========================================================================
-   MODAL ACERCA DE - 3D PERSPECTIVE TILT CARD
+   MODAL ACERCA DE - 3D PERSPECTIVE TILT CARD & AMBIENT MOTION FLOAT
    ========================================================================== */
 .about-3d-wrap {
     perspective: 1200px;
@@ -4411,13 +4416,25 @@ body.tray-mode .tray-flyout-card {
     justify-content: center;
     align-items: center;
     padding: 16px;
+    animation: aboutMotionFloat 4.2s ease-in-out infinite alternate;
+}
+
+@keyframes aboutMotionFloat {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(0.4deg);
+    }
+    100% {
+        transform: translateY(4px) rotate(-0.4deg);
+    }
 }
 
 .about-card {
-    transition: transform 0.14s ease-out, box-shadow 0.28s ease, border-color 0.28s ease;
+    transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
     transform-style: preserve-3d;
     will-change: transform;
-    cursor: default;
 }
 
 .about-card.is-hovered {
@@ -4439,6 +4456,44 @@ body.tray-mode .tray-flyout-card {
     text-decoration: underline;
     transform: translateX(3px);
 }
+
+/* ==========================================================================
+   KPI ICON BADGES (Dashboard Modern Visual Icons)
+   ========================================================================== */
+.kpi-icon-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.kpi-icon-badge.green {
+    background: rgba(16, 231, 97, 0.12);
+    border: 1px solid rgba(16, 231, 97, 0.35);
+    box-shadow: 0 0 10px rgba(16, 231, 97, 0.15);
+}
+.kpi-icon-badge.cyan {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+}
+.kpi-icon-badge.amber {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+}
+.kpi-icon-badge.blue {
+    background: rgba(96, 165, 250, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.15);
+}
+.kpi-icon-badge:hover {
+    transform: scale(1.1);
+}
+
 
 
 

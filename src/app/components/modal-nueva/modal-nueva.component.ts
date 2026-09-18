@@ -13,12 +13,16 @@ export class ModalNuevaDescargaComponent implements OnInit {
   @Input()
   set visible(val: boolean) {
     this._visible = val;
-    if (val && this.downloadService.pendingNuevaDescargaUrl) {
-      this.url = this.downloadService.pendingNuevaDescargaUrl;
-      this.nombre = this.downloadService.pendingNuevaDescargaNombre || '';
-      this.downloadService.pendingNuevaDescargaUrl = '';
-      this.downloadService.pendingNuevaDescargaNombre = '';
-      setTimeout(() => this.onUrlInput(), 60);
+    if (val) {
+      this.notificacionPlaylistMostrada = false;
+      this.ultimaUrlPlaylistNotificada = '';
+      if (this.downloadService.pendingNuevaDescargaUrl) {
+        this.url = this.downloadService.pendingNuevaDescargaUrl;
+        this.nombre = this.downloadService.pendingNuevaDescargaNombre || '';
+        this.downloadService.pendingNuevaDescargaUrl = '';
+        this.downloadService.pendingNuevaDescargaNombre = '';
+        setTimeout(() => this.onUrlInput(), 60);
+      }
     }
   }
   get visible(): boolean {
@@ -303,6 +307,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
   public esPlaylistDetectada: boolean = false;
   public playlistSondeando: boolean = false;
   private notificacionPlaylistMostrada: boolean = false;
+  private ultimaUrlPlaylistNotificada: string = '';
 
   public onUrlInput(): void {
     if (this.timerSondeo) clearTimeout(this.timerSondeo);
@@ -311,6 +316,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
       this.esPlaylistDetectada = false;
       this.playlistSondeando = false;
       this.notificacionPlaylistMostrada = false;
+      this.ultimaUrlPlaylistNotificada = '';
       this.tamanoStr = 'Esperando URL...';
       this.estadoSondeo = '';
       this.isMediaStream = false;
@@ -320,8 +326,9 @@ export class ModalNuevaDescargaComponent implements OnInit {
     const isPl = trimmed.includes('list=') || trimmed.includes('playlist');
     this.esPlaylistDetectada = isPl;
 
-    if (isPl && !this.notificacionPlaylistMostrada) {
+    if (isPl && (!this.notificacionPlaylistMostrada || this.ultimaUrlPlaylistNotificada !== trimmed)) {
       this.notificacionPlaylistMostrada = true;
+      this.ultimaUrlPlaylistNotificada = trimmed;
       this.downloadService.showToastWithAction(
         'info',
         '🎬 Lista de Reproducción Detectada',
@@ -330,6 +337,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
       );
     } else if (!isPl) {
       this.notificacionPlaylistMostrada = false;
+      this.ultimaUrlPlaylistNotificada = '';
     }
 
     if (!isYt) {
@@ -645,6 +653,8 @@ export class ModalNuevaDescargaComponent implements OnInit {
     this.selectedQualities.clear();
     this.esPlaylistDetectada = false;
     this.playlistSondeando = false;
+    this.notificacionPlaylistMostrada = false;
+    this.ultimaUrlPlaylistNotificada = '';
     this.close.emit();
   }
 }

@@ -30,7 +30,14 @@
     <!-- KPI 1: ROI / Tiempo Recuperado -->
     <div class="tremor-kpi-card" data-tour="kpi-roi" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_roi_lbl') }}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="kpi-icon-badge green" title="Tiempo Recuperado / ROI">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_roi_lbl') }}</span>
+        </div>
         <span class="tremor-semaforo-badge" [ngClass]="semaforoRoi.cls">
           <span class="semaforo-dot"></span>
           {{ semaforoRoi.lbl }}
@@ -62,7 +69,14 @@
     <!-- KPI 2: Ancho de Banda Actual -->
     <div class="tremor-kpi-card" data-tour="kpi-throughput" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_vel_lbl') }}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="kpi-icon-badge cyan" title="Ancho de Banda / Throughput TCP">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+          </div>
+          <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_vel_lbl') }}</span>
+        </div>
         <span class="tremor-semaforo-badge" [ngClass]="semaforoThroughput.cls">
           <span class="semaforo-dot"></span>
           {{ semaforoThroughput.lbl }}
@@ -91,7 +105,18 @@
     <!-- KPI 3: Sockets Activos -->
     <div class="tremor-kpi-card" data-tour="kpi-sockets" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_sock_lbl') }}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="kpi-icon-badge amber" title="Canales Multi-Socket Tokio">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="6" height="6" rx="1.5"></rect>
+              <rect x="15" y="3" width="6" height="6" rx="1.5"></rect>
+              <rect x="9" y="15" width="6" height="6" rx="1.5"></rect>
+              <path d="M6 9v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9"></path>
+              <line x1="12" y1="13" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_sock_lbl') }}</span>
+        </div>
         <span class="tremor-semaforo-badge" [ngClass]="semaforoSockets.cls">
           <span class="semaforo-dot"></span>
           {{ semaforoSockets.lbl }}
@@ -120,7 +145,16 @@
     <!-- KPI 4: Tráfico Transferido / Salud -->
     <div class="tremor-kpi-card" data-tour="kpi-health" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_datos_lbl') }}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="kpi-icon-badge blue" title="Volumen de Tráfico y Datos">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+          </div>
+          <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_datos_lbl') }}</span>
+        </div>
         <span class="tremor-semaforo-badge" [ngClass]="semaforoSalud.cls">
           <span class="semaforo-dot"></span>
           {{ semaforoSalud.lbl }}
