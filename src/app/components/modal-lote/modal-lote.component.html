@@ -19,23 +19,22 @@
 
     <!-- Toolbar de Preset Maestro -->
     <div class="modal-lote-toolbar">
-      <div style="display:flex;align-items:center;gap:10px;flex:1;">
-        <span class="form-label" style="white-space:nowrap;margin:0;">PRESET MAESTRO:</span>
-        <select class="form-input" style="width:220px;height:34px;font-size:8pt;" [(ngModel)]="presetGlobal" (change)="aplicarPresetGlobal()">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;">
+        <!-- Checkbox Maestro alineado con la columna de checkboxes de la lista -->
+        <label class="lote-master-check-wrap" title="Seleccionar o desmarcar todos">
+          <input type="checkbox" 
+                 class="lote-checkbox"
+                 [checked]="estaTodosSeleccionados()" 
+                 (change)="toggleSeleccionarTodos()">
+        </label>
+        <span class="form-label" style="white-space:nowrap;margin:0;font-weight:700;">PRESET MAESTRO:</span>
+        <select class="form-input" style="width:230px;height:34px;font-size:8pt;" [(ngModel)]="presetGlobal" (change)="aplicarPresetGlobal()">
           <option value="1080p">🎬 Video MP4 (1080p Full HD)</option>
           <option value="720p">🎬 Video MP4 (720p HD)</option>
           <option value="mp3">🎵 Audio MP3 (320 kbps Alta Calidad)</option>
           <option value="m4a">🎵 Audio M4A (Original AAC)</option>
         </select>
         <span style="font-size:7.5pt;color:var(--text-muted);">Aplica formato base a todos los elementos</span>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:32px;padding:0 12px;font-size:7.5pt;" (click)="toggleSeleccionarTodos()">
-          <span class="btn-txt">
-            {{ estaTodosSeleccionados() ? 'Desmarcar Todos' : '☑ Seleccionar Todos' }}
-          </span>
-        </button>
       </div>
     </div>
 
@@ -79,7 +78,7 @@
         </div>
       </div>
 
-      <!-- Columna Derecha: Inspector & Carrusel del Video Activo -->
+      <!-- Columna Derecha: Inspector & 3D Card Stack del Video Activo -->
       <div class="modal-lote-inspector" *ngIf="getVideoActual() as actual">
         <!-- Navegación de Inspector -->
         <div class="inspector-header">
@@ -94,11 +93,43 @@
           </div>
         </div>
 
-        <!-- Vista Previa de Miniatura Grande -->
-        <div class="inspector-preview-box">
-          <img *ngIf="actual.thumbnail" [src]="actual.thumbnail" class="inspector-preview-img" alt="preview">
-          <div class="inspector-preview-overlay">
-            <span class="inspector-duration-tag">{{ actual.duracion_str }}</span>
+        <!-- 3D Card Stack Animado (Uiverse Style con cambio al dar clic) -->
+        <div class="wrap_card">
+          <!-- Tarjeta Izquierda (Anterior) -->
+          <div class="card card-left" *ngIf="getVideoRelativo(-1) as prevItem" (click)="seleccionarOffset(-1)" title="Ver: {{ prevItem.titulo }}">
+            <div class="card-inner">
+              <img *ngIf="prevItem.thumbnail" [src]="prevItem.thumbnail" class="card-thumb" alt="prev">
+              <div class="card-overlay">
+                <span class="card-dur-tag">{{ prevItem.duracion_str }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta Derecha (Siguiente) -->
+          <div class="card card-right" *ngIf="getVideoRelativo(1) as nextItem" (click)="seleccionarOffset(1)" title="Ver: {{ nextItem.titulo }}">
+            <div class="card-inner">
+              <img *ngIf="nextItem.thumbnail" [src]="nextItem.thumbnail" class="card-thumb" alt="next">
+              <div class="card-overlay">
+                <span class="card-dur-tag">{{ nextItem.duracion_str }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta Central (Activa) -->
+          <div class="card card-center" (click)="seleccionarOffset(1)" title="Click para siguiente video">
+            <div class="card-inner">
+              <img *ngIf="actual.thumbnail" [src]="actual.thumbnail" class="card-thumb" alt="active">
+              <div class="card-overlay">
+                <span class="card-num-tag">#{{ indiceInspeccionado + 1 }}</span>
+                <span class="card-dur-tag">{{ actual.duracion_str }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Líneas de Destello Neón Calibradas -->
+          <div class="lines">
+            <div class="line"></div>
+            <div class="line"></div>
           </div>
         </div>
 
@@ -126,7 +157,7 @@
 
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:8pt;color:var(--text-secondary);">
-              <input type="checkbox" [checked]="estaSeleccionado(actual.id)" (change)="toggleSeleccion(actual.id)">
+              <input type="checkbox" class="lote-checkbox" [checked]="estaSeleccionado(actual.id)" (change)="toggleSeleccion(actual.id)">
               <span>Incluir en la descarga</span>
             </label>
             <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" 
@@ -143,21 +174,18 @@
     <!-- Footer -->
     <div class="modal-lote-footer">
       <!-- Ruta de Destino -->
-      <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:480px;">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:460px;">
         <span class="form-label" style="white-space:nowrap;margin:0;">DESTINO:</span>
         <input type="text" class="form-input" [(ngModel)]="carpetaDestino" style="height:34px;font-size:8pt;flex:1;">
-        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:34px;padding:0 10px;font-size:7.5pt;" (click)="seleccionarCarpeta()">
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:34px;padding:0 12px;font-size:7.5pt;" (click)="seleccionarCarpeta()">
           <span class="btn-txt">Examinar</span>
         </button>
       </div>
 
       <!-- Resumen y Acciones -->
-      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
+      <div style="display:flex;align-items:center;gap:14px;margin-left:auto;">
         <div style="text-align:right;">
-          <div style="font-size:7.5pt;font-weight:700;color:var(--text-primary);font-family:'Inter',sans-serif;">
-            {{ itemsSeleccionados.size }} ELEMENTOS SELECCIONADOS
-          </div>
-          <div style="font-size:7pt;color:var(--accent-green);font-family:'JetBrains Mono',monospace;">
+          <div style="font-size:7.5pt;font-weight:700;color:var(--accent-green);font-family:'JetBrains Mono',monospace;">
             ~{{ getTamanoEstimadoTotal() }} estimado
           </div>
         </div>
@@ -166,15 +194,20 @@
           <span class="btn-txt">Cancelar</span>
         </button>
 
-        <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
-                style="height:36px;padding:0 18px;" 
-                [disabled]="itemsSeleccionados.size === 0 || estaProcesando"
-                (click)="confirmarDescargaLote()">
-          <span class="btn-txt" style="display:flex;align-items:center;gap:6px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            {{ estaProcesando ? 'Encolando...' : '🚀 Añadir ' + itemsSeleccionados.size + ' a la Cola' }}
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <span class="tremor-delta-badge green" style="font-size:6.8pt;letter-spacing:0.5px;">
+            ● {{ itemsSeleccionados.size }} / {{ playlistData?.items?.length || 0 }} SELECCIONADOS
           </span>
-        </button>
+          <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
+                  style="height:34px;padding:0 22px;font-weight:700;" 
+                  [disabled]="itemsSeleccionados.size === 0 || estaProcesando"
+                  (click)="confirmarDescargaLote()">
+            <span class="btn-txt" style="display:flex;align-items:center;gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              {{ estaProcesando ? 'Encolando...' : 'Aceptar' }}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

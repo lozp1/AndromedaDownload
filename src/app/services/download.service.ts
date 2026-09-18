@@ -639,4 +639,10 @@ export class DownloadService {
       await this.tauri.invoke('cerrar_tray_flyout');
     } catch {}
   }
+
+  public async gestionarSistemaTray(accion: string): Promise<void> {
+    try {
+      await this.tauri.invoke('gestionar_sistema_tray', { accion });
+    } catch {}
+  }
 }

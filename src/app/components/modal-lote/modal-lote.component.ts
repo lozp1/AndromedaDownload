@@ -145,7 +145,27 @@ export class ModalLoteComponent implements OnInit, OnChanges {
     return this.downloadService.formatBytes(bytes);
   }
 
+  public getVideoRelativo(offset: number): PlaylistItemProbe | null {
+    if (!this.playlistData?.items?.length) return null;
+    const len = this.playlistData.items.length;
+    const idx = (this.indiceInspeccionado + offset + len) % len;
+    return this.playlistData.items[idx] || null;
+  }
+
+  public seleccionarOffset(offset: number): void {
+    if (!this.playlistData?.items?.length) return;
+    const len = this.playlistData.items.length;
+    this.indiceInspeccionado = (this.indiceInspeccionado + offset + len) % len;
+  }
+
   public async seleccionarCarpeta(): Promise<void> {
+    try {
+      const ruta = await this.tauriService.seleccionarDirectorio();
+      if (ruta && ruta.trim().length > 0) {
+        this.carpetaDestino = ruta.trim();
+        return;
+      }
+    } catch {}
     const ruta = await this.downloadService.abrirExploradorModal(this.carpetaDestino);
     if (ruta && ruta.trim().length > 0) {
       this.carpetaDestino = ruta.trim();

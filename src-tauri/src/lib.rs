@@ -107,6 +107,42 @@ async fn cerrar_tray_flyout(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
+async fn mostrar_ventana_principal(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        let _ = win.set_focus();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+async fn gestionar_sistema_tray(accion: String, app: tauri::AppHandle) -> Result<(), String> {
+    if accion == "salir" {
+        app.exit(0);
+        return Ok(());
+    }
+
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        let _ = win.set_focus();
+        match accion.as_str() {
+            "ajustes" => { let _ = win.emit("abrir_ajustes", ()); },
+            "guia" => { let _ = win.emit("abrir_guia", ()); },
+            "acerca_de" => { let _ = win.emit("abrir_acerca_de", ()); },
+            "nueva" => { let _ = win.emit("abrir_nueva_descarga", serde_json::json!({ "url": "", "nombre": "" })); },
+            _ => {}
+        }
+    }
+
+    if let Some(tray_win) = app.get_webview_window("tray_flyout") {
+        let _ = tray_win.hide();
+    }
+    Ok(())
+}
+
+#[tauri::command]
 async fn obtener_ajustes(gestor: State<'_, Arc<GestorDescargas>>) -> Result<UserSettings, String> {
     Ok(gestor.ajustes.read().await.clone())
 }
@@ -682,7 +718,9 @@ pub fn run() {
             actualizar_widget_barra_tareas,
             sondear_playlist,
             iniciar_descargas_lote,
-            cerrar_tray_flyout
+            cerrar_tray_flyout,
+            mostrar_ventana_principal,
+            gestionar_sistema_tray
         ])
         .run(tauri::generate_context!())
         .expect("error while running andromeda application");

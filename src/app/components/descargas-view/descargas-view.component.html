@@ -102,33 +102,40 @@
           <td [style.max-width.px]="columnWidths['nombre'] - 16" style="font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" [title]="item.nombre">
             {{ item.nombre }}
           </td>
-          <td style="font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">
-            {{ downloadService.formatBytes(item.descargado) }} / {{ downloadService.formatBytes(item.tamano_total) }}
+          <td style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;">
+            <span *ngIf="item.estado === 'Completado'" style="color:var(--text-primary);font-weight:600;">
+              {{ downloadService.formatBytes(item.tamano_total) }}
+            </span>
+            <span *ngIf="item.estado !== 'Completado'">
+              <span style="color:var(--text-primary);font-weight:600;">{{ downloadService.formatBytes(item.descargado) }}</span>
+              <span style="color:var(--text-muted);font-size:7pt;"> / {{ downloadService.formatBytes(item.tamano_total) }}</span>
+            </span>
           </td>
           <td>
             <div style="display:flex;align-items:center;gap:8px;">
               <div class="progress-bar-bg" style="flex:1;">
-                <div class="progress-bar-fill" [style.width.%]="item.progreso"></div>
+                <div class="progress-bar-fill" [style.width.%]="item.progreso" [class.completed]="item.estado === 'Completado'"></div>
               </div>
-              <span style="font-family:'Inter',sans-serif;font-size:7.8pt;font-weight:500;width:42px;text-align:right;color:var(--text-secondary);">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;font-weight:600;width:46px;text-align:right;" [style.color]="item.estado === 'Completado' ? 'var(--accent-green)' : 'var(--text-secondary)'">
                 {{ item.progreso.toFixed(1) }}%
               </span>
             </div>
           </td>
-          <td style="font-family:'JetBrains Mono',monospace;color:var(--accent-green);font-weight:700;">
-            {{ item.velocidad }}
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--accent-green);font-weight:700;font-size:7.5pt;">
+            {{ item.estado === 'Completado' ? '—' : item.velocidad }}
           </td>
-          <td style="font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">
-            {{ item.eta }}
+          <td style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;">
+            <span *ngIf="item.estado === 'Completado'" style="color:var(--text-muted);">—</span>
+            <span *ngIf="item.estado !== 'Completado'" style="color:var(--text-secondary);">{{ item.eta || '—' }}</span>
           </td>
           <td style="text-align:center;">
-            <span class="status-badge" [ngClass]="getStatusBadgeClass(item.estado)">{{ item.estado }}</span>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(item.estado)">{{ item.estado | uppercase }}</span>
           </td>
           <td style="text-align:center;">
             <span class="cat-badge" [ngClass]="getCategoryBadgeClass(item.categoria)">{{ item.categoria }}</span>
           </td>
-          <td style="font-size:7.5pt;font-weight:400;color:var(--text-muted);text-align:center;font-family:'JetBrains Mono',monospace;">
-            {{ formatFechaCompacta(item.fecha_creacion) }}
+          <td style="text-align:center;">
+            <span class="table-date-badge">{{ formatFechaCompacta(item.fecha_creacion) }}</span>
           </td>
         </tr>
       </tbody>

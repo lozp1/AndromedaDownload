@@ -33,8 +33,9 @@
                     type="button"
                     [disabled]="playlistSondeando"
                     (click)="abrirGestorLotes()">
-              <span class="btn-txt">
-                {{ playlistSondeando ? 'Analizando...' : '⚡ Descargar Lista en Lote' }}
+              <span class="btn-txt" style="display:flex;align-items:center;gap:6px;">
+                <svg *ngIf="!playlistSondeando" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                {{ playlistSondeando ? 'Analizando...' : 'Descargar Lista en Lote' }}
               </span>
             </button>
           </div>

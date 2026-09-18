@@ -57,5 +57,32 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
   public abrirNuevaDescarga(): void {
     this.cerrar();
     this.downloadService.triggerNuevaDescargaModal(true);
+    this.downloadService.gestionarSistemaTray('nueva');
+  }
+
+  public abrirSuite(): void {
+    this.cerrar();
+    this.downloadService.gestionarSistemaTray('abrir');
+  }
+
+  public abrirAjustes(): void {
+    this.cerrar();
+    this.downloadService.setView('ajustes');
+    this.downloadService.gestionarSistemaTray('ajustes');
+  }
+
+  public abrirGuia(): void {
+    this.cerrar();
+    this.downloadService.requestTour();
+    this.downloadService.gestionarSistemaTray('guia');
+  }
+
+  public abrirAcercaDe(): void {
+    this.cerrar();
+    this.downloadService.gestionarSistemaTray('acerca_de');
+  }
+
+  public salirApp(): void {
+    this.downloadService.gestionarSistemaTray('salir');
   }
 }

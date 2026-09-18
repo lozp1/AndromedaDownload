@@ -105,6 +105,14 @@ export class AppComponent implements OnInit {
     this.tauriService.listen('abrir_ajustes', () => {
       this.downloadService.setView('ajustes');
     });
+
+    this.tauriService.listen('abrir_guia', () => {
+      this.isTourOpen = true;
+    });
+
+    this.tauriService.listen('abrir_acerca_de', () => {
+      this.isAboutModalOpen = true;
+    });
   }
 
   @HostListener('window:contextmenu', ['$event'])

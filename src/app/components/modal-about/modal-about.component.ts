@@ -17,8 +17,13 @@ export class ModalAboutComponent {
   public readonly suite = 'Andromeda Download Suite';
   public readonly arquitectura = '64-bit Windows Desktop Core (Rust Tauri v2)';
   public readonly version = '1.0.0 versión estable';
+  public mostrarDetalles: boolean = false;
 
   constructor(public i18n: I18nService) {}
+
+  public toggleDetalles(): void {
+    this.mostrarDetalles = !this.mostrarDetalles;
+  }
 
   public abrirEnlace(url: string): void {
     if (typeof window !== 'undefined') {
