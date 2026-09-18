@@ -83,8 +83,14 @@ export class AppComponent implements OnInit {
       this.downloadService.triggerNuevaDescargaModal(true, p?.url || '', p?.nombre || '');
     });
 
-    this.tauriService.listen<{ url?: string; nombre?: string }>('abrir_nueva_descarga_standalone', (event) => { const p = event?.payload; this.isStandaloneMode = true; this.downloadService.triggerNuevaDescargaModal(true, p?.url || '', p?.nombre || ''); }); this.tauriService.listen('toggle_tray_panel', () => {
-      this.isTrayPanelOpen = !this.isTrayPanelOpen;
+    this.tauriService.listen<{ url?: string; nombre?: string }>('abrir_nueva_descarga_standalone', (event) => {
+      const p = event?.payload;
+      this.isStandaloneMode = true;
+      this.downloadService.triggerNuevaDescargaModal(true, p?.url || '', p?.nombre || '');
+    });
+
+    this.tauriService.listen('toggle_tray_panel', () => {
+      this.isTrayPanelOpen = true;
     });
 
     this.tauriService.listen('abrir_ajustes', () => {

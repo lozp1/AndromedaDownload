@@ -1462,6 +1462,48 @@ app-ajustes-view {
     opacity: 0.85;
 }
 
+/* Indicador estable de Subcarpeta Automática (Sin saltos de tamaño) */
+.subcarpeta-indicator {
+    font-size: 7.5pt;
+    color: var(--accent-cyan);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    line-height: 24px;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.subcarpeta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    flex-shrink: 0;
+    color: var(--accent-cyan);
+    white-space: nowrap;
+}
+
+.subcarpeta-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    color: var(--text-primary);
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    flex: 1;
+    min-width: 0;
+}
+
 /* Forzar que las flechas de incremento/decremento numérico SIEMPRE estén visibles y sin cuadros negros */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

@@ -108,12 +108,15 @@ pub struct UserSettings {
 
 impl Default for UserSettings {
     fn default() -> Self {
+        let default_dir = std::env::var("USERPROFILE")
+            .map(|u| format!("{}\\Downloads\\Andromeda", u))
+            .unwrap_or_else(|_| "C:\\Downloads\\Andromeda".to_string());
         Self {
             conexiones_por_archivo: 16,
             limite_velocidad_kb: 0,
             reintentos_conexion: 3,
             socket_timeout_segundos: 30,
-            directorio_descargas: "C:\\Descargas".to_string(),
+            directorio_descargas: default_dir,
             auto_categorizar: true,
             abrir_carpeta_al_completar: false,
             max_descargas_simultaneas: 5,
