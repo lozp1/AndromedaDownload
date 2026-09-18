@@ -363,7 +363,7 @@ export class DownloadService {
     this.audio.playClick();
     const targetIds = ids || Array.from(this.selectedIds$.value);
     for (const id of targetIds) {
-      await this.tauri.invoke('eliminar_descarga', { id, borrarArchivo });
+      await this.tauri.invoke('eliminar_descarga', { id, borrar_archivo: borrarArchivo, borrarArchivo });
     }
     this.clearSelection();
     await this.actualizarTelemetria();

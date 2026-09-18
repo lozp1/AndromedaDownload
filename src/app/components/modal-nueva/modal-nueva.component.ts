@@ -130,6 +130,26 @@ export class ModalNuevaDescargaComponent implements OnInit {
     return this.mediaQualities;
   }
 
+  public autoCategorizarActivo: boolean = true;
+
+  public getSubcarpetaCategoria(): string {
+    const cat = (this.categoria || 'Otros').toLowerCase();
+    let key = 'otros';
+    if (cat.includes('mús') || cat.includes('mus') || cat.includes('aud')) key = 'musica';
+    else if (cat.includes('vid') || cat.includes('pel')) key = 'videos';
+    else if (cat.includes('doc') || cat.includes('pdf')) key = 'documentos';
+    else if (cat.includes('comp') || cat.includes('zip') || cat.includes('rar')) key = 'comprimidos';
+    else if (cat.includes('prog') || cat.includes('app') || cat.includes('exe')) key = 'programas';
+    else if (cat.includes('im') || cat.includes('img') || cat.includes('pic')) key = 'imagenes';
+
+    const lang = this.i18n.getCurrentLang();
+    if (lang === 'es' && key === 'musica') {
+      return 'Musica';
+    }
+    const trans = this.i18n.t('cat_' + key);
+    return trans || this.categoria;
+  }
+
   constructor(
     public downloadService: DownloadService,
     public i18n: I18nService,
@@ -140,6 +160,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
     this.downloadService.settingsObservable.subscribe(s => {
       this.carpetaDestino = s.directorio_descargas || 'C:\\Descargas';
       this.conexiones = s.conexiones_por_archivo || 16;
+      this.autoCategorizarActivo = s.auto_categorizar ?? true;
     });
     // Fecha actual por defecto para el calendario
     const hoy = new Date();

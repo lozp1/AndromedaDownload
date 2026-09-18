@@ -16,6 +16,8 @@ struct PeticionDescargaIPC {
     #[serde(default)]
     origen: Option<String>,
     #[serde(default)]
+    categoria: Option<String>,
+    #[serde(default)]
     abrir_modal: Option<bool>,
 }
 
@@ -171,7 +173,7 @@ pub async fn iniciar_servidor_ipc(app_handle: AppHandle, gestor: Arc<GestorDesca
                                     datos.nombre,
                                     None,
                                     None,
-                                    None,
+                                    datos.categoria,
                                     false,
                                     None,
                                     false,

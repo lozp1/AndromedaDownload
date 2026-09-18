@@ -193,7 +193,7 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
 
   public get canResume(): boolean {
     if (this.selectedIds.size === 0) return false;
-    return this.descargas.some(d => this.selectedIds.has(d.id) && (d.estado === 'Pausado' || d.estado === 'Detenido' || d.estado === 'Error'));
+    return this.descargas.some(d => this.selectedIds.has(d.id) && (d.estado === 'Pausado' || d.estado === 'Detenido' || d.estado === 'Error' || d.estado === 'Eliminado'));
   }
 
   public get canStop(): boolean {
@@ -284,6 +284,7 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
     const e = (estado || '').toLowerCase();
     if (e.includes('descarg') || e.includes('progreso')) return 'status-descargando';
     if (e.includes('complet')) return 'status-completada';
+    if (e.includes('elimin')) return 'status-eliminado';
     if (e.includes('paus')) return 'status-pausada';
     if (e.includes('program')) return 'status-programada';
     if (e.includes('error') || e.includes('fall')) return 'status-error';

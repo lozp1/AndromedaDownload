@@ -462,6 +462,8 @@ impl GestorDescargas {
             .or(probe.categoria)
             .unwrap_or_else(|| clasificar_categoria(&nombre));
 
+        let subcarpeta = obtener_subcarpeta_categoria(&categoria, &cfg.idioma);
+
         let ruta_destino = if let Some(r) = ruta_destino_opt.filter(|p| !p.trim().is_empty()) {
             let p = std::path::Path::new(&r);
             let ya_es_archivo = if let Some(file_name) = p.file_name() {
@@ -477,13 +479,20 @@ impl GestorDescargas {
                 r
             } else {
                 // r es un directorio de destino
-                let _ = std::fs::create_dir_all(&r);
-                format!("{}\\{}", r.trim_end_matches(['\\', '/']), nombre)
+                let mut dir = r.trim_end_matches(['\\', '/']).to_string();
+                if cfg.auto_categorizar {
+                    let ult_componente = std::path::Path::new(&dir).file_name().and_then(|n| n.to_str()).unwrap_or("");
+                    if !ult_componente.eq_ignore_ascii_case(subcarpeta) && !ult_componente.eq_ignore_ascii_case(&categoria) {
+                        dir = format!("{}\\{}", dir, subcarpeta);
+                    }
+                }
+                let _ = std::fs::create_dir_all(&dir);
+                format!("{}\\{}", dir, nombre)
             }
         } else {
-            let mut dir = cfg.directorio_descargas.clone();
+            let mut dir = cfg.directorio_descargas.trim_end_matches(['\\', '/']).to_string();
             if cfg.auto_categorizar {
-                dir = format!("{}\\{}", dir, categoria);
+                dir = format!("{}\\{}", dir, subcarpeta);
             }
             let _ = std::fs::create_dir_all(&dir);
             format!("{}\\{}", dir, nombre)
@@ -594,7 +603,19 @@ impl GestorDescargas {
 
         if borrar_archivo {
             if let Some(r) = ruta {
-                let _ = std::fs::remove_file(r);
+                tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+                let _ = std::fs::remove_file(&r);
+                let _ = std::fs::remove_file(format!("{}.part", &r));
+                let _ = std::fs::remove_file(format!("{}.ytdl", &r));
+                let _ = std::fs::remove_file(format!("{}.tmp", &r));
+
+                let ruta_base = r.rsplit_once('.').map(|(b, _)| b).unwrap_or(&r);
+                for ext in &["mp3", "m4a", "mp4", "mkv", "webm"] {
+                    let alt_path = format!("{}.{}", ruta_base, ext);
+                    let _ = std::fs::remove_file(&alt_path);
+                    let _ = std::fs::remove_file(format!("{}.part", &alt_path));
+                    let _ = std::fs::remove_file(format!("{}.ytdl", &alt_path));
+                }
             }
         }
 
@@ -636,7 +657,16 @@ impl GestorDescargas {
                     }
                 }
             } else if it.estado == "Completado" {
-                completadas += 1;
+                if !std::path::Path::new(&it.ruta_destino).exists() {
+                    it.estado = "Eliminado".to_string();
+                } else {
+                    completadas += 1;
+                }
+            } else if it.estado == "Eliminado" {
+                if std::path::Path::new(&it.ruta_destino).exists() {
+                    it.estado = "Completado".to_string();
+                    completadas += 1;
+                }
             }
 
             if it.tamano_total > 0 && it.descargado > it.tamano_total {
@@ -1497,5 +1527,110 @@ fn clasificar_categoria(nombre: &str) -> String {
         "Programas".to_string()
     } else {
         "Otros".to_string()
+    }
+}
+
+pub fn obtener_subcarpeta_categoria(categoria: &str, idioma: &str) -> &'static str {
+    let cat_norm = categoria.trim().to_lowercase();
+    let id_norm = idioma.trim().to_lowercase();
+
+    let clave = if cat_norm.contains("mús") || cat_norm.contains("mus") || cat_norm.contains("aud") || cat_norm.contains("son") {
+        "musica"
+    } else if cat_norm.contains("vid") || cat_norm.contains("pel") || cat_norm.contains("mov") {
+        "videos"
+    } else if cat_norm.contains("doc") || cat_norm.contains("pdf") || cat_norm.contains("txt") {
+        "documentos"
+    } else if cat_norm.contains("zip") || cat_norm.contains("rar") || cat_norm.contains("tar") || cat_norm.contains("comp") {
+        "comprimidos"
+    } else if cat_norm.contains("prog") || cat_norm.contains("app") || cat_norm.contains("soft") || cat_norm.contains("exe") {
+        "programas"
+    } else if cat_norm.contains("im") || cat_norm.contains("img") || cat_norm.contains("foto") || cat_norm.contains("pic") {
+        "imagenes"
+    } else {
+        "otros"
+    };
+
+    match id_norm.as_str() {
+        "ru" => match clave {
+            "musica" => "Музыка",
+            "videos" => "Видео",
+            "documentos" => "Документы",
+            "comprimidos" => "Сжатые",
+            "programas" => "Программы",
+            "imagenes" => "Изображения",
+            _ => "Другое",
+        },
+        "en" => match clave {
+            "musica" => "Music",
+            "videos" => "Videos",
+            "documentos" => "Documents",
+            "comprimidos" => "Compressed",
+            "programas" => "Programs",
+            "imagenes" => "Images",
+            _ => "Others",
+        },
+        "de" => match clave {
+            "musica" => "Musik",
+            "videos" => "Videos",
+            "documentos" => "Dokumente",
+            "comprimidos" => "Komprimiert",
+            "programas" => "Programme",
+            "imagenes" => "Bilder",
+            _ => "Sonstiges",
+        },
+        "fr" => match clave {
+            "musica" => "Musique",
+            "videos" => "Videos",
+            "documentos" => "Documents",
+            "comprimidos" => "Compresse",
+            "programas" => "Programmes",
+            "imagenes" => "Images",
+            _ => "Autres",
+        },
+        "pt" => match clave {
+            "musica" => "Musica",
+            "videos" => "Videos",
+            "documentos" => "Documentos",
+            "comprimidos" => "Compactados",
+            "programas" => "Programas",
+            "imagenes" => "Imagens",
+            _ => "Outros",
+        },
+        "it" => match clave {
+            "musica" => "Musica",
+            "videos" => "Video",
+            "documentos" => "Documenti",
+            "comprimidos" => "Compressi",
+            "programas" => "Programmi",
+            "imagenes" => "Immagini",
+            _ => "Altri",
+        },
+        "zh" => match clave {
+            "musica" => "音乐",
+            "videos" => "视频",
+            "documentos" => "文档",
+            "comprimidos" => "压缩包",
+            "programas" => "程序",
+            "imagenes" => "图片",
+            _ => "其他",
+        },
+        "ja" => match clave {
+            "musica" => "音楽",
+            "videos" => "動画",
+            "documentos" => "文書",
+            "comprimidos" => "圧縮ファイル",
+            "programas" => "プログラム",
+            "imagenes" => "画像",
+            _ => "その他",
+        },
+        _ => match clave {
+            "musica" => "Musica",
+            "videos" => "Videos",
+            "documentos" => "Documentos",
+            "comprimidos" => "Comprimidos",
+            "programas" => "Programas",
+            "imagenes" => "Imagenes",
+            _ => "Otros",
+        },
     }
 }

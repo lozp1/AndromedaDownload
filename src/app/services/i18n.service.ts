@@ -2793,4 +2793,8 @@ export class I18nService {
     }
     return this.translations[lang]?.[normalizedKey] || this.translations['es']?.[normalizedKey] || key;
   }
+
+  public getCurrentLang(): Language {
+    return this.currentLang$.value;
+  }
 }

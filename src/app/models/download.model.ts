@@ -5,7 +5,8 @@ export type DownloadStatus =
   | 'Detenido' 
   | 'Completado' 
   | 'Error' 
-  | 'Programada';
+  | 'Programada'
+  | 'Eliminado';
 
 export type DownloadCategory = 
   | 'Comprimidos' 

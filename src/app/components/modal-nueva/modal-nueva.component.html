@@ -50,6 +50,12 @@
               </span>
             </button>
           </div>
+          <div *ngIf="autoCategorizarActivo" style="font-size:7.5pt;color:var(--accent-cyan);margin-top:5px;display:flex;align-items:center;gap:6px;">
+            <span>📁 Subcarpeta automática:</span>
+            <span style="font-family:'JetBrains Mono',monospace;color:var(--text-primary);background:rgba(56,189,248,0.12);padding:1px 6px;border-radius:4px;border:1px solid rgba(56,189,248,0.25);">
+              {{ carpetaDestino }}\{{ getSubcarpetaCategoria() }}\
+            </span>
+          </div>
         </div>
 
         <!-- Categoría y Conexiones -->

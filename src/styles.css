@@ -1204,6 +1204,11 @@ app-ajustes-view {
     color: #EF4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
+.status-eliminado {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
 
 /* Barra de Progreso en Tabla */
 .table-prog-bar-wrap {
