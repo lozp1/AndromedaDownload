@@ -55,6 +55,10 @@
             {{ i18n.t('col_nombre') }}
             <div class="th-resizer" (mousedown)="startColResize('nombre', $event)"></div>
           </th>
+          <th [style.width.px]="columnWidths['ext']" style="position:relative;text-align:center;">
+            EXT
+            <div class="th-resizer" (mousedown)="startColResize('ext', $event)"></div>
+          </th>
           <th [style.width.px]="columnWidths['tamano']" style="position:relative;">
             {{ i18n.t('col_tamano') }}
             <div class="th-resizer" (mousedown)="startColResize('tamano', $event)"></div>
@@ -100,7 +104,10 @@
             </label>
           </td>
           <td [style.max-width.px]="columnWidths['nombre'] - 16" style="font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" [title]="item.nombre">
-            {{ item.nombre }}
+            {{ getNombreLimpio(item.nombre) }}
+          </td>
+          <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:7.5pt;font-weight:700;color:var(--accent-cyan);">
+            {{ getExtensionArchivo(item.nombre) }}
           </td>
           <td style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;">
             <span *ngIf="item.estado === 'Completado'" style="color:var(--text-primary);font-weight:600;">
@@ -135,7 +142,7 @@
             <span class="cat-badge" [ngClass]="getCategoryBadgeClass(item.categoria)">{{ item.categoria }}</span>
           </td>
           <td style="text-align:center;">
-            <span class="table-date-badge">{{ formatFechaCompacta(item.fecha_creacion) }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;color:var(--text-secondary);">{{ formatFechaCompacta(item.fecha_creacion) }}</span>
           </td>
         </tr>
       </tbody>
@@ -181,7 +188,7 @@
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 14 14"></polyline>
         </svg>
-        <span>ROI: {{ telemetry?.tiempo_total_ahorrado_str || '0s ahorrados' }} ({{ telemetry?.multiplicador_promedio_str || '1.0x' }}x)</span>
+        <span>ROI: {{ telemetry?.tiempo_total_ahorrado_str || '0s' }} ({{ telemetry?.multiplicador_promedio_str || '1.0x' }}x)</span>
       </span>
     </div>
 

@@ -1206,9 +1206,30 @@ app-ajustes-view {
     display: inline-block;
 }
 
+.progress-bar-bg {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+[data-theme="light"] .progress-bar-bg,
+[data-theme="white"] .progress-bar-bg {
+    background: #E2E8F0;
+    border-color: #CBD5E1;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284C7, #38BDF8);
+    border-radius: 999px;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .progress-bar-fill.completed {
-    background: var(--accent-green) !important;
-    box-shadow: 0 0 8px rgba(16, 231, 97, 0.3) !important;
+    background: linear-gradient(90deg, #059669, #10E761) !important;
+    box-shadow: 0 0 8px rgba(16, 231, 97, 0.35) !important;
 }
 .status-descargando {
     background: rgba(16, 231, 97, 0.12);

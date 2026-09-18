@@ -1,7 +1,15 @@
-<div class="splash-backdrop" *ngIf="visible" [class.fade-out]="isFadingOut">
-  <div class="splash-card">
+<div class="splash-backdrop" *ngIf="visible" [class.fade-out]="isFadingOut" (click)="closeOnBackdrop($event)">
+  <div class="splash-card" (click)="$event.stopPropagation()">
     <!-- Barra de acento superior sutil Office-style -->
     <div class="splash-top-accent"></div>
+
+    <!-- Botón de cerrar para modo On-Demand -->
+    <button *ngIf="isOnDemand" class="splash-close-btn" (click)="cerrar()" title="Cerrar Splash">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
 
     <div class="splash-content">
       <!-- Sección de Marca / Logotipo -->

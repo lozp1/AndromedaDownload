@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   public isDetailModalOpen: boolean = false;
   public selectedDetailTaskId: string | null = null;
   public isAboutModalOpen: boolean = false;
+  public isSplashOnDemand: boolean = false;
 
   // Modales de Confirmación Animados
   public isConfirmModalOpen: boolean = false;
@@ -84,6 +85,11 @@ export class AppComponent implements OnInit {
 
     this.downloadService.trayPanelObservable.subscribe(open => {
       this.isTrayPanelOpen = open;
+    });
+
+    this.downloadService.splashObservable.subscribe(open => {
+      this.isSplashOnDemand = open;
+      this.cdr.detectChanges();
     });
 
     // Escuchar eventos desde la bandeja del sistema de Windows y la extensión web
@@ -161,6 +167,11 @@ export class AppComponent implements OnInit {
   }
 
   public async onSplashFinished(): Promise<void> {
+    if (this.isSplashOnDemand) {
+      this.isSplashOnDemand = false;
+      this.cdr.detectChanges();
+      return;
+    }
     this.isAppReady = true;
     this.cdr.detectChanges();
     try {

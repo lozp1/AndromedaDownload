@@ -102,6 +102,11 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getTiempoLimpio(str: string | undefined): string {
+    if (!str) return '0m 0s';
+    return str.replace(/ahorrados|ahorrado/gi, '').trim();
+  }
+
   public modoSimulacion: boolean = true;
   private simInterval: any = null;
   private simBuffer: number[] = [];
@@ -212,7 +217,7 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
         total_transferido_bytes: this.simBytes,
         total_transferido_str: `${totalGB} GB`,
         tiempo_total_ahorrado_segundos: 1458,
-        tiempo_total_ahorrado_str: '24m 18s ahorrados',
+        tiempo_total_ahorrado_str: '24m 18s',
         multiplicador_promedio_str: '37.8x',
         motor_conectado: true
       };

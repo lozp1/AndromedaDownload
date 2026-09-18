@@ -31,7 +31,7 @@
       </div>
       <div class="tray-stat-box">
         <span class="tray-stat-lbl">TIEMPO AHORRADO</span>
-        <span class="tray-stat-val amber">{{ (telemetry$ | async)?.tiempo_total_ahorrado_str || '0 s' }}</span>
+        <span class="tray-stat-val amber">{{ getTiempoLimpio((telemetry$ | async)?.tiempo_total_ahorrado_str) }}</span>
       </div>
     </div>
 

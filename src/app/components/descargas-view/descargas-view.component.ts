@@ -23,15 +23,34 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
   // Anchos de columna redimensionables estilo Excel (px)
   public columnWidths: { [key: string]: number } = {
     check: 40,
-    nombre: 260,
-    tamano: 140,
-    progreso: 160,
+    nombre: 250,
+    ext: 60,
+    tamano: 130,
+    progreso: 155,
     vel: 110,
-    eta: 105,
+    eta: 100,
     estado: 110,
-    cat: 105,
+    cat: 100,
     fecha: 115
   };
+
+  public getNombreLimpio(nombre: string): string {
+    if (!nombre) return '';
+    const idx = nombre.lastIndexOf('.');
+    if (idx > 0 && idx > nombre.length - 8) {
+      return nombre.substring(0, idx);
+    }
+    return nombre;
+  }
+
+  public getExtensionArchivo(nombre: string): string {
+    if (!nombre) return '—';
+    const idx = nombre.lastIndexOf('.');
+    if (idx > 0 && idx > nombre.length - 8) {
+      return nombre.substring(idx + 1).toUpperCase();
+    }
+    return '—';
+  }
 
   private activeColKey: string | null = null;
   private startX: number = 0;

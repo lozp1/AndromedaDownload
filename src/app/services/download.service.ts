@@ -86,6 +86,13 @@ export class DownloadService {
     this.trayPanelSubject.next(open);
   }
 
+  private splashSubject = new Subject<boolean>();
+  public splashObservable = this.splashSubject.asObservable();
+
+  public triggerSplash(open: boolean = true): void {
+    this.splashSubject.next(open);
+  }
+
   public getCurrentDownloads(): DescargaItem[] {
     return this.descargas$.value;
   }

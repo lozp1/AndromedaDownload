@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { I18nService } from '../../services/i18n.service';
 
 @Component({
@@ -6,13 +6,15 @@ import { I18nService } from '../../services/i18n.service';
   templateUrl: './splash-screen.component.html',
   styleUrls: ['./splash-screen.component.css']
 })
-export class SplashScreenComponent implements OnInit {
+export class SplashScreenComponent implements OnInit, OnDestroy {
+  @Input() isOnDemand: boolean = false;
   @Output() completed = new EventEmitter<void>();
 
   public visible: boolean = true;
   public isFadingOut: boolean = false;
   public progress: number = 0;
   public currentStatus: string = '';
+  private timer: any = null;
 
   constructor(public i18n: I18nService) {
     this.currentStatus = this.i18n.t('splash_status_init');
@@ -20,6 +22,25 @@ export class SplashScreenComponent implements OnInit {
 
   ngOnInit(): void {
     this.runSplashSequence();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  public cerrar(): void {
+    if (this.isFadingOut) return;
+    this.isFadingOut = true;
+    setTimeout(() => {
+      this.visible = false;
+      this.completed.emit();
+    }, 350);
+  }
+
+  public closeOnBackdrop(e: MouseEvent): void {
+    if (this.isOnDemand) {
+      this.cerrar();
+    }
   }
 
   private runSplashSequence(): void {
@@ -31,20 +52,19 @@ export class SplashScreenComponent implements OnInit {
     ];
 
     let currentStep = 0;
-    const interval = setInterval(() => {
+    this.timer = setInterval(() => {
       if (currentStep < steps.length) {
         this.progress = steps[currentStep].p;
         this.currentStatus = this.i18n.t(steps[currentStep].msgKey);
         currentStep++;
       } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          this.isFadingOut = true;
+        clearInterval(this.timer);
+        this.timer = null;
+        if (!this.isOnDemand) {
           setTimeout(() => {
-            this.visible = false;
-            this.completed.emit();
-          }, 350);
-        }, 300);
+            this.cerrar();
+          }, 300);
+        }
       }
     }, 450);
   }

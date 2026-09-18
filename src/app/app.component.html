@@ -56,8 +56,8 @@
 <!-- Cursor Fluido Magnético (YouTube 7eE8xPyXSR4) -->
 <app-custom-cursor></app-custom-cursor>
 
-<!-- Pantalla de Splash Independiente al Inicializar la Aplicación -->
-<app-splash-screen *ngIf="!isTrayMode" (completed)="onSplashFinished()"></app-splash-screen>
+<!-- Pantalla de Splash Independiente al Inicializar la Aplicación o Bajo Demanda -->
+<app-splash-screen *ngIf="(!isTrayMode && !isAppReady) || isSplashOnDemand" [isOnDemand]="isSplashOnDemand" (completed)="onSplashFinished()"></app-splash-screen>
 
 <!-- Guía Interactiva del Sistema (Tarjeta Elegante Sin Mascota) -->
 <app-tour-mascota 

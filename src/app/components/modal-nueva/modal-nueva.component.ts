@@ -166,6 +166,19 @@ export class ModalNuevaDescargaComponent implements OnInit {
       this.conexiones = s.conexiones_por_archivo || 16;
       this.autoCategorizarActivo = s.auto_categorizar ?? true;
     });
+
+    this.downloadService.newModalObservable.subscribe(open => {
+      if (open && this.downloadService.pendingNuevaDescargaUrl) {
+        this.url = this.downloadService.pendingNuevaDescargaUrl;
+        this.nombre = this.downloadService.pendingNuevaDescargaNombre || '';
+        this.downloadService.pendingNuevaDescargaUrl = '';
+        this.downloadService.pendingNuevaDescargaNombre = '';
+        this.notificacionPlaylistMostrada = false;
+        this.ultimaUrlPlaylistNotificada = '';
+        setTimeout(() => this.onUrlInput(), 60);
+      }
+    });
+
     // Fecha actual por defecto para el calendario
     const hoy = new Date();
     this.fechaProgramada = hoy.toISOString().split('T')[0];
