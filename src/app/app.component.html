@@ -1,4 +1,4 @@
-<div class="app-window" id="app-window" *ngIf="isAppReady && !isStandaloneMode">
+<div class="app-window" id="app-window" *ngIf="isAppReady && !isStandaloneMode && !isTrayMode">
   <!-- Header Principal Frameless con Traffic Lights -->
   <app-header></app-header>
 
@@ -57,7 +57,7 @@
 <app-custom-cursor></app-custom-cursor>
 
 <!-- Pantalla de Splash Independiente al Inicializar la Aplicación -->
-<app-splash-screen (completed)="onSplashFinished()"></app-splash-screen>
+<app-splash-screen *ngIf="!isTrayMode" (completed)="onSplashFinished()"></app-splash-screen>
 
 <!-- Guía Interactiva del Sistema (Tarjeta Elegante Sin Mascota) -->
 <app-tour-mascota 
@@ -76,11 +76,22 @@
 <!-- Transición de Tema Estándar, Limpia y Profesional (Iris Radial Suave) -->
 <div class="theme-iris-transition" id="theme-iris-transition"></div>
 
-<!-- Panel Rápido Flotante / Widget de Barra de Tareas -->
-<app-tray-panel 
-  [visible]="isTrayPanelOpen" 
-  (close)="isTrayPanelOpen = false">
-</app-tray-panel>
+<!-- Modo Ventana Flotante Externa de Bandeja (Tray Flyout Window) -->
+<div *ngIf="isTrayMode" class="tray-window-container" (click)="cerrarTrayWindow()">
+  <div (click)="$event.stopPropagation()" style="width:100%;height:100%;">
+    <app-tray-panel 
+      [visible]="true" 
+      (close)="cerrarTrayWindow()">
+    </app-tray-panel>
+  </div>
+</div>
+
+<!-- Modal Descarga por Lotes / Playlist -->
+<app-modal-lote
+  [visible]="downloadService.isLoteModalOpen"
+  [playlistData]="downloadService.activePlaylistData"
+  (close)="downloadService.triggerLoteModal(false)">
+</app-modal-lote>
 
 <!-- Menú Contextual Personalizado de Andromeda -->
 <app-context-menu 

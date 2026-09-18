@@ -7,7 +7,9 @@ import {
   DownloadCategory, 
   UserSettings, 
   ProbeResult,
-  RoiMetrics
+  RoiMetrics,
+  PlaylistProbeResult,
+  ItemLoteDescarga
 } from '../models/download.model';
 import { TauriService } from './tauri.service';
 import { AudioService } from './audio.service';
@@ -573,6 +575,10 @@ export class DownloadService {
     this.toast$.next(filtrada);
   }
 
+  public mostrarToast(titulo: string, mensaje: string, tipo: 'info' | 'success' | 'error' = 'info'): void {
+    this.showToast(tipo, titulo, mensaje);
+  }
+
   // Helpers de formato
   public formatBytes(bytes: number): string {
     if (bytes == null || isNaN(bytes) || bytes <= 0) return '0 B';
@@ -588,5 +594,49 @@ export class DownloadService {
 
   public formatBps(bytesPorSeg: number): string {
     return `${this.formatBytes(bytesPorSeg)}/s`;
+  }
+
+  // --- Gestor de Lotes y Listas de Reproducción ---
+  public isLoteModalOpen: boolean = false;
+  public activePlaylistData: PlaylistProbeResult | null = null;
+
+  public triggerLoteModal(open: boolean, playlistData?: PlaylistProbeResult): void {
+    this.isLoteModalOpen = open;
+    if (playlistData) {
+      this.activePlaylistData = playlistData;
+    }
+  }
+
+  public async sondearPlaylist(url: string): Promise<PlaylistProbeResult> {
+    try {
+      return await this.tauri.invoke<PlaylistProbeResult>('sondear_playlist', { url });
+    } catch (e) {
+      return {
+        ok: false,
+        id_playlist: '',
+        titulo: '',
+        canal: '',
+        total_items: 0,
+        items: [],
+        error: String(e)
+      };
+    }
+  }
+
+  public async iniciarDescargasLote(items: ItemLoteDescarga[]): Promise<number> {
+    try {
+      const creadas = await this.tauri.invoke<number>('iniciar_descargas_lote', { items });
+      this.mostrarToast('Descargas masivas iniciadas', `Se añadieron ${creadas} descargas a la cola.`);
+      return creadas;
+    } catch (e) {
+      this.mostrarToast('Error en descargas', `No se pudo iniciar el lote: ${e}`);
+      return 0;
+    }
+  }
+
+  public async cerrarTrayFlyout(): Promise<void> {
+    try {
+      await this.tauri.invoke('cerrar_tray_flyout');
+    } catch {}
   }
 }

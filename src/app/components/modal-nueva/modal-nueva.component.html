@@ -22,6 +22,22 @@
             <div *ngIf="sondeoEnCurso" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:2px solid var(--border-subtle);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 0.6s linear infinite;"></div>
           </div>
           <span *ngIf="estadoSondeo" style="font-size:8pt;color:#0284C7;font-family:'Inter',sans-serif;font-weight:600;margin-top:3px;display:block;">{{ estadoSondeo }}</span>
+          <!-- Banner de Detección de Playlist / Lote -->
+          <div *ngIf="esPlaylistDetectada" class="playlist-detect-banner">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              <span style="font-size:7.5pt;font-weight:700;color:var(--text-primary);letter-spacing:0.3px;">LISTA DE REPRODUCCIÓN DETECTADA</span>
+            </div>
+            <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
+                    style="height:28px;padding:0 12px;font-size:7.2pt;" 
+                    type="button"
+                    [disabled]="playlistSondeando"
+                    (click)="abrirGestorLotes()">
+              <span class="btn-txt">
+                {{ playlistSondeando ? 'Analizando...' : '⚡ Descargar Lista en Lote' }}
+              </span>
+            </button>
+          </div>
         </div>
 
         <!-- Nombre y Tamaño -->
@@ -49,17 +65,6 @@
                 Examinar
               </span>
             </button>
-          </div>
-          <div *ngIf="autoCategorizarActivo" class="subcarpeta-indicator">
-            <span class="subcarpeta-tag">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span>Subcarpeta automática:</span>
-            </span>
-            <span class="subcarpeta-path" [title]="carpetaDestino + '\\' + getSubcarpetaCategoria() + '\\'">
-              {{ carpetaDestino }}\{{ getSubcarpetaCategoria() }}\
-            </span>
           </div>
         </div>
 

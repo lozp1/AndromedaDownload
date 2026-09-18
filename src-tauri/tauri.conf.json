@@ -23,6 +23,20 @@
         "transparent": true,
         "center": true,
         "visible": true
+      },
+      {
+        "label": "tray_flyout",
+        "title": "Andromeda Quick Panel",
+        "width": 380,
+        "height": 520,
+        "resizable": false,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "url": "index.html?mode=tray"
       }
     ],
     "security": {

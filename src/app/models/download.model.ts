@@ -116,3 +116,32 @@ export interface UserSettings {
   sonidos_activos: boolean;
   iniciar_con_windows: boolean;
 }
+
+export interface PlaylistItemProbe {
+  id: string;
+  titulo: string;
+  duracion_str: string;
+  duracion_segundos: number;
+  url: string;
+  thumbnail?: string;
+  formato_sugerido: string;
+  tamano_est_bytes: number;
+}
+
+export interface PlaylistProbeResult {
+  ok: boolean;
+  id_playlist: string;
+  titulo: string;
+  canal: string;
+  total_items: number;
+  items: PlaylistItemProbe[];
+  error?: string;
+}
+
+export interface ItemLoteDescarga {
+  url: string;
+  titulo: string;
+  formato: string;
+  carpeta: string;
+  conexiones?: number;
+}

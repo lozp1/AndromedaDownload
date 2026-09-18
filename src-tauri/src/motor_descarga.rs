@@ -18,7 +18,10 @@ use uuid::Uuid;
 use std::os::windows::process::CommandExt;
 
 use crate::gestor_sockets::GestorSockets;
-use crate::modelos::{DescargaItem, GlobalTelemetry, ProbeResult, SegmentoDescarga, UserSettings};
+use crate::modelos::{
+    DescargaItem, GlobalTelemetry, ItemLoteDescarga, PlaylistItemProbe, PlaylistProbeResult,
+    ProbeResult, SegmentoDescarga, UserSettings,
+};
 use crate::roi_telemetria::{calcular_speed_duel, formatear_tamano_legible, formatear_velocidad, formatear_tiempo_segundos};
 
 const DEFAULT_USER_AGENT: &str = "AndromedaDownload/1.0 (Windows NT 10.0; Win64; x64) High-Speed Engine";
@@ -412,6 +415,150 @@ impl GestorDescargas {
             content_type,
             error: None,
         }
+    }
+
+    pub async fn sondear_playlist(&self, url: &str) -> PlaylistProbeResult {
+        let mut cmd = Command::new(if cfg!(target_os = "windows") { "python" } else { "python3" });
+        cmd.env("PYTHONIOENCODING", "utf-8");
+        cmd.args(["-X", "utf8", "-m", "yt_dlp", "--flat-playlist", "--dump-single-json", "--no-warnings", url]);
+        #[cfg(target_os = "windows")]
+        cmd.creation_flags(0x08000000);
+
+        let res = tokio::time::timeout(std::time::Duration::from_secs(18), cmd.output()).await;
+        match res {
+            Ok(Ok(out)) => {
+                if out.status.success() {
+                    let text = String::from_utf8_lossy(&out.stdout);
+                    if let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) {
+                        let titulo_playlist = json.get("title").and_then(|v| v.as_str()).unwrap_or("Lista de Reproducción").to_string();
+                        let canal = json.get("uploader").or_else(|| json.get("channel")).and_then(|v| v.as_str()).unwrap_or("Desconocido").to_string();
+                        let id_pl = json.get("id").and_then(|v| v.as_str()).unwrap_or("").to_string();
+
+                        let mut items_probe = Vec::new();
+                        if let Some(entries) = json.get("entries").and_then(|v| v.as_array()) {
+                            for (idx, entry) in entries.iter().enumerate() {
+                                let id = entry.get("id").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                                let raw_title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("Video").to_string();
+                                let mut title: String = raw_title.chars().map(|c| match c {
+                                    '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' => '_',
+                                    _ => c,
+                                }).collect();
+                                if title.trim().is_empty() {
+                                    title = format!("Pista_{}", idx + 1);
+                                }
+                                let dur_secs = entry.get("duration").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                                let dur_str = if dur_secs > 0.0 {
+                                    let m = (dur_secs / 60.0).floor() as u64;
+                                    let s = (dur_secs % 60.0) as u64;
+                                    format!("{:02}:{:02}", m, s)
+                                } else {
+                                    entry.get("duration_string").and_then(|v| v.as_str()).unwrap_or("--:--").to_string()
+                                };
+
+                                let item_url = entry.get("url").and_then(|v| v.as_str()).map(|u| {
+                                    if u.starts_with("http") { u.to_string() } else { format!("https://www.youtube.com/watch?v={}", id) }
+                                }).unwrap_or_else(|| format!("https://www.youtube.com/watch?v={}", id));
+
+                                let thumbnail = entry.get("thumbnails")
+                                    .and_then(|t| t.as_array())
+                                    .and_then(|arr| arr.last())
+                                    .and_then(|thumb| thumb.get("url"))
+                                    .and_then(|u| u.as_str())
+                                    .map(|s| s.to_string())
+                                    .or_else(|| Some(format!("https://i.ytimg.com/vi/{}/mqdefault.jpg", id)));
+
+                                items_probe.push(PlaylistItemProbe {
+                                    id: if id.is_empty() { format!("item_{}", idx) } else { id },
+                                    titulo: title.trim().to_string(),
+                                    duracion_str: dur_str,
+                                    duracion_segundos: dur_secs,
+                                    url: item_url,
+                                    thumbnail,
+                                    formato_sugerido: "1080p".to_string(),
+                                    tamano_est_bytes: 45 * 1024 * 1024,
+                                });
+                            }
+                        }
+
+                        let total = items_probe.len();
+                        return PlaylistProbeResult {
+                            ok: true,
+                            id_playlist: id_pl,
+                            titulo: titulo_playlist,
+                            canal,
+                            total_items: total,
+                            items: items_probe,
+                            error: None,
+                        };
+                    }
+                }
+                PlaylistProbeResult {
+                    ok: false,
+                    id_playlist: "".to_string(),
+                    titulo: "".to_string(),
+                    canal: "".to_string(),
+                    total_items: 0,
+                    items: Vec::new(),
+                    error: Some("No se pudo obtener la lista de reproducción. Verifique la URL o su conexión.".to_string()),
+                }
+            }
+            Ok(Err(e)) => PlaylistProbeResult {
+                ok: false,
+                id_playlist: "".to_string(),
+                titulo: "".to_string(),
+                canal: "".to_string(),
+                total_items: 0,
+                items: Vec::new(),
+                error: Some(format!("Error de subproceso yt-dlp: {}", e)),
+            },
+            Err(_) => PlaylistProbeResult {
+                ok: false,
+                id_playlist: "".to_string(),
+                titulo: "".to_string(),
+                canal: "".to_string(),
+                total_items: 0,
+                items: Vec::new(),
+                error: Some("Tiempo de espera agotado al sondear la lista de reproducción.".to_string()),
+            },
+        }
+    }
+
+    pub async fn iniciar_descargas_lote(&self, items: Vec<ItemLoteDescarga>) -> Result<usize, String> {
+        let mut creadas = 0;
+        for item in items {
+            let ext = if item.formato.to_lowercase().contains("mp3") {
+                "mp3"
+            } else if item.formato.to_lowercase().contains("m4a") {
+                "m4a"
+            } else {
+                "mp4"
+            };
+
+            let mut nombre_con_ext = item.titulo.trim().to_string();
+            if !nombre_con_ext.to_lowercase().ends_with(&format!(".{}", ext)) {
+                nombre_con_ext = format!("{}.{}", nombre_con_ext, ext);
+            }
+
+            let cat = if ext == "mp3" || ext == "m4a" {
+                "Música".to_string()
+            } else {
+                "Videos".to_string()
+            };
+
+            let _ = self.agregar_e_iniciar(
+                item.url,
+                Some(nombre_con_ext),
+                Some(item.carpeta),
+                item.conexiones,
+                Some(cat),
+                false,
+                None,
+                false,
+                None,
+            ).await;
+            creadas += 1;
+        }
+        Ok(creadas)
     }
 
     pub async fn agregar_e_iniciar(

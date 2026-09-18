@@ -131,3 +131,35 @@ impl Default for UserSettings {
         }
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlaylistItemProbe {
+    pub id: String,
+    pub titulo: String,
+    pub duracion_str: String,
+    pub duracion_segundos: f64,
+    pub url: String,
+    pub thumbnail: Option<String>,
+    pub formato_sugerido: String,
+    pub tamano_est_bytes: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlaylistProbeResult {
+    pub ok: bool,
+    pub id_playlist: String,
+    pub titulo: String,
+    pub canal: String,
+    pub total_items: usize,
+    pub items: Vec<PlaylistItemProbe>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ItemLoteDescarga {
+    pub url: String,
+    pub titulo: String,
+    pub formato: String,
+    pub carpeta: String,
+    pub conexiones: Option<usize>,
+}

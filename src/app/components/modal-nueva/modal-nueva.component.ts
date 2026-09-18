@@ -300,10 +300,16 @@ export class ModalNuevaDescargaComponent implements OnInit {
     }
   }
 
+  public esPlaylistDetectada: boolean = false;
+  public playlistSondeando: boolean = false;
+
   public onUrlInput(): void {
     if (this.timerSondeo) clearTimeout(this.timerSondeo);
     const trimmed = (this.url || '').trim();
     const isYt = trimmed.includes('youtube.com') || trimmed.includes('youtu.be');
+    const isPl = trimmed.includes('list=') || trimmed.includes('playlist');
+    this.esPlaylistDetectada = isPl;
+
     if (!isYt) {
       this.isMediaStream = false;
     }
@@ -313,6 +319,19 @@ export class ModalNuevaDescargaComponent implements OnInit {
       this.tamanoStr = 'Esperando URL...';
       this.estadoSondeo = '';
       this.isMediaStream = false;
+    }
+  }
+
+  public async abrirGestorLotes(): Promise<void> {
+    if (!this.url) return;
+    this.playlistSondeando = true;
+    const res = await this.downloadService.sondearPlaylist(this.url);
+    this.playlistSondeando = false;
+    if (res && res.ok && res.items.length > 0) {
+      this.cerrarModal();
+      this.downloadService.triggerLoteModal(true, res);
+    } else {
+      this.downloadService.mostrarToast('Error en lista', res.error || 'No se pudieron extraer los videos de la playlist.');
     }
   }
 

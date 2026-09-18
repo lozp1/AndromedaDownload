@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   // Panel Flotante de Bandeja / Tareas de Windows
   public isTrayPanelOpen: boolean = false;
   public isStandaloneMode: boolean = false;
+  public isTrayMode: boolean = false;
 
   // Menú Contextual Personalizado
   public isContextMenuOpen: boolean = false;
@@ -40,6 +41,14 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'tray') {
+      this.isTrayMode = true;
+      this.isAppReady = true;
+      document.body.classList.add('tray-mode');
+      return;
+    }
+
     if (!this.isAppReady) {
       this.tauriService.setSplashMode().catch(() => {});
     }
@@ -196,5 +205,16 @@ export class AppComponent implements OnInit {
 
   public closeAboutModal(): void {
     this.isAboutModalOpen = false;
+  }
+
+  @HostListener('window:blur')
+  public onWindowBlur(): void {
+    if (this.isTrayMode) {
+      this.cerrarTrayWindow();
+    }
+  }
+
+  public cerrarTrayWindow(): void {
+    this.downloadService.cerrarTrayFlyout();
   }
 }

@@ -1,0 +1,181 @@
+<!-- MODAL: DESCARGA POR LOTES Y PLAYLISTS (modal-lote.ui) -->
+<div class="modal-overlay" *ngIf="visible" (click)="cerrarModal()">
+  <div class="modal-lote-card" (click)="$event.stopPropagation()">
+    <!-- Ambient Floating Glowing Spheres -->
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-header-dot"></div>
+      <span class="modal-header-title">DESCARGA POR LOTES / LISTA DE REPRODUCCIÓN</span>
+      <span class="tremor-delta-badge cyan" style="margin-left:8px;font-size:7pt;" *ngIf="playlistData">
+        ● {{ itemsSeleccionados.size }} DE {{ playlistData.items.length }} SELECCIONADOS
+      </span>
+      <div class="traffic-lights" style="margin-left:auto;">
+        <button class="traffic-btn traffic-close" (click)="cerrarModal()" title="Cerrar"></button>
+      </div>
+    </div>
+
+    <!-- Toolbar de Preset Maestro -->
+    <div class="modal-lote-toolbar">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;">
+        <span class="form-label" style="white-space:nowrap;margin:0;">PRESET MAESTRO:</span>
+        <select class="form-input" style="width:220px;height:34px;font-size:8pt;" [(ngModel)]="presetGlobal" (change)="aplicarPresetGlobal()">
+          <option value="1080p">🎬 Video MP4 (1080p Full HD)</option>
+          <option value="720p">🎬 Video MP4 (720p HD)</option>
+          <option value="mp3">🎵 Audio MP3 (320 kbps Alta Calidad)</option>
+          <option value="m4a">🎵 Audio M4A (Original AAC)</option>
+        </select>
+        <span style="font-size:7.5pt;color:var(--text-muted);">Aplica formato base a todos los elementos</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:32px;padding:0 12px;font-size:7.5pt;" (click)="toggleSeleccionarTodos()">
+          <span class="btn-txt">
+            {{ estaTodosSeleccionados() ? 'Desmarcar Todos' : '☑ Seleccionar Todos' }}
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Cuerpo Híbrido: Tabla a la izquierda + Inspector a la derecha -->
+    <div class="modal-lote-body">
+      <!-- Columna Izquierda: Lista de Videos -->
+      <div class="modal-lote-list-container">
+        <div class="modal-lote-item-row" 
+             *ngFor="let item of playlistData?.items; let i = index"
+             [class.active]="i === indiceInspeccionado"
+             (click)="seleccionarParaInspeccion(i)">
+          
+          <!-- Checkbox de Selección -->
+          <input type="checkbox" 
+                 class="lote-checkbox"
+                 [checked]="estaSeleccionado(item.id)" 
+                 (change)="toggleSeleccion(item.id, $event)">
+
+          <!-- Número de Índice -->
+          <span class="lote-item-idx">#{{ i + 1 }}</span>
+
+          <!-- Miniatura Pequeña -->
+          <div class="lote-thumb-wrap">
+            <img *ngIf="item.thumbnail" [src]="item.thumbnail" class="lote-thumb-img" alt="thumb">
+            <div *ngIf="!item.thumbnail" class="lote-thumb-placeholder">▶</div>
+            <span class="lote-thumb-duration">{{ item.duracion_str }}</span>
+          </div>
+
+          <!-- Información del Video -->
+          <div class="lote-item-info">
+            <span class="lote-item-title" [title]="getTituloVideo(item)">
+              {{ getTituloVideo(item) }}
+            </span>
+            <div class="lote-item-meta">
+              <span class="lote-fmt-badge" [class.override]="formatosPersonalizados.has(item.id)">
+                {{ getFormatoVideo(item.id).toUpperCase() }}
+              </span>
+              <span *ngIf="formatosPersonalizados.has(item.id)" style="color:var(--accent-amber);font-size:6.5pt;">● Personalizado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Inspector & Carrusel del Video Activo -->
+      <div class="modal-lote-inspector" *ngIf="getVideoActual() as actual">
+        <!-- Navegación de Inspector -->
+        <div class="inspector-header">
+          <span class="inspector-badge">VIDEO #{{ indiceInspeccionado + 1 }} DE {{ playlistData?.items?.length }}</span>
+          <div class="inspector-nav-btns">
+            <button class="nav-arrow-btn" [disabled]="indiceInspeccionado === 0" (click)="anteriorVideo()" title="Video Anterior">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="nav-arrow-btn" [disabled]="indiceInspeccionado === (playlistData?.items?.length || 1) - 1" (click)="siguienteVideo()" title="Video Siguiente">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Vista Previa de Miniatura Grande -->
+        <div class="inspector-preview-box">
+          <img *ngIf="actual.thumbnail" [src]="actual.thumbnail" class="inspector-preview-img" alt="preview">
+          <div class="inspector-preview-overlay">
+            <span class="inspector-duration-tag">{{ actual.duracion_str }}</span>
+          </div>
+        </div>
+
+        <!-- Configuración Específica del Video -->
+        <div class="inspector-fields">
+          <div class="form-group">
+            <label class="form-label">TÍTULO DEL ARCHIVO</label>
+            <input type="text" class="form-input" 
+                   [value]="getTituloVideo(actual)"
+                   (input)="setTituloVideo(actual.id, $any($event.target).value)"
+                   placeholder="Título del archivo">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">FORMATO INDIVIDUAL</label>
+            <select class="form-input" 
+                    [value]="getFormatoVideo(actual.id)"
+                    (change)="setFormatoVideo(actual.id, $any($event.target).value)">
+              <option value="1080p">🎬 Video MP4 (1080p Full HD)</option>
+              <option value="720p">🎬 Video MP4 (720p HD)</option>
+              <option value="mp3">🎵 Audio MP3 (320 kbps)</option>
+              <option value="m4a">🎵 Audio M4A (Original AAC)</option>
+            </select>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:8pt;color:var(--text-secondary);">
+              <input type="checkbox" [checked]="estaSeleccionado(actual.id)" (change)="toggleSeleccion(actual.id)">
+              <span>Incluir en la descarga</span>
+            </label>
+            <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" 
+                    *ngIf="formatosPersonalizados.has(actual.id)" 
+                    style="height:26px;padding:0 8px;font-size:7pt;" 
+                    (click)="formatosPersonalizados.delete(actual.id)">
+              <span class="btn-txt">Restablecer preset</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-lote-footer">
+      <!-- Ruta de Destino -->
+      <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:480px;">
+        <span class="form-label" style="white-space:nowrap;margin:0;">DESTINO:</span>
+        <input type="text" class="form-input" [(ngModel)]="carpetaDestino" style="height:34px;font-size:8pt;flex:1;">
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:34px;padding:0 10px;font-size:7.5pt;" (click)="seleccionarCarpeta()">
+          <span class="btn-txt">Examinar</span>
+        </button>
+      </div>
+
+      <!-- Resumen y Acciones -->
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
+        <div style="text-align:right;">
+          <div style="font-size:7.5pt;font-weight:700;color:var(--text-primary);font-family:'Inter',sans-serif;">
+            {{ itemsSeleccionados.size }} ELEMENTOS SELECCIONADOS
+          </div>
+          <div style="font-size:7pt;color:var(--accent-green);font-family:'JetBrains Mono',monospace;">
+            ~{{ getTamanoEstimadoTotal() }} estimado
+          </div>
+        </div>
+
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:36px;padding:0 16px;" (click)="cerrarModal()">
+          <span class="btn-txt">Cancelar</span>
+        </button>
+
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
+                style="height:36px;padding:0 18px;" 
+                [disabled]="itemsSeleccionados.size === 0 || estaProcesando"
+                (click)="confirmarDescargaLote()">
+          <span class="btn-txt" style="display:flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            {{ estaProcesando ? 'Encolando...' : '🚀 Añadir ' + itemsSeleccionados.size + ' a la Cola' }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -19,6 +19,7 @@ import { ModalExploradorComponent } from './components/modal-explorador/modal-ex
 import { TourMascotaComponent } from './components/tour-mascota/tour-mascota.component';
 import { TrayPanelComponent } from './components/tray-panel/tray-panel.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { ModalLoteComponent } from './components/modal-lote/modal-lote.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     ModalExploradorComponent,
     TourMascotaComponent,
     TrayPanelComponent,
-    ContextMenuComponent
+    ContextMenuComponent,
+    ModalLoteComponent
   ],
   imports: [
     BrowserModule,

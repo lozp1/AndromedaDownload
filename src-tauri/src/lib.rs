@@ -7,7 +7,9 @@ mod servidor_ipc;
 use std::sync::Arc;
 use tauri::{Manager, State, Window, Emitter};
 
-use modelos::{GlobalTelemetry, ProbeResult, UserSettings};
+use modelos::{
+    GlobalTelemetry, ItemLoteDescarga, PlaylistProbeResult, ProbeResult, UserSettings,
+};
 use motor_descarga::GestorDescargas;
 use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState};
@@ -81,6 +83,27 @@ async fn obtener_telemetria(gestor: State<'_, Arc<GestorDescargas>>) -> Result<G
 #[tauri::command]
 async fn sondear_url(url: String, gestor: State<'_, Arc<GestorDescargas>>) -> Result<ProbeResult, String> {
     Ok(gestor.sondear_url(&url).await)
+}
+
+#[tauri::command]
+async fn sondear_playlist(url: String, gestor: State<'_, Arc<GestorDescargas>>) -> Result<PlaylistProbeResult, String> {
+    Ok(gestor.sondear_playlist(&url).await)
+}
+
+#[tauri::command]
+async fn iniciar_descargas_lote(
+    items: Vec<ItemLoteDescarga>,
+    gestor: State<'_, Arc<GestorDescargas>>,
+) -> Result<usize, String> {
+    gestor.iniciar_descargas_lote(items).await
+}
+
+#[tauri::command]
+async fn cerrar_tray_flyout(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(win) = app.get_webview_window("tray_flyout") {
+        let _ = win.hide();
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -493,6 +516,15 @@ pub fn run() {
                     gestor_queue.iniciar_queue_runner().await;
                 });
 
+                if let Some(tray_win) = app.get_webview_window("tray_flyout") {
+                    let tw = tray_win.clone();
+                    tray_win.on_window_event(move |ev| {
+                        if let tauri::WindowEvent::Focused(false) = ev {
+                            let _ = tw.hide();
+                        }
+                    });
+                }
+
                 let open_i = MenuItem::with_id(app, "open", "Abrir Andromeda Suite", true, None::<&str>)?;
                 let nueva_i = MenuItem::with_id(app, "nueva_descarga", "➕ Nueva Descarga...", true, None::<&str>)?;
                 let pausar_i = MenuItem::with_id(app, "pausar_todas", "⏸️ Pausar Todas", true, None::<&str>)?;
@@ -537,11 +569,22 @@ pub fn run() {
                                 }
                             }
                             "tray_panel" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                    let _ = window.emit("toggle_tray_panel", ());
+                                if let Some(win) = app.get_webview_window("tray_flyout") {
+                                    if win.is_visible().unwrap_or(false) {
+                                        let _ = win.hide();
+                                    } else {
+                                        if let Ok(Some(monitor)) = win.current_monitor() {
+                                            let screen = monitor.size();
+                                            let scale = monitor.scale_factor();
+                                            let w = (380.0 * scale) as i32;
+                                            let h = (520.0 * scale) as i32;
+                                            let x = monitor.position().x + screen.width as i32 - w - (18.0 * scale) as i32;
+                                            let y = monitor.position().y + screen.height as i32 - h - (54.0 * scale) as i32;
+                                            let _ = win.set_position(tauri::Position::Physical(tauri::PhysicalPosition { x, y }));
+                                        }
+                                        let _ = win.show();
+                                        let _ = win.set_focus();
+                                    }
                                 }
                             }
                             "pausar_todas" => {
@@ -636,7 +679,10 @@ pub fn run() {
             obtener_rutas_sistema,
             listar_directorios,
             crear_carpeta,
-            actualizar_widget_barra_tareas
+            actualizar_widget_barra_tareas,
+            sondear_playlist,
+            iniciar_descargas_lote,
+            cerrar_tray_flyout
         ])
         .run(tauri::generate_context!())
         .expect("error while running andromeda application");

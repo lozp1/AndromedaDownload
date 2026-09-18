@@ -1462,6 +1462,19 @@ app-ajustes-view {
     opacity: 0.85;
 }
 
+.playlist-detect-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    margin-top: 6px;
+    animation: modalPopIn 0.2s ease forwards;
+}
+
 /* Indicador estable de Subcarpeta Automática (Sin saltos de tamaño) */
 .subcarpeta-indicator {
     font-size: 7.5pt;
@@ -3817,6 +3830,290 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 }
 [data-tooltip][data-tooltip-pos="bottom-left"]:hover:before {
     transform: translateY(0);
+}
+
+/* ==========================================================================
+   MODAL DESCARGA POR LOTES / PLAYLIST (modal-lote)
+   ========================================================================== */
+.modal-lote-card {
+    width: 960px;
+    max-width: 95vw;
+    height: 640px;
+    max-height: 92vh;
+    background-color: var(--bg-base);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-modal);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+    position: relative;
+    animation: modalPopIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-lote-toolbar {
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.modal-lote-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.modal-lote-list-container {
+    flex: 1.15;
+    overflow-y: auto;
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-right: 1px solid var(--border-subtle);
+}
+
+.modal-lote-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.modal-lote-item-row:hover {
+    background: rgba(56, 189, 248, 0.06);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.modal-lote-item-row.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--accent-cyan);
+}
+
+.lote-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent-cyan);
+    flex-shrink: 0;
+}
+
+.lote-item-idx {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    color: var(--text-muted);
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.lote-thumb-wrap {
+    width: 68px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lote-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.lote-thumb-placeholder {
+    font-size: 10pt;
+    color: var(--text-muted);
+}
+
+.lote-thumb-duration {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: rgba(0, 0, 0, 0.85);
+    font-size: 6pt;
+    color: #fff;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.lote-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lote-item-title {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lote-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lote-fmt-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6.5pt;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.lote-fmt-badge.override {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--accent-amber);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.modal-lote-inspector {
+    width: 360px;
+    flex-shrink: 0;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+}
+
+.inspector-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.inspector-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5pt;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+}
+
+.inspector-nav-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.nav-arrow-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.nav-arrow-btn:hover:not([disabled]) {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+.nav-arrow-btn[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.inspector-preview-box {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.inspector-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.inspector-preview-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+.inspector-duration-tag {
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 7.5pt;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.inspector-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-lote-footer {
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Modo Ventana Flotante de Bandeja (Tray Flyout Window) */
+body.tray-mode {
+    background: transparent !important;
+    overflow: hidden;
+}
+
+.tray-window-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 8px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tray-window-container .tray-flyout-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
 }
 
 
