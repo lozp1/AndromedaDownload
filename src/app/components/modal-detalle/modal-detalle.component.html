@@ -1,0 +1,156 @@
+<!-- MODAL: DETALLE TÉCNICO (detalle.ui — 840 × 600 px) -->
+<div class="modal-overlay" *ngIf="visible" (click)="cerrar()">
+  <div class="modal-detalle-card" (click)="$event.stopPropagation()">
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+    <div class="modal-header">
+      <div class="modal-header-dot"></div>
+      <span class="modal-header-title">{{ item?.nombre || '⚡ DETALLES TÉCNICOS' }}</span>
+      <div class="traffic-lights" style="margin-left:auto;">
+        <button class="traffic-btn traffic-close" (click)="cerrar()" title="Cerrar"></button>
+      </div>
+    </div>
+    <div class="modal-body" style="gap:14px;">
+      <!-- 3 Tarjetas KPI Superiores (meta-card) -->
+      <div class="kpi-grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+        <div class="meta-card">
+          <span class="meta-label">VELOCIDAD ACTUAL</span>
+          <span class="meta-val" style="color:var(--accent-green);">{{ item?.velocidad || '0.00 B/s' }}</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">PROGRESO</span>
+          <span class="meta-val" style="color:var(--accent-cyan);">{{ Math.min(100, item?.progreso || 0).toFixed(1) }}%</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">TIEMPO RESTANTE</span>
+          <span class="meta-val" style="color:var(--accent-amber);">{{ item?.eta || '--:--' }}</span>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso Global (14px) -->
+      <div class="progress-global-container">
+        <div style="display:flex;justify-content:space-between;font-size:7.5pt;color:var(--text-secondary);">
+          <span>{{ i18n.t('det_progreso') }}</span>
+          <span style="font-family:'JetBrains Mono',monospace;">
+            {{ downloadService.formatBytes(Math.min(item?.tamano_total || 0, item?.descargado || 0)) }} / {{ downloadService.formatBytes(item?.tamano_total || 0) }}
+          </span>
+        </div>
+        <div class="progress-global-bg">
+          <div class="progress-global-fill" [style.width.%]="Math.min(100, item?.progreso || 0)"></div>
+        </div>
+      </div>
+
+      <!-- Cuadrícula 2x2 de Gráficos Estratégicos -->
+      <div class="charts-grid-2x2">
+        <!-- 1. Osciloscopio -->
+        <div class="chart-card">
+          <span class="chart-title">OSCILOSCOPIO DE VELOCIDAD</span>
+          <div style="flex:1;position:relative;width:100%;height:100%;min-height:75px;">
+            <svg viewBox="0 0 320 80" style="width:100%;height:100%;" preserveAspectRatio="none" id="svg-det-osci">
+              <line x1="0" y1="20" x2="320" y2="20" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
+              <line x1="0" y1="40" x2="320" y2="40" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
+              <line x1="0" y1="60" x2="320" y2="60" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
+              <path [attr.d]="osciPath" fill="none" stroke="#10E761" stroke-width="2.2"></path>
+              <circle cx="320" [attr.cy]="osciDotY" r="3" fill="#FFF" stroke="#10E761" stroke-width="1.5"></circle>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 2. Chunks 32 Sockets (16x2) -->
+        <div class="chart-card">
+          <span class="chart-title">CHUNKS PARALELOS (32 SOCKETS)</span>
+          <div class="chunks-matrix-grid">
+            <div *ngFor="let c of chunksGrid" 
+                 class="chunk-cell"
+                 [style.background-color]="c.completed ? 'var(--accent-green)' : (c.active ? 'var(--accent-cyan)' : 'var(--border-subtle)')">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:4px;">
+            <span style="color:var(--accent-green);">■ Descargado</span>
+            <span style="color:var(--accent-cyan);">■ Activo</span>
+            <span style="color:var(--border-subtle);">■ Pendiente</span>
+          </div>
+        </div>
+
+        <!-- 3. Parámetros de Red y Protocolo Tokio -->
+        <div class="chart-card" style="display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;">
+          <span class="chart-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>PROTOCOLO &amp; RANGOS HTTP</span>
+            <span class="tremor-delta-badge green" style="font-size:6.5pt;">DIRECT I/O</span>
+          </span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:6px;font-size:7.5pt;">
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CONEXIÓN:</span>
+              <span style="color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-weight:600;">{{ item?.soporta_rangos ? 'HTTP Range 206 OK' : 'Monohilo Estándar' }}</span>
+            </div>
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CANALES ACTIVOS:</span>
+              <span style="color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-weight:700;">{{ item?.conexiones || 16 }} Sockets Tokio</span>
+            </div>
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">LATENCIA RTT:</span>
+              <span style="color:var(--accent-green);font-family:'JetBrains Mono',monospace;font-weight:700;">~12 ms (Keep-Alive)</span>
+            </div>
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">BUFFER ASÍNCRONO:</span>
+              <span style="color:var(--text-primary);font-family:'JetBrains Mono',monospace;">Zero-Copy 8 MB</span>
+            </div>
+          </div>
+          <div style="margin-top:6px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:6px;padding:5px 8px;font-size:7pt;color:var(--accent-cyan);">
+            ⚡ Pipeline multiplexado con reparto dinámico de fragmentos
+          </div>
+        </div>
+
+        <!-- 4. Integridad Criptográfica y Almacenamiento -->
+        <div class="chart-card" style="display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;">
+          <span class="chart-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>INTEGRIDAD &amp; ALMACENAMIENTO</span>
+            <span class="tremor-delta-badge green" style="font-size:6.5pt;">SHA-256 OK</span>
+          </span>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:7.5pt;">
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CATEGORÍA / TIPO:</span>
+              <span style="color:var(--text-primary);font-weight:600;">{{ item?.categoria || 'Descargas' }} • Stream Multihilo</span>
+            </div>
+            <div>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">RUTA DESTINO LOCAL:</span>
+              <span style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:7pt;word-break:break-all;" [title]="item?.ruta_destino">
+                {{ item?.ruta_destino || 'Directorio por defecto' }}
+              </span>
+            </div>
+          </div>
+          <div style="margin-top:6px;background:rgba(16,231,97,0.06);border:1px solid rgba(16,231,97,0.25);border-radius:6px;padding:5px 8px;font-size:7pt;color:var(--accent-green);display:flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Verificación cíclica de hashes activa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;align-items:center;gap:10px;">
+      <!-- Botón de Transporte Físico Dinámico -->
+      <button *ngIf="item?.estado === 'Descargando'" class="ep133-btn ep133-pausar" (click)="pausar()" [title]="i18n.t('btn_pausar')">
+        <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+
+      <button *ngIf="item?.estado === 'Pausado' || item?.estado === 'Programada' || item?.estado === 'Pendiente' || item?.estado === 'Detenido'" class="ep133-btn ep133-reanudar" (click)="reanudar()" [title]="i18n.t('btn_reanudar')">
+        <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+
+      <button *ngIf="item?.estado === 'Completado'" class="ep133-btn ep133-reanudar" (click)="abrirArchivo()" title="Abrir / Ejecutar Archivo">
+        <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+
+      <span style="font-size:7pt;font-weight:800;color:var(--text-muted);letter-spacing:0.8px;margin-left:4px;">
+        CONTROL DE DESCARGA
+      </span>
+
+      <div style="flex:1;"></div>
+      <button *ngIf="item?.estado === 'Completado'" class="btn-uiverse-gaurav type1 btn-uiverse-primary" (click)="abrirArchivo()" style="min-width:130px;" title="Abrir y reproducir multimedia">
+        <span class="btn-txt">▶ REPRODUCIR</span>
+      </button>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="abrirCarpeta()">
+        <span class="btn-txt">{{ i18n.t('btn_abrir_carpeta') }}</span>
+      </button>
+    </div>
+  </div>
+</div>

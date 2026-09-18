@@ -1,0 +1,220 @@
+<!-- ─── VISTA: DESCARGAS (descargas.ui) ─── -->
+<section id="vista-descargas" style="display:flex;flex-direction:column;flex:1;height:100%;overflow:hidden;">
+  <!-- Toolbar Superior de 56px con Botones EP-133 y Eliminar Deslizante -->
+  <div class="toolbar-frame" data-tour="toolbar-actions">
+    <button class="ep133-btn ep133-nueva" data-tour="new-btn" (click)="triggerNew()" title="Nueva Descarga Turbo">
+      <svg width="20" height="20" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <div class="toolbar-sep"></div>
+    <button class="ep133-btn ep133-pausar" [disabled]="!canPause" (click)="pauseSelected()" title="Pausar Seleccionadas">
+      <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+    <button class="ep133-btn ep133-reanudar" [disabled]="!canResume" (click)="resumeSelected()" title="Reanudar Seleccionadas">
+      <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+    <button class="ep133-btn ep133-detener" [disabled]="!canStop" (click)="stopSelected()" title="Detener Seleccionadas">
+      <svg width="16" height="16" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+    </button>
+
+    <!-- Botón de Eliminar con Deslizamiento de Icono (Uiverse cssbuttons-io) -->
+    <button class="btn-slide-delete" [disabled]="selectedIds.size === 0" (click)="deleteSelected()" title="Eliminar Seleccionadas">
+      <span class="btn-text">ELIMINAR</span>
+      <span class="btn-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+      </span>
+    </button>
+
+    <div class="toolbar-sep"></div>
+    <button class="tb-btn tb-btn-detalle" [disabled]="selectedIds.size === 0" (click)="viewDetail()" title="Ver Detalle Técnico y Telemetría">
+      <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    </button>
+
+    <div class="toolbar-search-wrap">
+      <svg width="15" height="15" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="toolbar-search-input" [value]="searchString" (input)="onSearch($event)" placeholder="Buscar descargas...">
+    </div>
+  </div>
+
+  <!-- Tabla de Descargas con Checkboxes Neón -->
+  <!-- Tabla de Descargas con Checkboxes Neón y Columnas Redimensionables -->
+  <div class="table-area" data-tour="downloads-table">
+    <table class="downloads-table">
+      <thead>
+        <tr>
+          <th [style.width.px]="columnWidths['check']" style="text-align:center;position:relative;">
+            <label class="neon-checkbox">
+              <input type="checkbox" [checked]="isMasterChecked()" (change)="toggleMaster($event)">
+              <div class="neon-checkmark">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </label>
+          </th>
+          <th [style.width.px]="columnWidths['nombre']" style="position:relative;">
+            {{ i18n.t('col_nombre') }}
+            <div class="th-resizer" (mousedown)="startColResize('nombre', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['tamano']" style="position:relative;">
+            {{ i18n.t('col_tamano') }}
+            <div class="th-resizer" (mousedown)="startColResize('tamano', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['progreso']" style="position:relative;">
+            {{ i18n.t('col_progreso') }}
+            <div class="th-resizer" (mousedown)="startColResize('progreso', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['vel']" style="position:relative;">
+            {{ i18n.t('col_vel') }}
+            <div class="th-resizer" (mousedown)="startColResize('vel', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['eta']" style="position:relative;">
+            {{ i18n.t('col_eta') }}
+            <div class="th-resizer" (mousedown)="startColResize('eta', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['estado']" style="position:relative;text-align:center;">
+            {{ i18n.t('col_estado') }}
+            <div class="th-resizer" (mousedown)="startColResize('estado', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['cat']" style="position:relative;text-align:center;">
+            {{ i18n.t('col_cat') }}
+            <div class="th-resizer" (mousedown)="startColResize('cat', $event)"></div>
+          </th>
+          <th [style.width.px]="columnWidths['fecha']" style="position:relative;text-align:center;">
+            {{ i18n.t('col_fecha') }}
+            <div class="th-resizer" (mousedown)="startColResize('fecha', $event)"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="tbody-descargas" *ngIf="descargasFiltradas.length > 0">
+        <tr *ngFor="let item of descargasFiltradas" 
+            [attr.data-download-id]="item.id"
+            [class.selected]="isSelected(item.id)"
+            (click)="toggleSelect(item.id)"
+            (dblclick)="viewDetailItem(item.id)">
+          <td style="text-align:center;" (click)="$event.stopPropagation()">
+            <label class="neon-checkbox">
+              <input type="checkbox" [checked]="isSelected(item.id)" (change)="toggleSelect(item.id)">
+              <div class="neon-checkmark">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </label>
+          </td>
+          <td [style.max-width.px]="columnWidths['nombre'] - 16" style="font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" [title]="item.nombre">
+            {{ item.nombre }}
+          </td>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">
+            {{ downloadService.formatBytes(item.descargado) }} / {{ downloadService.formatBytes(item.tamano_total) }}
+          </td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="progress-bar-bg" style="flex:1;">
+                <div class="progress-bar-fill" [style.width.%]="item.progreso"></div>
+              </div>
+              <span style="font-family:'Inter',sans-serif;font-size:7.8pt;font-weight:500;width:42px;text-align:right;color:var(--text-secondary);">
+                {{ item.progreso.toFixed(1) }}%
+              </span>
+            </div>
+          </td>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--accent-green);font-weight:700;">
+            {{ item.velocidad }}
+          </td>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">
+            {{ item.eta }}
+          </td>
+          <td style="text-align:center;">
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(item.estado)">{{ item.estado }}</span>
+          </td>
+          <td style="text-align:center;">
+            <span class="cat-badge" [ngClass]="getCategoryBadgeClass(item.categoria)">{{ item.categoria }}</span>
+          </td>
+          <td style="font-size:7.5pt;font-weight:400;color:var(--text-muted);text-align:center;font-family:'JetBrains Mono',monospace;">
+            {{ formatFechaCompacta(item.fecha_creacion) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Estado Vacío Centrado Absoluto Sin Líneas Residuales -->
+    <div *ngIf="descargasFiltradas.length === 0" class="empty-downloads-container">
+      <div class="empty-downloads-card">
+        <div class="empty-downloads-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="empty-downloads-title">Cola de Descargas Vacía</div>
+        <div class="empty-downloads-desc">
+          No hay tareas activas en esta sección. Presiona el botón <strong>[ + ]</strong> en la barra superior para iniciar una descarga turbo con 32 sockets Tokio.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dock Inferior de Telemetría (Condicional según preferencia de usuario) -->
+  <footer class="dock-telemetria" *ngIf="settings?.dock_osciloscopio_activo !== false" style="display:flex;align-items:center;justify-content:space-between;padding:12px 24px;height:82px;min-height:82px;max-height:82px;background:var(--bg-card);border-top:1.5px solid var(--border-subtle);gap:20px;">
+    <!-- Badges Tremor a la Izquierda Alineados de Arriba a Abajo -->
+    <!-- Métricas Rápidas a la Izquierda (Total, Activas y ROI) -->
+    <div style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;flex-shrink:0;">
+      <span class="tremor-delta-badge neutral" style="display:inline-flex;align-items:center;gap:6px;font-size:7.2pt;padding:3px 8px;white-space:nowrap;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>{{ telemetry?.total_descargas || 0 }} TOTAL</span>
+      </span>
+      <span class="tremor-delta-badge cyan" style="display:inline-flex;align-items:center;gap:6px;font-size:7.2pt;padding:3px 8px;white-space:nowrap;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+        <span>{{ telemetry?.activas || 0 }} ACTIVAS • {{ telemetry?.sockets_activos || 0 }} SOCKETS</span>
+      </span>
+      <span class="tremor-delta-badge green" style="display:inline-flex;align-items:center;gap:6px;font-size:7.2pt;padding:3px 8px;white-space:nowrap;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 14 14"></polyline>
+        </svg>
+        <span>ROI: {{ telemetry?.tiempo_total_ahorrado_str || '0s ahorrados' }} ({{ telemetry?.multiplicador_promedio_str || '1.0x' }}x)</span>
+      </span>
+    </div>
+
+    <!-- Monitor de Flujo Centrado y Enriquecido (Ancho Totalmente Expandido) -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;margin:0 18px;min-width:0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="flujo-live-indicator"></span>
+          <span style="color:var(--text-muted);font-size:8pt;font-weight:700;letter-spacing:1px;">FLUJO ACTUAL:</span>
+          <span style="color:var(--accent-green);font-size:11.5pt;font-weight:900;line-height:1;">
+            {{ telemetry?.velocidad_global || '0.00 B/s' }}
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:8pt;color:var(--text-muted);">
+          <span>PICO MÁX:</span>
+          <span style="color:var(--text-primary);font-weight:700;">{{ telemetry?.velocidad_pico_str || '0.00 B/s' }}</span>
+        </div>
+      </div>
+      <div style="height:32px;position:relative;width:100%;">
+        <svg viewBox="0 0 800 32" style="width:100%;height:32px;overflow:visible;" preserveAspectRatio="none" id="svg-dock-osci">
+          <defs>
+            <linearGradient id="dockTremorGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--accent-green)" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="var(--accent-green)" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="glowGreen" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="glow"/>
+              <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+            </filter>
+          </defs>
+          <line x1="0" y1="16" x2="800" y2="16" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="3,3"/>
+          <path [attr.d]="osciPath" fill="none" stroke="var(--accent-green)" stroke-width="2.5" filter="url(#glowGreen)"></path>
+        </svg>
+
+        <!-- Indicador circular 100% esférico sin distorsión horizontal -->
+        <div class="dock-pulse-dot" 
+             [style.top.px]="osciCircleY" 
+             style="position:absolute;right:0;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#FFFFFF;border:2.5px solid var(--accent-green);box-shadow:0 0 8px var(--accent-green), 0 0 3px #FFFFFF;pointer-events:none;z-index:3;">
+        </div>
+      </div>
+    </div>
+  </footer>
+</section>

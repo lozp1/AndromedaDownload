@@ -1,0 +1,304 @@
+<!-- MODAL: NUEVA DESCARGA (nueva_descarga.ui — Formulario Estable + Formatos Flotantes) -->
+<div class="modal-overlay" *ngIf="visible" (click)="cerrarModal()">
+  <div class="modal-nueva-layout" (click)="$event.stopPropagation()">
+    <!-- Tarjeta Principal del Formulario Fijo -->
+    <div class="modal-nueva-card" style="position:relative;">
+      <!-- Ambient Floating Glowing Spheres -->
+      <div class="ambient-orb ambient-orb-1"></div>
+      <div class="ambient-orb ambient-orb-2"></div>
+      <div class="modal-header">
+        <div class="modal-header-dot"></div>
+        <span class="modal-header-title">{{ i18n.t('modal_nueva_title') }}</span>
+        <div class="traffic-lights" style="margin-left:auto;">
+          <button class="traffic-btn traffic-close" (click)="cerrarModal()" title="Cerrar"></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <!-- URL -->
+        <div class="form-group">
+          <label class="form-label">{{ i18n.t('lbl_url') }}</label>
+          <div style="position:relative;">
+            <input type="text" class="form-input" [(ngModel)]="url" (input)="onUrlInput()" placeholder="https://releases.ubuntu.com/24.04.1/ubuntu-24.04.1-desktop-amd64.iso" autocomplete="off">
+            <div *ngIf="sondeoEnCurso" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:2px solid var(--border-subtle);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 0.6s linear infinite;"></div>
+          </div>
+          <span *ngIf="estadoSondeo" style="font-size:8pt;color:#0284C7;font-family:'Inter',sans-serif;font-weight:600;margin-top:3px;display:block;">{{ estadoSondeo }}</span>
+        </div>
+
+        <!-- Nombre y Tamaño -->
+        <div class="form-row">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">{{ i18n.t('lbl_nombre') }}</label>
+            <input type="text" class="form-input" [(ngModel)]="nombre" placeholder="archivo_descarga.iso">
+          </div>
+          <div class="form-group" style="width:200px;flex-shrink:0;">
+            <label class="form-label">{{ i18n.t('lbl_tamano') }}</label>
+            <input type="text" class="form-input" [value]="tamanoStr" readonly style="color:var(--accent-green);font-weight:700;font-family:'JetBrains Mono',monospace;text-align:center;">
+          </div>
+        </div>
+
+        <!-- Carpeta de Destino con Botón Examinar Nativo -->
+        <div class="form-group">
+          <label class="form-label">{{ i18n.t('lbl_carpeta') }}</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="form-input" [(ngModel)]="carpetaDestino">
+            <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:38px;padding:0 14px;white-space:nowrap;" type="button" (click)="seleccionarCarpeta()" title="Examinar carpeta en Windows">
+              <span class="btn-txt">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Examinar
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categoría y Conexiones -->
+        <div class="form-row">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">{{ i18n.t('lbl_cat') }}</label>
+            <select class="form-input" [(ngModel)]="categoria">
+              <option value="Comprimidos">Comprimidos</option>
+              <option value="Videos">Videos</option>
+              <option value="Documentos">Documentos</option>
+              <option value="Programas">Programas</option>
+              <option value="Música">Música</option>
+              <option value="Imágenes">Imágenes</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">{{ i18n.t('lbl_hilos') }}</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="number" class="form-input" min="1" max="32" [(ngModel)]="conexiones" style="width:85px;text-align:center;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent-green);">
+              <span style="font-size:7.5pt;color:var(--text-muted);">{{ i18n.t('lbl_hilos_desc') }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Programación con Calendario & Selector de Hora Obsidian Flotantes -->
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <div style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;" (click)="programada = !programada">
+            <label class="neon-checkbox" (click)="$event.stopPropagation()">
+              <input type="checkbox" [(ngModel)]="programada">
+              <div class="neon-checkmark">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </label>
+            <span style="font-size:8pt;font-weight:600;color:var(--text-secondary);display:inline-flex;align-items:center;gap:6px;user-select:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {{ i18n.t('lbl_programar') }}
+            </span>
+          </div>
+        </div>
+
+      <div *ngIf="programada" style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:10px;padding:14px;margin-top:8px;position:relative;overflow:visible;">
+        <div class="form-row" style="position:relative;overflow:visible;">
+          <!-- Selector de Fecha con Calendario Custom Dark Obsidian -->
+          <div class="form-group" style="flex:1;position:relative;">
+            <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ i18n.t('lbl_fecha') }}</span>
+            </label>
+            
+            <!-- Campo disparador con estilo Obsidian -->
+            <div class="form-input" (click)="toggleCustomCalendar()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'JetBrains Mono',monospace;user-select:none;">
+              <span>{{ fechaProgramada || 'Seleccionar fecha' }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+
+            <!-- Menú Desplegable Calendario Obsidian Flotante -->
+            <div *ngIf="isCalendarOpen" 
+                 class="custom-obsidian-calendar" 
+                 (click)="$event.stopPropagation()"
+                 style="position:absolute;bottom:100%;left:0;margin-bottom:8px;width:270px;background:var(--bg-card);border:1.5px solid var(--border-accent);border-radius:12px;padding:14px;box-shadow:0 18px 45px rgba(0,0,0,0.9), 0 0 25px rgba(56,189,248,0.25);z-index:999999;">
+              
+              <!-- Encabezado de Mes y Navegación -->
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <button type="button" class="cal-nav-btn" (click)="calPrevMonth($event)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <span style="font-weight:800;font-size:9pt;color:var(--text-primary);letter-spacing:0.5px;">
+                  {{ calMonthNames[calCurrentMonth] }} {{ calCurrentYear }}
+                </span>
+                <button type="button" class="cal-nav-btn" (click)="calNextMonth($event)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+
+              <!-- Días de la Semana -->
+              <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:4px;text-align:center;margin-bottom:8px;">
+                <span *ngFor="let w of calWeekDays" style="font-size:7pt;font-weight:800;color:var(--accent-cyan);">{{ w }}</span>
+              </div>
+
+              <!-- Grilla de Días -->
+              <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:4px;text-align:center;">
+                <button *ngFor="let dayItem of calDays" 
+                        type="button" 
+                        class="cal-day-cell" 
+                        [class.current-month]="dayItem.isCurrentMonth"
+                        [class.other-month]="!dayItem.isCurrentMonth"
+                        [class.selected]="dayItem.isSelected"
+                        [class.today]="dayItem.isToday"
+                        (click)="selectCalDate(dayItem.dateStr, $event)">
+                  {{ dayItem.day }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selector de Hora Custom Dark Obsidian Flotante -->
+          <div class="form-group" style="flex:1;position:relative;">
+            <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ i18n.t('lbl_hora') }}</span>
+            </label>
+            
+            <div class="form-input" (click)="toggleCustomTimePicker()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'JetBrains Mono',monospace;user-select:none;">
+              <span>{{ horaProgramada }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+
+            <!-- Popup Selector de Hora Obsidian -->
+            <div *ngIf="isTimePickerOpen" 
+                 class="custom-obsidian-calendar" 
+                 (click)="$event.stopPropagation()"
+                 style="position:absolute;bottom:100%;right:0;margin-bottom:8px;width:240px;background:var(--bg-card);border:1.5px solid var(--border-accent);border-radius:12px;padding:14px;box-shadow:0 18px 45px rgba(0,0,0,0.9), 0 0 25px rgba(56,189,248,0.25);z-index:999999;">
+              <div style="font-weight:800;font-size:8.5pt;color:var(--text-primary);margin-bottom:10px;text-align:center;">
+                SELECCIONAR HORA OBSIDIAN
+              </div>
+              
+              <!-- Selector Rápido de Horas Comunes -->
+              <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;">
+                <button type="button" class="cal-day-cell" (click)="setTime('08','00','AM')">08:00 AM</button>
+                <button type="button" class="cal-day-cell" (click)="setTime('12','00','PM')">12:00 PM</button>
+                <button type="button" class="cal-day-cell" (click)="setTime('02','30','PM')">02:30 PM</button>
+                <button type="button" class="cal-day-cell" (click)="setTime('06','00','PM')">06:00 PM</button>
+                <button type="button" class="cal-day-cell" (click)="setTime('10','00','PM')">10:00 PM</button>
+                <button type="button" class="cal-day-cell" (click)="setTime('12','00','AM')">12:00 AM</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de Acción con Estilo Uiverse Gaurav-WebDev Fill & Idempotencia -->
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="cerrarModal()" [disabled]="enviando">{{ i18n.t('btn_cancelar') }}</button>
+      <div style="position:relative;display:inline-flex;overflow:visible;">
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="iniciar(false)" [disabled]="enviando">
+          <span class="btn-txt">{{ i18n.t('btn_cola') }}</span>
+        </button>
+        <!-- Burbuja de Notificación Uiverse con Conteo de Formatos Seleccionados (Fuera del botón para no ser recortada) -->
+        <span *ngIf="isMediaStream && selectedFormatsCount > 1" class="btn-notification-badge">
+          {{ selectedFormatsCount }}
+        </span>
+      </div>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" (click)="iniciar(true)" [disabled]="enviando" style="min-width:140px;">
+        <span class="btn-txt" *ngIf="!enviando">{{ i18n.t('btn_iniciar') }}</span>
+        <span class="btn-txt" *ngIf="enviando" style="display:inline-flex;align-items:center;gap:6px;">
+          <span style="width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#ffffff;border-radius:50%;display:inline-block;animation:spin 0.6s linear infinite;"></span>
+          Iniciando...
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Flotante de Formatos de Video/Audio (Estilo SaveFrom Flotando al Lado) -->
+  <div *ngIf="isMediaStream" class="modal-formats-floating-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div *ngIf="mediaThumbnailUrl" style="width:68px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#000;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid var(--border-subtle);">
+        <img [src]="mediaThumbnailUrl" alt="Thumbnail" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div *ngIf="!mediaThumbnailUrl" style="width:52px;height:42px;border-radius:8px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.2">
+          <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#EF4444"></polygon>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:9.5pt;font-weight:800;color:var(--text-primary);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" [title]="mediaVideoTitle">
+          {{ mediaVideoTitle || 'Video Stream' }}
+        </div>
+        <div style="font-size:7.5pt;color:var(--text-muted);margin-top:2px;">
+          {{ mediaChannelName || 'YouTube HD' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas: Video | Audio -->
+    <div style="display:flex;border-bottom:1.5px solid var(--border-subtle);margin-bottom:8px;">
+      <button type="button" 
+              (click)="mediaFilterTab = 'video'" 
+              [style.color]="mediaFilterTab === 'video' ? 'var(--text-primary)' : 'var(--text-muted)'"
+              [style.borderBottomColor]="mediaFilterTab === 'video' ? '#EF4444' : 'transparent'"
+              style="padding:8px 20px;font-size:8.5pt;font-weight:800;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.15s ease;">
+        Video
+      </button>
+      <button type="button" 
+              (click)="mediaFilterTab = 'audio'" 
+              [style.color]="mediaFilterTab === 'audio' ? 'var(--text-primary)' : 'var(--text-muted)'"
+              [style.borderBottomColor]="mediaFilterTab === 'audio' ? '#EF4444' : 'transparent'"
+              style="padding:8px 20px;font-size:8.5pt;font-weight:800;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.15s ease;">
+        Audio
+      </button>
+    </div>
+
+    <!-- Tabla con Columnas Reorganizadas: Checkmark Neón, Tamaño, Calidad, Formato -->
+    <div style="max-height:280px;overflow-y:auto;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg-card);">
+      <table class="downloads-table" style="width:100%;border-collapse:collapse;text-align:left;font-size:8pt;">
+        <thead>
+          <tr style="background:var(--bg-surface);border-bottom:1px solid var(--border-subtle);color:var(--text-muted);font-weight:700;font-size:7.5pt;">
+            <th style="padding:8px 10px;width:44px;text-align:center;"></th>
+            <th style="padding:8px 10px;">Tamaño</th>
+            <th style="padding:8px 10px;">Calidad</th>
+            <th style="padding:8px 10px;">Formato</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of filteredMediaQualities" 
+              [class.row-selected]="isQualitySelected(q.val)"
+              style="border-bottom:1px solid var(--border-subtle);cursor:pointer;transition:background 0.15s ease;"
+              (click)="toggleQualitySelection(q)">
+            <td style="padding:6px 10px;text-align:center;width:44px;" (click)="$event.stopPropagation()">
+              <label class="neon-checkbox">
+                <input type="checkbox" [checked]="isQualitySelected(q.val)" (change)="toggleQualitySelection(q)">
+                <div class="neon-checkmark">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </label>
+            </td>
+            <td style="padding:6px 10px;font-family:'Inter',sans-serif;font-weight:400;color:var(--text-secondary);font-size:8pt;">
+              {{ q.size }}
+            </td>
+            <td style="padding:6px 10px;font-weight:500;color:var(--text-primary);font-size:8.5pt;">
+              {{ q.label }}
+            </td>
+            <td style="padding:6px 10px;color:var(--text-primary);font-size:8pt;font-weight:500;">
+              {{ q.format }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,100 @@
+<div class="tray-flyout-overlay" *ngIf="visible" (click)="cerrar()">
+  <div class="tray-flyout-card" (click)="$event.stopPropagation()">
+    <!-- Header del Mini-Panel -->
+    <div class="tray-flyout-header">
+      <div class="tray-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <div>
+          <div class="tray-brand-title">ANDROMEDA QUICK PANEL</div>
+          <div class="tray-brand-sub">CONTROL DE BANDEJA & TAREAS</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="tremor-delta-badge green" style="font-size:6.5pt;letter-spacing:0.5px;">● EN VIVO</span>
+        <button class="tray-close-btn" (click)="cerrar()" title="Cerrar Panel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Telemetría Resumida (Velocidad & Sockets) -->
+    <div class="tray-stats-grid">
+      <div class="tray-stat-box">
+        <span class="tray-stat-lbl">VELOCIDAD TOTAL</span>
+        <span class="tray-stat-val cyan">{{ (telemetry$ | async)?.velocidad_global || '0.00 B/s' }}</span>
+      </div>
+      <div class="tray-stat-box">
+        <span class="tray-stat-lbl">SOCKETS TOKIO</span>
+        <span class="tray-stat-val green">{{ (telemetry$ | async)?.sockets_activos || 0 }} / 32</span>
+      </div>
+      <div class="tray-stat-box">
+        <span class="tray-stat-lbl">TIEMPO AHORRADO</span>
+        <span class="tray-stat-val amber">{{ (telemetry$ | async)?.tiempo_total_ahorrado_str || '0 s' }}</span>
+      </div>
+    </div>
+
+    <!-- Lista Compacta de Descargas Activas -->
+    <div class="tray-downloads-section">
+      <div class="tray-section-header">
+        <span>DESCARGAS ACTIVAS ({{ descargasActivas.length }})</span>
+      </div>
+
+      <div class="tray-downloads-list" *ngIf="descargasActivas.length > 0; else noDownloads">
+        <div class="tray-dl-item" *ngFor="let dl of descargasActivas">
+          <div class="tray-dl-info">
+            <div class="tray-dl-name" [title]="dl.nombre">{{ dl.nombre }}</div>
+            <div class="tray-dl-meta">
+              <span>{{ dl.velocidad }}</span>
+              <span>•</span>
+              <span>{{ dl.progreso }}%</span>
+              <span *ngIf="dl.eta">• {{ dl.eta }}</span>
+            </div>
+          </div>
+
+          <div class="tray-dl-actions">
+            <button class="tray-action-btn" *ngIf="dl.estado === 'Descargando'" (click)="pausar(dl.id)" title="Pausar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            </button>
+            <button class="tray-action-btn green" *ngIf="dl.estado === 'Pausado'" (click)="reanudar(dl.id)" title="Reanudar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </button>
+          </div>
+
+          <!-- Mini Barra de Progreso -->
+          <div class="tray-dl-bar-bg">
+            <div class="tray-dl-bar-fill" [style.width.%]="dl.progreso" [class.paused]="dl.estado === 'Pausado'"></div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noDownloads>
+        <div class="tray-empty-state">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>No hay descargas activas en curso</span>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Botones de Acción Global -->
+    <div class="tray-footer-actions">
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:32px;padding:0 10px;font-size:7.5pt;" (click)="pausarTodo()">
+        <span class="btn-txt">⏸ Pausar Todo</span>
+      </button>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:32px;padding:0 10px;font-size:7.5pt;" (click)="reanudarTodo()">
+        <span class="btn-txt">▶ Reanudar Todo</span>
+      </button>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" style="height:32px;padding:0 10px;font-size:7.5pt;" (click)="abrirCarpetaDescargas()">
+        <span class="btn-txt">📁 Carpeta</span>
+      </button>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" style="height:32px;padding:0 12px;font-size:7.5pt;" (click)="abrirNuevaDescarga()">
+        <span class="btn-txt">+ Turbo</span>
+      </button>
+    </div>
+  </div>
+</div>

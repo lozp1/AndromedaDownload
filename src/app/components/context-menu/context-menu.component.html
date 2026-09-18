@@ -1,0 +1,111 @@
+<div class="andromeda-context-menu" 
+     *ngIf="visible" 
+     [style.left.px]="x" 
+     [style.top.px]="y" 
+     (click)="$event.stopPropagation()">
+  
+  <!-- Modo 1: Menú Sobre una Tarea de Descarga -->
+  <ng-container *ngIf="item">
+    <div class="ctx-header">
+      <span class="ctx-title" [title]="item.nombre">{{ item.nombre }}</span>
+      <span class="tremor-delta-badge" [class.green]="item.estado === 'Completado'" [class.cyan]="item.estado === 'Descargando'" [class.amber]="item.estado === 'Pausado'">
+        {{ item.estado }}
+      </span>
+    </div>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" *ngIf="item.estado === 'Programada' || item.estado === 'Pendiente' || item.estado === 'Detenido'" (click)="ejecutar('iniciar_ahora')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <span>Descargar Ahora (Iniciar)</span>
+      <span class="ctx-shortcut">Enter</span>
+    </button>
+
+    <button class="ctx-item" *ngIf="item.estado === 'Pausado'" (click)="ejecutar('reanudar')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <span>Reanudar Descarga</span>
+      <span class="ctx-shortcut">Enter</span>
+    </button>
+
+    <button class="ctx-item" *ngIf="item.estado === 'Descargando'" (click)="ejecutar('pausar')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+      <span>Pausar Descarga</span>
+      <span class="ctx-shortcut">Espacio</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('detalles')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Ver Matriz de Chunks (32 Sockets)</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('abrir_carpeta')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      <span>Abrir Carpeta Contenedora</span>
+    </button>
+
+    <button class="ctx-item" *ngIf="item.estado === 'Completado'" (click)="ejecutar('abrir_archivo')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <span>Abrir / Ejecutar Archivo</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutar('copiar_url')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <span>Copiar Enlace URL</span>
+      <span class="ctx-shortcut">Ctrl+C</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('copiar_sha256')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>Copiar Checksum SHA-256</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item danger" (click)="ejecutar('eliminar')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+      <span>Eliminar Descarga</span>
+      <span class="ctx-shortcut">Supr</span>
+    </button>
+  </ng-container>
+
+  <!-- Modo 2: Menú Global en Área Vacía -->
+  <ng-container *ngIf="!item">
+    <button class="ctx-item" (click)="ejecutar('nueva_descarga')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+      <span>Nueva Descarga Turbo</span>
+      <span class="ctx-shortcut">Ctrl+N</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('ir_dashboard')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+      <span>Panel de Control (Dashboard)</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('ir_descargas')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <span>Todas las Descargas</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutar('abrir_carpeta_raiz')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      <span>Abrir Carpeta de Descargas</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutar('actualizar_telemetria')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      <span>Actualizar Telemetría</span>
+      <span class="ctx-shortcut">F5</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutar('ir_ajustes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <span>Configuración & Temas</span>
+    </button>
+  </ng-container>
+</div>

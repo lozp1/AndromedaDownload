@@ -1,0 +1,423 @@
+/* ==========================================================================
+   GUÍA INTERACTIVA DE INSPECCIÓN & AVATAR MASCOTA ANDROMEDA
+   Calibración 1:1 con referencias visuales de C:\Projects\angular\descarga\guia_interactiva
+   ========================================================================== */
+
+:host {
+  display: block;
+}
+
+/* Contenedor Global del Overlay de Guía */
+.guide-overlay-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  pointer-events: none;
+  user-select: none;
+  animation: guideFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes guideFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fondo protector que bloquea clicks a la app inferior */
+.guide-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(3, 7, 18, 0.5);
+  pointer-events: auto;
+  z-index: 99990;
+}
+
+/* 1. Banner Superior Flotante */
+.guide-top-banner {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 18px;
+  background: rgba(11, 17, 32, 0.95);
+  border: 1.5px solid rgba(56, 189, 248, 0.4);
+  border-radius: 999px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
+  backdrop-filter: blur(12px);
+  z-index: 100000;
+  max-width: calc(100vw - 40px);
+  width: auto;
+  box-sizing: border-box;
+  animation: bannerSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bannerSlideDown {
+  from { transform: translate(-50%, -30px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.banner-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  flex-shrink: 0;
+}
+
+.banner-text {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #F8FAFC;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 540px;
+}
+
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-banner-nav {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-banner-nav:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38BDF8;
+  color: #38BDF8;
+}
+
+.btn-banner-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.banner-step-tag {
+  font-size: 7.5pt;
+  font-weight: 700;
+  color: #94A3B8;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.btn-banner-exit {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  font-size: 7.5pt;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-banner-exit:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+/* 2. Spotlight Ring Pulsante sobre el elemento inspeccionado */
+.spotlight-ring {
+  position: fixed;
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 99998;
+  border: 2px solid #F59E0B;
+  box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.65), 0 0 20px rgba(245, 158, 11, 0.7);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: spotlightPulse 2s infinite ease-in-out;
+}
+
+@keyframes spotlightPulse {
+  0% { border-color: rgba(245, 158, 11, 0.7); box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.65), 0 0 14px rgba(245, 158, 11, 0.5); }
+  50% { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.65), 0 0 26px rgba(245, 158, 11, 0.9); }
+  100% { border-color: rgba(245, 158, 11, 0.7); box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.65), 0 0 14px rgba(245, 158, 11, 0.5); }
+}
+
+/* Punto Focal / Marcador Pulsante */
+.spotlight-dot {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.25);
+  border: 1.5px solid #F59E0B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px #F59E0B;
+}
+
+.spotlight-dot::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #F59E0B;
+}
+
+/* 3. Tarjeta Flotante con Mascota Peeking */
+.inspector-floating-card {
+  position: fixed;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  background: #0B1120;
+  border: 1.5px solid #26344A;
+  border-radius: 16px;
+  padding: 22px 24px 18px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(2, 132, 199, 0.2);
+  z-index: 100001;
+  pointer-events: auto;
+  transition: top 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  animation: cardPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardPopIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Mascota Asomándose sobre el Borde Superior Derecho */
+.mascot-peek-wrapper {
+  position: absolute;
+  top: -50px;
+  right: 22px;
+  width: 68px;
+  height: 68px;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+  animation: mascotBobbing 3s ease-in-out infinite alternate;
+}
+
+@keyframes mascotBobbing {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(-1deg); }
+}
+
+.avatar-robot-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mascot-cursor-eye {
+  animation: eyeBlink 1.4s infinite alternate ease-in-out;
+}
+
+@keyframes eyeBlink {
+  0%, 80% { opacity: 1; }
+  90%, 100% { opacity: 0.2; }
+}
+
+/* Cabecera de la Tarjeta */
+.inspector-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.inspector-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F59E0B;
+  flex-shrink: 0;
+}
+
+.inspector-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.inspector-category {
+  font-size: 7pt;
+  font-weight: 800;
+  color: #F59E0B;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.inspector-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: #F8FAFC;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+}
+
+/* Divisor Fino */
+.inspector-divider {
+  width: 100%;
+  height: 1px;
+  background: #1E293B;
+  margin: 10px 0 12px 0;
+}
+
+/* Párrafo Explicativo */
+.inspector-desc {
+  font-size: 8.5pt;
+  line-height: 1.55;
+  color: #CBD5E1;
+  margin: 0 0 14px 0;
+}
+
+/* Píldora de Estado / Tip en Vivo */
+.inspector-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(16, 231, 97, 0.12);
+  border: 1px solid rgba(16, 231, 97, 0.3);
+  font-size: 7.8pt;
+  font-weight: 600;
+  color: #10E761;
+}
+
+.inspector-status-pill svg {
+  flex-shrink: 0;
+  stroke: #10E761;
+}
+
+/* Botones Inferiores de Navegación del Tour */
+.inspector-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #1E293B;
+}
+
+.inspector-nav-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.inspector-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #334155;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.inspector-dot.active {
+  width: 18px;
+  border-radius: 99px;
+  background: #38BDF8;
+}
+
+/* Adaptación a Temas Claros / Alto Contraste */
+:host-context([data-theme="white"]) .inspector-floating-card,
+:host-context([data-theme="light"]) .inspector-floating-card {
+  background: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host-context([data-theme="white"]) .inspector-title,
+:host-context([data-theme="light"]) .inspector-title {
+  color: #0F172A !important;
+}
+
+:host-context([data-theme="white"]) .inspector-desc,
+:host-context([data-theme="light"]) .inspector-desc {
+  color: #475569 !important;
+}
+
+:host-context([data-theme="white"]) .inspector-divider,
+:host-context([data-theme="light"]) .inspector-divider,
+:host-context([data-theme="white"]) .inspector-footer,
+:host-context([data-theme="light"]) .inspector-footer {
+  border-color: #E2E8F0 !important;
+  background: #E2E8F0 !important;
+}
+
+:host-context([data-theme="white"]) .guide-top-banner,
+:host-context([data-theme="light"]) .guide-top-banner {
+  background: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+:host-context([data-theme="white"]) .banner-text,
+:host-context([data-theme="light"]) .banner-text {
+  color: #0F172A !important;
+}
+
+:host-context([data-theme="white"]) .btn-banner-nav,
+:host-context([data-theme="light"]) .btn-banner-nav {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  color: #0F172A !important;
+}
+
+:host-context([data-theme="white"]) .btn-banner-nav:hover:not(:disabled),
+:host-context([data-theme="light"]) .btn-banner-nav:hover:not(:disabled) {
+  background: rgba(2, 132, 199, 0.15) !important;
+  border-color: #0284C7 !important;
+  color: #0284C7 !important;
+}
+
+:host-context([data-theme="white"]) .banner-step-tag,
+:host-context([data-theme="light"]) .banner-step-tag {
+  color: #64748B !important;
+}
+
+:host-context([data-theme="white"]) .guide-backdrop,
+:host-context([data-theme="light"]) .guide-backdrop {
+  background: rgba(15, 23, 42, 0.35) !important;
+}

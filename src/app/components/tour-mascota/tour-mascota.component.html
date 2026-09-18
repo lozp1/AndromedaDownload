@@ -1,0 +1,149 @@
+<!-- ==========================================================================
+     GUÍA INTERACTIVA DE INSPECCIÓN & AVATAR MASCOTA ANDROMEDA
+     Calibración 1:1 con referencias visuales de C:\Projects\angular\descarga\guia_interactiva
+     ========================================================================== -->
+
+<div class="guide-overlay-container" *ngIf="visible">
+
+  <!-- Fondo protector que bloquea clicks accidentales en la app mientras el tour está activo -->
+  <div class="guide-backdrop" (click)="$event.stopPropagation()"></div>
+
+  <!-- 1. Banner Superior Flotante Informativo -->
+  <div class="guide-top-banner">
+    <div class="banner-left">
+      <div class="banner-avatar-mini" title="Andromeda Nova Mascot">
+        <svg width="22" height="22" viewBox="0 0 84 84" fill="none">
+          <defs>
+            <linearGradient id="miniCloud" x1="12" y1="10" x2="72" y2="70" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#60A5FA"/>
+              <stop offset="100%" stop-color="#1D4ED8"/>
+            </linearGradient>
+          </defs>
+          <path d="M 22,54 C 12,54 6,45 8,36 C 9,28 16,23 23,24 C 25,14 34,7 44,8 C 53,9 60,16 61,25 C 68,25 76,31 76,40 C 76,48 70,54 62,54 Z" fill="url(#miniCloud)"/>
+          <rect x="23" y="24" width="38" height="26" rx="8" fill="#0B1120" stroke="#38BDF8" stroke-width="2"/>
+          <path d="M 31,34 L 35,37 L 31,40" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="47" y1="40" x2="55" y2="40" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="banner-text">Pasa el cursor sobre gráficos, métricas y botones para ver explicaciones en tiempo real</span>
+    </div>
+
+    <div class="banner-actions">
+      <button class="btn-banner-nav" (click)="anterior()" [disabled]="currentStepIndex === 0" title="Elemento anterior">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <span class="banner-step-tag">{{ currentStepIndex + 1 }} / {{ hotspots.length }}</span>
+      <button class="btn-banner-nav" (click)="siguiente()" title="Siguiente elemento">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <button class="btn-banner-exit" (click)="finalizar()">Salir de la Guía</button>
+    </div>
+  </div>
+
+  <!-- 2. Anillo Pulsante Focal (Spotlight) sobre el Elemento Seleccionado -->
+  <div class="spotlight-ring" *ngIf="spotlightRect"
+       [style.top.px]="spotlightRect.top"
+       [style.left.px]="spotlightRect.left"
+       [style.width.px]="spotlightRect.width"
+       [style.height.px]="spotlightRect.height">
+    <div class="spotlight-dot"></div>
+  </div>
+
+  <!-- 3. Tarjeta Flotante Explicativa con Mascota Asomada -->
+  <div class="inspector-floating-card"
+       [style.top.px]="cardPos.top"
+       [style.left.px]="cardPos.left">
+
+    <!-- Mascota Andromeda Peeking sobre el borde superior derecho -->
+    <div class="mascot-peek-wrapper">
+      <svg class="avatar-robot-svg" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="cloudGrad" x1="12" y1="10" x2="72" y2="70" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#60A5FA"/>
+            <stop offset="45%" stop-color="#3B82F6"/>
+            <stop offset="100%" stop-color="#1D4ED8"/>
+          </linearGradient>
+          <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+
+        <!-- Cabeza con silueta de nube azul orgánica -->
+        <path d="M 22,54 C 12,54 6,45 8,36 C 9,28 16,23 23,24 C 25,14 34,7 44,8 C 53,9 60,16 61,25 C 68,25 76,31 76,40 C 76,48 70,54 62,54 Z" fill="url(#cloudGrad)"/>
+        
+        <!-- Reflejo suave superior -->
+        <path d="M 26,22 C 32,13 41,11 48,12 C 55,13 58,18 58,22" stroke="#93C5FD" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+
+        <!-- Pantalla / Monitor de Rostro -->
+        <rect x="23" y="24" width="38" height="26" rx="8" fill="#0B1120" stroke="#38BDF8" stroke-width="2"/>
+        <rect x="25" y="26" width="34" height="22" rx="6" fill="#0F172A"/>
+
+        <!-- Expresión de Terminal: Ojo > y Cursor _ que parpadea -->
+        <path d="M 31,34 L 35,37 L 31,40" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#cyanGlow)"/>
+        <line x1="47" y1="40" x2="55" y2="40" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" class="mascot-cursor-eye" filter="url(#cyanGlow)"/>
+
+        <!-- Manitas descansando sobre el borde superior de la tarjeta -->
+        <ellipse cx="28" cy="54" rx="5" ry="4" fill="#60A5FA" stroke="#1D4ED8" stroke-width="1.5"/>
+        <ellipse cx="56" cy="54" rx="5" ry="4" fill="#60A5FA" stroke="#1D4ED8" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- Encabezado de la Tarjeta con Icono, Categoría y Título -->
+    <div class="inspector-header">
+      <div class="inspector-icon-box">
+        <!-- Icono según tipo -->
+        <svg *ngIf="currentHotspot.iconType === 'menu'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <svg *ngIf="currentHotspot.iconType === 'speed'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        <svg *ngIf="currentHotspot.iconType === 'roi'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <svg *ngIf="currentHotspot.iconType === 'sockets'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg *ngIf="currentHotspot.iconType === 'chart'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <svg *ngIf="currentHotspot.iconType === 'matrix'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <svg *ngIf="currentHotspot.iconType === 'new'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <svg *ngIf="currentHotspot.iconType === 'table'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <svg *ngIf="currentHotspot.iconType === 'actions'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+      </div>
+      <div class="inspector-titles">
+        <span class="inspector-category">{{ currentHotspot.categoria }}</span>
+        <span class="inspector-title">{{ currentHotspot.titulo }}</span>
+      </div>
+    </div>
+
+    <div class="inspector-divider"></div>
+
+    <!-- Descripción del Elemento -->
+    <p class="inspector-desc">{{ currentHotspot.descripcion }}</p>
+
+    <!-- Píldora de Estado / Tip de Telemetría -->
+    <div class="inspector-status-pill" *ngIf="currentHotspot.tip">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>{{ currentHotspot.tip }}</span>
+    </div>
+
+    <!-- Pie con Indicadores de Pasos y Botones -->
+    <div class="inspector-footer">
+      <div class="inspector-nav-dots">
+        <span *ngFor="let h of hotspots; let i = index"
+              class="inspector-dot"
+              [class.active]="currentStepIndex === i"
+              (click)="irAPaso(i)"
+              [title]="h.titulo">
+        </span>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-banner-nav" (click)="anterior()" [disabled]="currentStepIndex === 0" title="Anterior">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="btn-banner-nav" (click)="siguiente()" [title]="currentStepIndex === hotspots.length - 1 ? 'Finalizar' : 'Siguiente'">
+          <svg *ngIf="currentStepIndex < hotspots.length - 1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg *ngIf="currentStepIndex === hotspots.length - 1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10E761" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

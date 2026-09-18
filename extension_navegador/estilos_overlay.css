@@ -1,0 +1,123 @@
+/* ==========================================================================
+   ANDROMEDA DOWNLOAD - BOTÓN FLOTANTE SOBRE VIDEOS (CYBERPUNK GLASS DESIGN)
+   Reposo: Ícono squircle compacto 34x34px perfectamente centrado
+   Hover: Expansión fluida horizontal a "Descargar con Andromeda"
+   ========================================================================== */
+
+.andromeda-badge-flotante {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 2147483647 !important;
+    pointer-events: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0px !important;
+    background: rgba(11, 18, 32, 0.90) !important;
+    color: #F8FAFC !important;
+    border: 1.5px solid #1E3A8A !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+    height: 34px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px !important;
+    cursor: pointer !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 8px rgba(30, 58, 138, 0.3) !important;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 0.25s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                transform 0.2s ease !important;
+    user-select: none !important;
+}
+
+.andromeda-badge-flotante:hover {
+    background: #0284C7 !important;
+    color: #FFFFFF !important;
+    border-color: #38BDF8 !important;
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.55), 0 0 12px rgba(56, 189, 248, 0.4) !important;
+    transform: translateY(-1px) !important;
+    width: auto !important;
+    min-width: 34px !important;
+    max-width: 240px !important;
+    padding: 0 12px 0 9px !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+}
+
+.andromeda-badge-flotante:active {
+    transform: translateY(0px) scale(0.97) !important;
+}
+
+.andromeda-badge-flotante .andromeda-logo-box,
+.andromeda-badge-flotante .andromeda-ico {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+}
+
+.andromeda-badge-flotante .andromeda-squircle-img {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 4px !important;
+    object-fit: contain !important;
+}
+
+.andromeda-badge-flotante .andromeda-txt {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 11.5px !important;
+    color: #F8FAFC !important;
+    opacity: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    transform: translateX(-8px) !important;
+    transition: max-width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.22s ease,
+                transform 0.22s ease !important;
+}
+
+.andromeda-badge-flotante:hover .andromeda-txt {
+    opacity: 1 !important;
+    max-width: 200px !important;
+    transform: translateX(0) !important;
+    margin-left: 2px !important;
+}
+
+/* Estado de Envío / Apertura exitosa hacia la app */
+.andromeda-badge-flotante.andromeda-enviado {
+    background: #065F46 !important;
+    border-color: #10B981 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+    width: auto !important;
+    min-width: 34px !important;
+    max-width: 260px !important;
+    gap: 8px !important;
+    padding: 0 12px 0 9px !important;
+    justify-content: flex-start !important;
+}
+
+.andromeda-badge-flotante.andromeda-enviado .andromeda-txt {
+    opacity: 1 !important;
+    max-width: 220px !important;
+    transform: translateX(0) !important;
+    margin-left: 2px !important;
+}

@@ -1,0 +1,95 @@
+<div class="app-window" id="app-window" *ngIf="isAppReady && !isStandaloneMode">
+  <!-- Header Principal Frameless con Traffic Lights -->
+  <app-header></app-header>
+
+  <!-- Disposición Principal (Sidebar + Vistas) -->
+  <div class="main-body">
+    <app-sidebar (openAbout)="openAboutModal()"></app-sidebar>
+
+    <!-- Área de Vistas Principales -->
+    <main class="view-container" id="view-container">
+      <app-descargas-view 
+        *ngIf="activeView === 'descargas'"
+        (openNewDownload)="openNewModal()"
+        (openDetail)="openDetailModal($event)">
+      </app-descargas-view>
+
+      <app-dashboard-view 
+        *ngIf="activeView === 'dashboard'">
+      </app-dashboard-view>
+
+      <app-ajustes-view 
+        *ngIf="activeView === 'ajustes'">
+      </app-ajustes-view>
+    </main>
+  </div>
+</div>
+
+<!-- Diálogos Modales -->
+<app-modal-nueva 
+  [visible]="isNewModalOpen" 
+  (close)="closeNewModal()">
+</app-modal-nueva>
+
+<app-modal-detalle 
+  [visible]="isDetailModalOpen" 
+  [taskId]="selectedDetailTaskId" 
+  (close)="closeDetailModal()">
+</app-modal-detalle>
+
+<app-modal-about 
+  [visible]="isAboutModalOpen" 
+  (close)="closeAboutModal()">
+</app-modal-about>
+
+<app-modal-confirm
+  [visible]="isConfirmModalOpen"
+  [tipo]="confirmModalType"
+  [selectedCount]="confirmDeleteCount"
+  (confirm)="onConfirmAction($event)"
+  (close)="closeConfirmModal()">
+</app-modal-confirm>
+
+<!-- Contenedor de Notificaciones Toast -->
+<app-toast></app-toast>
+
+<!-- Cursor Fluido Magnético (YouTube 7eE8xPyXSR4) -->
+<app-custom-cursor></app-custom-cursor>
+
+<!-- Pantalla de Splash Independiente al Inicializar la Aplicación -->
+<app-splash-screen (completed)="onSplashFinished()"></app-splash-screen>
+
+<!-- Guía Interactiva del Sistema (Tarjeta Elegante Sin Mascota) -->
+<app-tour-mascota 
+  [visible]="isTourOpen" 
+  (close)="closeTour()">
+</app-tour-mascota>
+
+<!-- Modal Explorador de Archivos Centrado a Nivel Global (Perfectamente centrado sobre el viewport) -->
+<app-modal-explorador 
+  [visible]="downloadService.isGlobalExploradorOpen" 
+  [initialPath]="downloadService.globalExploradorInitialPath" 
+  (selected)="downloadService.onGlobalExploradorSelected($event)" 
+  (close)="downloadService.closeGlobalExplorador()">
+</app-modal-explorador>
+
+<!-- Transición de Tema Estándar, Limpia y Profesional (Iris Radial Suave) -->
+<div class="theme-iris-transition" id="theme-iris-transition"></div>
+
+<!-- Panel Rápido Flotante / Widget de Barra de Tareas -->
+<app-tray-panel 
+  [visible]="isTrayPanelOpen" 
+  (close)="isTrayPanelOpen = false">
+</app-tray-panel>
+
+<!-- Menú Contextual Personalizado de Andromeda -->
+<app-context-menu 
+  [visible]="isContextMenuOpen" 
+  [x]="contextMenuX" 
+  [y]="contextMenuY" 
+  [item]="contextMenuItem" 
+  (close)="closeContextMenu()" 
+  (openDetail)="openDetailModal($event)">
+</app-context-menu>
+
+

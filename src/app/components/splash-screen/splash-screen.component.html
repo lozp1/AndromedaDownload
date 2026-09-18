@@ -1,0 +1,36 @@
+<div class="splash-backdrop" *ngIf="visible" [class.fade-out]="isFadingOut">
+  <div class="splash-card">
+    <!-- Barra de acento superior sutil Office-style -->
+    <div class="splash-top-accent"></div>
+
+    <div class="splash-content">
+      <!-- Sección de Marca / Logotipo -->
+      <div class="splash-brand-row">
+        <div class="splash-logo-wrapper">
+          <img src="assets/img/logo_brand_squircle.png" class="splash-logo-img" alt="Andromeda">
+        </div>
+        <div class="splash-brand-text">
+          <div class="splash-app-title">Andromeda Download</div>
+          <div class="splash-app-subtitle">{{ i18n.t('splash_subtitle') }}</div>
+        </div>
+      </div>
+
+      <!-- Sección Inferior: Estado de Carga y Barra Shimmer -->
+      <div class="splash-bottom-section">
+        <div class="splash-status-row">
+          <span class="splash-dot"></span>
+          <span class="splash-status-text">{{ currentStatus }}</span>
+        </div>
+
+        <div class="splash-progress-track">
+          <div class="splash-progress-fill" [style.width.%]="progress"></div>
+        </div>
+
+        <div class="splash-legal-row">
+          <span>{{ i18n.t('splash_footer') }}</span>
+          <span class="splash-engine-tag">{{ i18n.t('splash_engine_tag') }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

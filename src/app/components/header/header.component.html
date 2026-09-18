@@ -1,0 +1,66 @@
+<!-- Barra de Acento Superior Continua (menu.ui) -->
+<div class="header-top-accent"></div>
+
+<!-- Header Principal (52px, menu.ui) con soporte de arrastre nativo -->
+<header class="header-bar" data-tauri-drag-region (mousedown)="onMouseDown($event)">
+  <img src="assets/img/logo_brand_squircle.png" class="header-logo" alt="Andromeda Squircle">
+  <span class="header-title" data-tauri-drag-region>{{ i18n.t('app_name') }}</span>
+  <div class="header-spacer" data-tauri-drag-region></div>
+  
+  <div style="position:relative;display:inline-flex;align-items:center;margin-right:12px;">
+    <span class="header-badge header-badge-interactive" id="badge-motor" data-tour="header-diag" (click)="toggleDiag($event)" title="Click para ver telemetría del sistema">
+      ● MOTOR ACTIVO • MULTI-HILO
+    </span>
+
+    <!-- Popover HUD de Diagnóstico del Motor Tokio -->
+    <div *ngIf="showDiag" class="motor-diag-popover" (click)="$event.stopPropagation()">
+      <div class="diag-header">
+        <span class="diag-title">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          ESTADO DEL SISTEMA
+        </span>
+        <span style="font-size:7pt;color:var(--accent-green);font-weight:700;">● EN LÍNEA</span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Motor de Descarga:</span>
+        <span class="diag-value" style="color:var(--accent-cyan);">Andromeda Engine 64-bit</span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Capacidad de Canales:</span>
+        <span class="diag-value">32 Canales Simultáneos</span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Aceleración:</span>
+        <span class="diag-value" style="color:var(--accent-green);">Transferencia Multi-Canal</span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Canales Conectados:</span>
+        <span class="diag-value" style="font-weight:600;color:var(--accent-cyan);">
+          {{ telemetry?.sockets_activos || 0 }} / 32
+        </span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Descargas en Paralelo:</span>
+        <span class="diag-value">{{ telemetry?.activas || 0 }}</span>
+      </div>
+      <div class="diag-row">
+        <span class="diag-label">Ancho de Banda Global:</span>
+        <span class="diag-value" style="color:var(--accent-green);">{{ telemetry?.velocidad_global || '0.00 B/s' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="header-help-btn" data-tour="header-help" (click)="openTour()" [title]="i18n.t('Guía Interactiva') || 'Guía Interactiva'">
+      ?
+    </button>
+
+    <div class="traffic-lights">
+      <button class="traffic-btn traffic-min" (click)="minimize()" title="Minimizar"></button>
+      <button class="traffic-btn traffic-max" (click)="toggleMaximize()" title="Maximizar"></button>
+      <button class="traffic-btn traffic-close" (click)="close()" title="Cerrar"></button>
+    </div>
+  </div>
+</header>

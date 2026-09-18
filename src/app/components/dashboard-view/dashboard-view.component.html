@@ -1,0 +1,324 @@
+<!-- ─── VISTA: DASHBOARD TELEMETRÍA (Tremor Overview Suite — dashboard.tremor.so/overview) ─── -->
+<section id="vista-dashboard" style="display:flex;flex-direction:column;flex:1;padding:22px;overflow-y:auto;gap:18px;">
+  <!-- Header con Status Badge y Píldoras Temporales Tremor -->
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <h2 style="font-size:14pt;font-weight:900;color:var(--text-primary);letter-spacing:-0.4px;margin:0;">{{ i18n.t('dash_title') }}</h2>
+        <span class="tremor-badge-live">{{ i18n.t('dash_live_badge') }}</span>
+      </div>
+      <div style="font-size:8pt;color:var(--text-secondary);margin-top:3px;">{{ i18n.t('dash_sub') }}</div>
+    </div>
+    
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn-uiverse-gaurav type1" [class.btn-uiverse-primary]="modoSimulacion" [class.btn-uiverse-secondary]="!modoSimulacion" style="height:32px;font-size:7.5pt;padding:0 12px;min-width:140px;" (click)="toggleSimulacion()" title="Alternar entre telemetría simulada y telemetría real">
+        <span class="btn-txt">{{ modoSimulacion ? i18n.t('dash_simulacion_activa') : i18n.t('dash_telemetria_real') }}</span>
+      </button>
+      
+      <!-- Selector de Rango Temporal Estilo Tremor -->
+      <div class="tremor-time-pills">
+        <span class="time-pill" [class.active]="selectedTimeWindow === '60s'" (click)="setTimeWindow('60s')" title="Ventana de tiempo real: 60 segundos">60s</span>
+        <span class="time-pill" [class.active]="selectedTimeWindow === '5m'" (click)="setTimeWindow('5m')" title="Histórico de rendimiento: últimos 5 minutos">5m</span>
+        <span class="time-pill" [class.active]="selectedTimeWindow === '30m'" (click)="setTimeWindow('30m')" title="Histórico de rendimiento: últimos 30 minutos">30m</span>
+        <span class="time-pill" [class.active]="selectedTimeWindow === '24h'" (click)="setTimeWindow('24h')" title="Histórico acumulado: últimas 24 horas">24h</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Kodezi-Style KPI Cards con Sparklines Vectoriales y Bordes de Neón Calibrados -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+    <!-- KPI 1: ROI / Tiempo Recuperado -->
+    <div class="tremor-kpi-card" data-tour="kpi-roi" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_roi_lbl') }}</span>
+        <span class="tremor-semaforo-badge" [ngClass]="semaforoRoi.cls">
+          <span class="semaforo-dot"></span>
+          {{ semaforoRoi.lbl }}
+        </span>
+      </div>
+      
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
+        <div>
+          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.75rem;margin:0;letter-spacing:-0.5px;">{{ telemetry?.tiempo_total_ahorrado_str || '0m 0s' }}</div>
+          <div style="font-size:7.2pt;color:var(--accent-green);font-weight:700;margin-top:4px;display:flex;align-items:center;gap:4px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            <span>▲ {{ telemetry?.multiplicador_promedio_str || '1.0x' }} {{ i18n.t('dash_card_acel') || 'más veloz' }}</span>
+          </div>
+        </div>
+
+        <!-- Micro Sparkline SVG Esmeralda -->
+        <div style="width:74px;height:32px;">
+          <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
+            <path d="M 0,26 Q 24,24 48,10 T 74,6" fill="none" stroke="var(--accent-green)" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div style="width:100%;height:3px;background:rgba(16,231,97,0.12);border-radius:99px;margin-top:12px;overflow:hidden;">
+        <div [style.width.%]="semaforoRoi.barPct" style="height:100%;background:var(--accent-green);border-radius:99px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <!-- KPI 2: Ancho de Banda Actual -->
+    <div class="tremor-kpi-card" data-tour="kpi-throughput" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_vel_lbl') }}</span>
+        <span class="tremor-semaforo-badge" [ngClass]="semaforoThroughput.cls">
+          <span class="semaforo-dot"></span>
+          {{ semaforoThroughput.lbl }}
+        </span>
+      </div>
+      
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
+        <div>
+          <div class="tremor-kpi-metric" [style.color]="semaforoThroughput.col" style="font-size:1.75rem;margin:0;letter-spacing:-0.5px;">{{ telemetry?.velocidad_global || '0.00 MB/s' }}</div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;">Pico: {{ telemetry?.velocidad_pico_str || '0 B/s' }} • TCP Live</div>
+        </div>
+
+        <!-- Micro Sparkline SVG Cyan/Throughput -->
+        <div style="width:74px;height:32px;">
+          <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
+            <path d="M 0,20 Q 18,30 36,12 T 74,8" fill="none" [attr.stroke]="semaforoThroughput.sparkCol" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div style="width:100%;height:3px;background:rgba(56,189,248,0.12);border-radius:99px;margin-top:12px;overflow:hidden;">
+        <div [style.width.%]="semaforoThroughput.barPct" [style.background]="semaforoThroughput.sparkCol" style="height:100%;border-radius:99px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <!-- KPI 3: Sockets Activos -->
+    <div class="tremor-kpi-card" data-tour="kpi-sockets" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_sock_lbl') }}</span>
+        <span class="tremor-semaforo-badge" [ngClass]="semaforoSockets.cls">
+          <span class="semaforo-dot"></span>
+          {{ semaforoSockets.lbl }}
+        </span>
+      </div>
+      
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
+        <div>
+          <div class="tremor-kpi-metric" style="color:var(--accent-amber);font-size:1.75rem;margin:0;letter-spacing:-0.5px;">{{ telemetry?.sockets_activos || 0 }} <span style="font-size:11pt;color:var(--text-muted);font-weight:600;">/ {{ telemetry?.max_sockets || 32 }}</span></div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;">{{ i18n.t('dash_tokio_sliding') || 'Canales Multiconexión' }}</div>
+        </div>
+
+        <!-- Micro Sparkline SVG Ámbar -->
+        <div style="width:74px;height:32px;">
+          <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
+            <path d="M 0,16 Q 24,6 48,22 T 74,10" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div style="width:100%;height:3px;background:rgba(245,158,11,0.12);border-radius:99px;margin-top:12px;overflow:hidden;">
+        <div [style.width.%]="semaforoSockets.barPct" style="height:100%;background:#F59E0B;border-radius:99px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <!-- KPI 4: Tráfico Transferido / Salud -->
+    <div class="tremor-kpi-card" data-tour="kpi-health" style="padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;min-height:115px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-kpi-title" style="font-size:7pt;letter-spacing:0.8px;">{{ i18n.t('kpi_datos_lbl') }}</span>
+        <span class="tremor-semaforo-badge" [ngClass]="semaforoSalud.cls">
+          <span class="semaforo-dot"></span>
+          {{ semaforoSalud.lbl }}
+        </span>
+      </div>
+      
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
+        <div>
+          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.75rem;margin:0;letter-spacing:-0.5px;">{{ telemetry?.total_transferido_str || '0 B' }}</div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;">{{ telemetry?.completadas || 0 }} {{ i18n.t('dash_files_unit') || 'archivos' }} • CRC32 OK</div>
+        </div>
+
+        <!-- Micro Sparkline SVG Azul/Gris -->
+        <div style="width:74px;height:32px;">
+          <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
+            <path d="M 0,28 L 22,18 L 44,22 L 74,8" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div style="width:100%;height:3px;background:rgba(100,116,139,0.15);border-radius:99px;margin-top:12px;overflow:hidden;">
+        <div [style.width.%]="semaforoSalud.barPct" style="height:100%;background:#64748B;border-radius:99px;transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tremor Area Chart Oficial con Ejes Y/X, Rejilla y Gradiente de Rendimiento -->
+  <div class="tremor-chart-card" data-tour="chart-bezier" style="flex:1;min-height:260px;display:flex;flex-direction:column;" title="Monitoreo de rendimiento continuo: Curva verde (Andromeda Turbo) vs Curva punteada (Navegador Estándar)">
+    <!-- Leyenda y Encabezado del Gráfico -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div class="tremor-chart-title">{{ i18n.t('dash_chart_title') }}</div>
+        <div style="font-size:7.5pt;color:var(--text-muted);margin-top:2px;">{{ i18n.t('dash_chart_sub') }}</div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;font-size:8pt;font-weight:700;">
+        <span style="display:flex;align-items:center;gap:6px;color:var(--accent-green);" title="Throughput acelerado con multi-socket Tokio">
+          <span style="width:10px;height:10px;border-radius:3px;background:var(--accent-green);box-shadow:0 0 6px rgba(16,231,97,0.6);"></span> {{ i18n.t('dash_andromeda') }}
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;color:var(--accent-cyan);" title="Línea base comparativa de descarga mono-hilo">
+          <span style="width:10px;height:10px;border-radius:3px;background:var(--accent-cyan);box-shadow:0 0 6px rgba(56,189,248,0.6);"></span> {{ i18n.t('dash_browser_ref') }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Contenedor del Gráfico con Escala Y y Escala X -->
+    <div style="display:flex;flex:1;position:relative;gap:10px;min-height:160px;">
+      <!-- Escala Eje Y (Velocidades) -->
+      <div style="display:flex;flex-direction:column;justify-content:space-between;padding-bottom:20px;font-size:7pt;color:var(--text-muted);font-family:'JetBrains Mono',monospace;text-align:right;width:58px;flex-shrink:0;">
+        <span>100 MB/s</span>
+        <span>75 MB/s</span>
+        <span>50 MB/s</span>
+        <span>25 MB/s</span>
+        <span>0 MB/s</span>
+      </div>
+
+      <!-- Lienzo SVG con Rejilla y Curvas Tremor -->
+      <div style="flex:1;position:relative;display:flex;flex-direction:column;">
+        <svg viewBox="0 0 700 140" style="width:100%;height:100%;" preserveAspectRatio="none" id="svg-dash-chart">
+          <defs>
+            <linearGradient id="tremorGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--accent-green)" stop-opacity="0.38"/>
+              <stop offset="65%" stop-color="var(--accent-green)" stop-opacity="0.08"/>
+              <stop offset="100%" stop-color="var(--accent-green)" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="browserGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Rejilla Horizontal Tremor -->
+          <line x1="0" y1="5" x2="700" y2="5" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="0" y1="38" x2="700" y2="38" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="0" y1="72" x2="700" y2="72" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="0" y1="106" x2="700" y2="106" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="0" y1="138" x2="700" y2="138" stroke="var(--border-subtle)" stroke-width="1"/>
+
+          <!-- Curva Navegador -->
+          <path [attr.d]="chartPathBrowser" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-dasharray="4,4"></path>
+          
+          <!-- Área y Curva Andromeda Turbo -->
+          <path [attr.d]="chartPathArea" fill="url(#tremorGrad)"></path>
+          <path [attr.d]="chartPathAndromeda" fill="none" stroke="var(--accent-green)" stroke-width="2.8"></path>
+          
+          <!-- Punto de Telemetría Activo -->
+          <circle cx="700" [attr.cy]="circleY" r="4.5" fill="#FFF" stroke="var(--accent-green)" stroke-width="2.5"></circle>
+        </svg>
+
+        <!-- Escala Eje X Dinámica (Tiempo) -->
+        <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:6px;padding:0 4px;">
+          <span *ngFor="let label of timeAxisLabels; let isLast = last" 
+                [style.color]="isLast ? 'var(--accent-green)' : 'var(--text-muted)'" 
+                [style.font-weight]="isLast ? '700' : 'normal'">
+            {{ label }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Speed Duel y Matriz Tremor Tracker (32 Sockets) -->
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;">
+    <!-- Tacómetro de Velocidad Andromeda Turbo (Gauge Neón) -->
+    <div class="tremor-chart-card" style="display:flex;flex-direction:column;justify-content:space-between;" title="Tacómetro dinámico de velocidad en tiempo real (Escala 0 a 120 MB/s)">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-chart-title">{{ i18n.t('dash_tacometro') }}</span>
+        <span class="tremor-delta-badge green">0 – 120 MB/s</span>
+      </div>
+
+      <!-- Dial Circular SVG con Radio R=80 -->
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:12px 0 6px 0;width:100%;overflow:visible;">
+        <svg viewBox="0 0 220 120" style="width:220px;height:115px;overflow:visible;" preserveAspectRatio="xMidYMid meet" id="svg-tachometer">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38BDF8"/>
+              <stop offset="50%" stop-color="var(--accent-green)"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Pista Base Circular de 180 Grados (R=80, centro en 110, 105) Trazo Hinchado Robusto (18px) -->
+          <path d="M 30,105 A 80,80 0 0,1 190,105" 
+                fill="none" 
+                stroke="var(--border-subtle)" 
+                stroke-width="18" 
+                stroke-linecap="round"/>
+
+          <!-- Arco Medidor Activo Neón Hinchado Nítido sin Blur -->
+          <path d="M 30,105 A 80,80 0 0,1 190,105" 
+                fill="none" 
+                stroke="url(#gaugeGrad)" 
+                stroke-width="18" 
+                stroke-linecap="round" 
+                stroke-dasharray="251.3" 
+                [attr.stroke-dashoffset]="251.3 - (251.3 * (tachometerPct / 100))" 
+                style="transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1);"/>
+
+          <!-- Marcas de escala (0, 30, 60, 90, 120) -->
+          <text x="24" y="122" fill="var(--text-muted)" font-size="7" font-weight="700" font-family="'JetBrains Mono',monospace" text-anchor="middle">0</text>
+          <text x="56" y="44" fill="var(--text-muted)" font-size="7" font-weight="700" font-family="'JetBrains Mono',monospace" text-anchor="middle">30</text>
+          <text x="110" y="14" fill="var(--text-muted)" font-size="7" font-weight="700" font-family="'JetBrains Mono',monospace" text-anchor="middle">60</text>
+          <text x="164" y="44" fill="var(--text-muted)" font-size="7" font-weight="700" font-family="'JetBrains Mono',monospace" text-anchor="middle">90</text>
+          <text x="196" y="122" fill="var(--text-muted)" font-size="7" font-weight="700" font-family="'JetBrains Mono',monospace" text-anchor="middle">120</text>
+
+          <!-- Aguja Indicadora Giratoria centrada en (110, 105) con Trazo Robusto Nítido -->
+          <g [style.transform]="'rotate(' + tachometerAngle + 'deg)'" 
+             style="transform-origin: 110px 105px; transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <line x1="110" y1="105" x2="110" y2="28" stroke="var(--accent-green)" stroke-width="4.5" stroke-linecap="round"/>
+            <polygon points="110,20 105,32 115,32" fill="var(--accent-green)"/>
+          </g>
+
+          <!-- Pivote Central Tacómetro Hinchado -->
+          <circle cx="110" cy="105" r="11" fill="var(--bg-base)" stroke="var(--accent-green)" stroke-width="3"/>
+          <circle cx="110" cy="105" r="5" fill="#38BDF8"/>
+        </svg>
+
+        <!-- Lectura Digital amplia y limpia ubicada con separación holgada -->
+        <div style="margin-top:14px;margin-bottom:6px;text-align:center;pointer-events:none;">
+          <div style="font-size:15pt;font-weight:900;color:var(--accent-green);font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;line-height:1.1;">
+            {{ tachometerSpeedMB }} <span style="font-size:8.5pt;color:var(--text-secondary);font-weight:700;">MB/s</span>
+          </div>
+          <div style="font-size:6.8pt;font-weight:800;color:var(--text-muted);letter-spacing:1.2px;margin-top:3px;">
+            THROUGHPUT DIRECT I/O
+          </div>
+        </div>
+      </div>
+
+      <div class="tremor-callout-box" style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span style="font-size:7.5pt;"><strong>Ahorro acumulado:</strong> {{ telemetry?.tiempo_total_ahorrado_str || '0s' }} ({{ telemetry?.multiplicador_promedio_str || '1.0x' }}x vs 2.5 MB/s navegador)</span>
+      </div>
+    </div>
+
+    <!-- Matriz de Sockets Tremor Tracker Grid (32 Sockets Numerados y Concurrentes) -->
+    <div class="tremor-chart-card" data-tour="matrix-sockets" title="Matriz de 32 canales concurrentes para transferencia paralela">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="tremor-chart-title">{{ i18n.t('matriz_sockets') }}</span>
+        <span style="font-size:7pt;color:var(--accent-green);font-weight:700;">CONEXIONES ACTIVAS</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:14px 0;">
+        <div *ngFor="let s of socketsMatrix" 
+             style="height:26px;border-radius:5px;transition:all 0.2s;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:6.2pt;font-weight:800;"
+             [style.opacity]="s.opacity || 1"
+             [style.color]="s.active ? '#06130B' : 'var(--text-muted)'"
+             [style.background-color]="s.active ? 'var(--accent-green)' : 'var(--bg-surface)'"
+             [style.box-shadow]="s.active ? '0 0 10px rgba(37,211,102,0.45)' : 'none'"
+             [style.border]="s.active ? '1.5px solid var(--accent-green)' : '1px solid var(--border-subtle)'"
+             [title]="'Canal #' + (s.id + 1) + (s.active ? ': Activo en transferencia' : ': En espera')">
+          #{{ s.id + 1 < 10 ? '0' + (s.id + 1) : (s.id + 1) }}
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:8px;">
+        <span style="color:var(--accent-green);font-weight:700;">■ Activo</span>
+        <span style="color:var(--accent-cyan);">■ Conectando</span>
+        <span style="color:var(--text-muted);">■ En Espera</span>
+      </div>
+    </div>
+  </div>
+</section>

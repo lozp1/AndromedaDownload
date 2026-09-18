@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ANDROMEDA DOWNLOAD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base: #070B14;
+    --bg-card: #0D1527;
+    --bg-surface: #111C33;
+    --bg-hover: rgba(56, 189, 248, 0.08);
+    --border-card: rgba(56, 189, 248, 0.2);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --accent-cyan: #38BDF8;
+    --accent-green: #10E761;
+    --accent-amber: #F59E0B;
+    --accent-red: #EF4444;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+  }
+
+  body {
+    width: 350px;
+    min-height: 160px;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* === CABECERA === */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-card);
+    background: linear-gradient(180deg, #0E1A33 0%, #080F1E 100%);
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    overflow: hidden;
+  }
+  .header-logo img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+  }
+  .header-title { flex: 1; }
+  .header-title .brand {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #FFFFFF;
+  }
+  .header-title .sub {
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .header-status {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #334155;
+    border: 1.5px solid rgba(0,0,0,0.6);
+    transition: all 0.3s ease;
+  }
+  .header-status.online {
+    background: var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green), 0 0 16px rgba(16, 231, 97, 0.5);
+  }
+
+  /* === SECCIÓN KPIS === */
+  .kpis {
+    display: flex;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .kpi {
+    flex: 1;
+    padding: 10px 8px;
+    text-align: center;
+    border-right: 1px solid var(--border-subtle);
+  }
+  .kpi:last-child { border-right: none; }
+  .kpi-val {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent-green);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.5px;
+  }
+  .kpi-val.cyan { color: var(--accent-cyan); }
+  .kpi-lbl {
+    font-size: 8px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+  }
+
+  /* === LISTA DE DESCARGAS === */
+  .section-title {
+    padding: 10px 16px 6px;
+    font-size: 8.5px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-base);
+  }
+
+  #lista-descargas {
+    max-height: 230px;
+    overflow-y: auto;
+    background: var(--bg-base);
+  }
+  #lista-descargas::-webkit-scrollbar { width: 4px; }
+  #lista-descargas::-webkit-scrollbar-track { background: transparent; }
+  #lista-descargas::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.25); border-radius: 4px; }
+
+  .item-descarga {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.15s ease;
+  }
+  .item-descarga:hover { background: var(--bg-hover); }
+
+  .item-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid var(--border-card);
+    flex-shrink: 0;
+    color: var(--accent-cyan);
+  }
+  .item-info { flex: 1; min-width: 0; }
+  .item-nombre {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .item-detalle {
+    color: var(--text-secondary);
+    font-size: 9.5px;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .item-vel {
+    font-size: 10.5px;
+    color: var(--accent-green);
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  /* barra de progreso mini */
+  .progress-bar {
+    width: 100%;
+    height: 3.5px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    box-shadow: 0 0 6px rgba(16, 231, 97, 0.5);
+    transition: width 0.3s ease;
+  }
+
+  /* === ESTADO VACÍO === */
+  .vacio {
+    padding: 30px 16px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .vacio-ico {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    color: var(--accent-cyan);
+  }
+  .vacio-txt {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* === PIE / BOTONES === */
+  .footer {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border-card);
+    background: #080F1E;
+  }
+  .btn {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: linear-gradient(135deg, #10E761 0%, #059669 100%);
+    color: #041B0F;
+    box-shadow: 0 0 14px rgba(16, 231, 97, 0.35);
+  }
+  .btn-primary:hover {
+    background: #10E761;
+    color: #02120A;
+    box-shadow: 0 0 18px rgba(16, 231, 97, 0.55);
+  }
+  .btn-ghost {
+    background: rgba(56, 189, 248, 0.08);
+    color: var(--text-primary);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .btn-ghost:hover {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: var(--accent-cyan);
+    color: #FFFFFF;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+  }
+
+  .badge-error { color: var(--accent-red); font-weight: 700; }
+  .badge-completado { color: var(--accent-green); font-weight: 700; }
+  .badge-pausado { color: var(--accent-amber); font-weight: 700; }
+  .badge-descargando { color: var(--accent-cyan); font-weight: 700; }
+  .badge-pendiente { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- CABECERA -->
+<div class="header">
+  <div class="header-logo">
+    <img src="iconos/logo_brand_squircle.png" alt="Andromeda Squircle Logo">
+  </div>
+  <div class="header-title">
+    <div class="brand">ANDROMEDA</div>
+    <div class="sub">Download Manager</div>
+  </div>
+  <div class="header-status" id="dot-estado"></div>
+</div>
+
+<!-- KPIs -->
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi-val cyan" id="kpi-velocidad">--</div>
+    <div class="kpi-lbl">Velocidad</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val" id="kpi-activas">--</div>
+    <div class="kpi-lbl">Activas</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val" id="kpi-total">--</div>
+    <div class="kpi-lbl">Total</div>
+  </div>
+</div>
+
+<!-- LISTA DE DESCARGAS -->
+<div class="section-title">Descargas Recientes</div>
+<div id="lista-descargas">
+  <div class="vacio" id="estado-vacio">
+    <div class="vacio-ico">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </div>
+    <div class="vacio-txt">Conectando con ANDROMEDA DOWNLOAD...</div>
+  </div>
+</div>
+
+<!-- PIE -->
+<div class="footer">
+  <button class="btn btn-primary" id="btn-abrir">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    Abrir App
+  </button>
+  <button class="btn btn-ghost" id="btn-nueva">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Nueva Descarga
+  </button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
