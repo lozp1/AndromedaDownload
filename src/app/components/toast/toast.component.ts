@@ -21,7 +21,9 @@ export class ToastComponent implements OnInit {
   }
 
   public onClickToast(t: ToastMessage): void {
-    if (t.ruta_destino) {
+    if (t.accion) {
+      t.accion();
+    } else if (t.ruta_destino) {
       this.downloadService.abrirCarpeta(t.ruta_destino);
     }
     this.dismiss(t.id);

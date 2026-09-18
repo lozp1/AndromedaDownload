@@ -17,12 +17,31 @@ export class ModalAboutComponent {
   public readonly suite = 'Andromeda Download Suite';
   public readonly arquitectura = '64-bit Windows Desktop Core (Rust Tauri v2)';
   public readonly version = '1.0.0 versión estable';
-  public mostrarDetalles: boolean = false;
+
+  public cardTransform: string = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0)';
+  public isHovered: boolean = false;
 
   constructor(public i18n: I18nService) {}
 
-  public toggleDetalles(): void {
-    this.mostrarDetalles = !this.mostrarDetalles;
+  public onMouseMove(e: MouseEvent): void {
+    const card = e.currentTarget as HTMLElement;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -7;
+    const rotateY = ((x - centerX) / centerX) * 7;
+    this.cardTransform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+  }
+
+  public onMouseEnter(): void {
+    this.isHovered = true;
+  }
+
+  public onMouseLeave(): void {
+    this.isHovered = false;
+    this.cardTransform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0)';
   }
 
   public abrirEnlace(url: string): void {

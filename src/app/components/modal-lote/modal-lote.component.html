@@ -9,7 +9,7 @@
     <div class="modal-header">
       <div class="modal-header-dot"></div>
       <span class="modal-header-title">DESCARGA POR LOTES / LISTA DE REPRODUCCIÓN</span>
-      <span class="tremor-delta-badge cyan" style="margin-left:8px;font-size:7pt;" *ngIf="playlistData">
+      <span class="tremor-delta-badge green" style="margin-left:8px;font-size:7pt;" *ngIf="playlistData">
         ● {{ itemsSeleccionados.size }} DE {{ playlistData.items.length }} SELECCIONADOS
       </span>
       <div class="traffic-lights" style="margin-left:auto;">
@@ -94,7 +94,7 @@
         </div>
 
         <!-- 3D Card Stack Animado (Uiverse Style con cambio al dar clic) -->
-        <div class="wrap_card">
+        <div class="wrap_card" [class.swap-left]="swapDirection === 'left'" [class.swap-right]="swapDirection === 'right'">
           <!-- Tarjeta Izquierda (Anterior) -->
           <div class="card card-left" *ngIf="getVideoRelativo(-1) as prevItem" (click)="seleccionarOffset(-1)" title="Ver: {{ prevItem.titulo }}">
             <div class="card-inner">
@@ -194,20 +194,14 @@
           <span class="btn-txt">Cancelar</span>
         </button>
 
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-          <span class="tremor-delta-badge green" style="font-size:6.8pt;letter-spacing:0.5px;">
-            ● {{ itemsSeleccionados.size }} / {{ playlistData?.items?.length || 0 }} SELECCIONADOS
+        <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
+                style="height:36px;padding:0 24px;font-weight:700;" 
+                [disabled]="itemsSeleccionados.size === 0 || estaProcesando"
+                (click)="confirmarDescargaLote()">
+          <span class="btn-txt">
+            {{ estaProcesando ? 'Encolando...' : 'Continuar' }}
           </span>
-          <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" 
-                  style="height:34px;padding:0 22px;font-weight:700;" 
-                  [disabled]="itemsSeleccionados.size === 0 || estaProcesando"
-                  (click)="confirmarDescargaLote()">
-            <span class="btn-txt" style="display:flex;align-items:center;gap:6px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              {{ estaProcesando ? 'Encolando...' : 'Aceptar' }}
-            </span>
-          </button>
-        </div>
+        </button>
       </div>
     </div>
   </div>

@@ -132,6 +132,7 @@ async fn gestionar_sistema_tray(accion: String, app: tauri::AppHandle) -> Result
             "guia" => { let _ = win.emit("abrir_guia", ()); },
             "acerca_de" => { let _ = win.emit("abrir_acerca_de", ()); },
             "nueva" => { let _ = win.emit("abrir_nueva_descarga", serde_json::json!({ "url": "", "nombre": "" })); },
+            "panel" => { let _ = win.emit("abrir_panel", ()); },
             _ => {}
         }
     }

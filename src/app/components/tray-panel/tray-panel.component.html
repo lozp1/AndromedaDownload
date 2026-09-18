@@ -81,52 +81,69 @@
       </ng-template>
     </div>
 
-    <!-- Botones de Acción Rápida (2x2) -->
+    <!-- Botones de Acción Rápida (2x2) con Animación Radial (Estilo Añadir a Cola) -->
     <div class="tray-action-grid">
-      <button class="tray-btn-action" (click)="pausarTodo()" title="Pausar todas las descargas">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-        <span>Pausar Todo</span>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="pausarTodo()" title="Pausar todas las descargas">
+        <span class="btn-txt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          <span>Pausar Todo</span>
+        </span>
       </button>
-      <button class="tray-btn-action" (click)="reanudarTodo()" title="Reanudar todas las descargas">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        <span>Reanudar Todo</span>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="reanudarTodo()" title="Reanudar todas las descargas">
+        <span class="btn-txt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <span>Reanudar Todo</span>
+        </span>
       </button>
-      <button class="tray-btn-action" (click)="abrirCarpetaDescargas()" title="Abrir carpeta de descargas en Windows Explorer">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-        </svg>
-        <span>Abrir Carpeta</span>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="abrirCarpetaDescargas()" title="Abrir carpeta de descargas en Windows Explorer">
+        <span class="btn-txt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Abrir Carpeta</span>
+        </span>
       </button>
-      <button class="tray-btn-action primary" (click)="abrirNuevaDescarga()" title="Nueva descarga turbo">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>+ Nueva Descarga</span>
+      <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" (click)="abrirNuevaDescarga()" title="Nueva descarga turbo">
+        <span class="btn-txt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>+ Nueva Descarga</span>
+        </span>
       </button>
     </div>
 
-    <!-- Barra de Gestión del Sistema Andromeda -->
+    <!-- Barra de Gestión del Sistema Andromeda (Orden Exacto Solicitado) -->
     <div class="tray-system-bar">
-      <button class="tray-sys-btn" (click)="abrirSuite()" title="Abrir Suite Completa de Andromeda">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
-        <span>Abrir Suite</span>
-      </button>
-      <button class="tray-sys-btn" (click)="abrirAjustes()" title="Configuración y Ajustes">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span>Ajustes</span>
-      </button>
-      <button class="tray-sys-btn" (click)="abrirGuia()" title="Ayuda y Guía Interactiva">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        <span>Ayuda</span>
-      </button>
+      <!-- 1: Acerca de -->
       <button class="tray-sys-btn" (click)="abrirAcercaDe()" title="Acerca de Andromeda">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         <span>Acerca de</span>
       </button>
-      <button class="tray-sys-btn danger" (click)="salirApp()" title="Salir de Andromeda Suite">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
-        <span>Salir</span>
+
+      <!-- 2: Ayuda -->
+      <button class="tray-sys-btn" (click)="abrirGuia()" title="Ayuda y Guía Interactiva">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <span>Ayuda</span>
+      </button>
+
+      <!-- 3: Abrir Andromeda -->
+      <button class="tray-sys-btn" (click)="abrirSuite()" title="Abrir Ventana Principal de Andromeda">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Abrir Andromeda</span>
+      </button>
+
+      <!-- 4: Mostrar Panel -->
+      <button class="tray-sys-btn" (click)="mostrarPanel()" title="Mostrar Panel Principal de Descargas">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Mostrar Panel</span>
+      </button>
+
+      <!-- 5: Ajustes -->
+      <button class="tray-sys-btn" (click)="abrirAjustes()" title="Configuración y Ajustes">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Ajustes</span>
       </button>
     </div>
   </div>

@@ -113,6 +113,10 @@ export class AppComponent implements OnInit {
     this.tauriService.listen('abrir_acerca_de', () => {
       this.isAboutModalOpen = true;
     });
+
+    this.tauriService.listen('abrir_panel', () => {
+      this.downloadService.setView('descargas');
+    });
   }
 
   @HostListener('window:contextmenu', ['$event'])

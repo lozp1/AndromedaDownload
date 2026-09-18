@@ -22,6 +22,7 @@ export interface ToastMessage {
   mensaje: string;
   tiempo: number;
   ruta_destino?: string;
+  accion?: () => void;
 }
 
 @Injectable({
@@ -577,6 +578,23 @@ export class DownloadService {
 
   public mostrarToast(titulo: string, mensaje: string, tipo: 'info' | 'success' | 'error' = 'info'): void {
     this.showToast(tipo, titulo, mensaje);
+  }
+
+  public showToastWithAction(tipo: 'success' | 'error' | 'info' | 'warning', titulo: string, mensaje: string, accion: () => void): void {
+    const nuevo: ToastMessage = {
+      id: Math.random().toString(36).substring(2, 9),
+      tipo,
+      titulo,
+      mensaje,
+      tiempo: Date.now(),
+      accion
+    };
+    const lista = [...this.toast$.value, nuevo];
+    this.toast$.next(lista);
+
+    setTimeout(() => {
+      this.removerToast(nuevo.id);
+    }, 7000);
   }
 
   // Helpers de formato

@@ -152,20 +152,21 @@ export class ModalLoteComponent implements OnInit, OnChanges {
     return this.playlistData.items[idx] || null;
   }
 
+  public swapDirection: 'left' | 'right' | null = null;
+  private swapTimer: any = null;
+
   public seleccionarOffset(offset: number): void {
     if (!this.playlistData?.items?.length) return;
+    this.swapDirection = offset < 0 ? 'left' : 'right';
+    if (this.swapTimer) clearTimeout(this.swapTimer);
     const len = this.playlistData.items.length;
     this.indiceInspeccionado = (this.indiceInspeccionado + offset + len) % len;
+    this.swapTimer = setTimeout(() => {
+      this.swapDirection = null;
+    }, 400);
   }
 
   public async seleccionarCarpeta(): Promise<void> {
-    try {
-      const ruta = await this.tauriService.seleccionarDirectorio();
-      if (ruta && ruta.trim().length > 0) {
-        this.carpetaDestino = ruta.trim();
-        return;
-      }
-    } catch {}
     const ruta = await this.downloadService.abrirExploradorModal(this.carpetaDestino);
     if (ruta && ruta.trim().length > 0) {
       this.carpetaDestino = ruta.trim();
