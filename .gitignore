@@ -50,4 +50,12 @@ Thumbs.db
 *.log
 *.tmp
 *.part
-/scratch/*.part
+/scratch/
+andromeda_downloads.json
+andromeda_config.json
+downloads.json
+config.json
+.env
+.env.*
+.env.local
+
