@@ -383,6 +383,14 @@ export class ModalNuevaDescargaComponent implements OnInit {
     }
   }
 
+  public volverALista(): void {
+    if (this.downloadService.activePlaylistData) {
+      const data = this.downloadService.activePlaylistData;
+      this.close.emit();
+      this.downloadService.triggerLoteModal(true, data);
+    }
+  }
+
   public async ejecutarSondeo(url: string): Promise<void> {
     this.sondeoEnCurso = true;
     this.estadoSondeo = 'Sondeando cabeceras HTTP Range y streams...';

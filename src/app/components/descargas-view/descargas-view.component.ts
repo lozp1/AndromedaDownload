@@ -194,12 +194,20 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
 
   public get canResume(): boolean {
     if (this.selectedIds.size === 0) return false;
-    return this.descargas.some(d => this.selectedIds.has(d.id) && (d.estado === 'Pausado' || d.estado === 'Detenido' || d.estado === 'Error' || d.estado === 'Eliminado'));
+    return this.descargas.some(d => this.selectedIds.has(d.id) && (d.estado === 'Pausado' || d.estado === 'Detenido' || d.estado === 'Error' || d.estado === 'Eliminado' || d.estado === 'Programada'));
   }
 
   public get canStop(): boolean {
     if (this.selectedIds.size === 0) return false;
     return this.descargas.some(d => this.selectedIds.has(d.id) && d.estado === 'Descargando');
+  }
+
+  public togglePauseResumeSelected(): void {
+    if (this.canPause) {
+      this.pauseSelected();
+    } else if (this.canResume) {
+      this.resumeSelected();
+    }
   }
 
   public pauseSelected(): void {

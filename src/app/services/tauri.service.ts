@@ -156,6 +156,28 @@ export class TauriService {
     });
   }
 
+  public async leerPortapapeles(): Promise<string> {
+    try {
+      return await this.invoke<string>('leer_portapapeles');
+    } catch {
+      try {
+        return await navigator.clipboard.readText();
+      } catch {
+        return '';
+      }
+    }
+  }
+
+  public async escribirPortapapeles(texto: string): Promise<void> {
+    try {
+      await this.invoke('escribir_portapapeles', { texto });
+    } catch {
+      try {
+        await navigator.clipboard.writeText(texto);
+      } catch {}
+    }
+  }
+
   // Fallback Mock data for browser testing
   private handleMockCommand<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
     switch (cmd) {

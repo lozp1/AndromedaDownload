@@ -14,6 +14,29 @@
         </div>
       </div>
       <div class="modal-body">
+        <!-- Barra Informativa para Volver a la Lista de Reproducción -->
+        <div *ngIf="downloadService.loteEnCola.length > 0 && downloadService.activePlaylistData" 
+             style="display:flex;align-items:center;justify-content:space-between;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2.2">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <div style="font-size:7.5pt;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              <strong style="color:var(--accent-cyan);">Lista de Reproducción:</strong> {{ downloadService.activePlaylistData.titulo || 'Playlist' }} ({{ downloadService.loteEnCola.length }} seleccionados)
+            </div>
+          </div>
+          <button type="button" (click)="volverALista()" 
+                  style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:var(--accent-cyan);border-radius:6px;padding:4px 10px;font-size:7.2pt;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;flex-shrink:0;transition:all 0.15s ease;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Volver a la Lista</span>
+          </button>
+        </div>
+
         <!-- URL -->
         <div class="form-group">
           <label class="form-label">{{ i18n.t('lbl_url') }}</label>

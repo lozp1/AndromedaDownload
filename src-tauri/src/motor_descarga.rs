@@ -720,6 +720,13 @@ impl GestorDescargas {
         if let Some(t) = self.tareas.read().await.get(id) {
             t.pausado.store(false, Ordering::SeqCst);
             t.cancelado.store(false, Ordering::SeqCst);
+            {
+                let mut it = t.item.write().await;
+                it.fecha_programada = None;
+                if it.estado == "Programada" || it.estado == "Pausado" || it.estado == "Detenido" {
+                    it.estado = "Descargando".to_string();
+                }
+            }
             let client = self.client.clone();
             let handle = t.clone();
             tokio::spawn(async move {
@@ -1150,6 +1157,8 @@ async fn descargar_stream_multimedia(
             audio_format.to_string(),
             "--audio-quality".to_string(),
             "0".to_string(),
+            "--embed-thumbnail".to_string(),
+            "--add-metadata".to_string(),
         ]
     } else {
         let height_filter = if nombre.contains("720p") || (tamano_total > 0 && tamano_total <= 140 * 1024 * 1024 && tamano_total > 60 * 1024 * 1024) {
@@ -1186,6 +1195,7 @@ async fn descargar_stream_multimedia(
 
     args.push("-o".to_string());
     args.push(out_template);
+    args.push("--".to_string());
     args.push(url.clone());
 
     // Ejecución real con motor yt-dlp forzando UTF-8

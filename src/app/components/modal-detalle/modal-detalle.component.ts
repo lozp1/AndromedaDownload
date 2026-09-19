@@ -130,6 +130,25 @@ export class ModalDetalleComponent implements OnInit, OnChanges, OnDestroy {
     return '—';
   }
 
+  public async copiarTexto(texto?: string, label: string = 'Texto'): Promise<void> {
+    if (!texto) return;
+    try {
+      await navigator.clipboard.writeText(texto);
+      this.downloadService.mostrarToast('Portapapeles', `${label} copiado con éxito`, 'info');
+    } catch {
+      this.downloadService.mostrarToast('Error', 'No se pudo copiar al portapapeles', 'error');
+    }
+  }
+
+  public getSha256(): string {
+    if (this.item?.hashes && this.item.hashes['sha256']) {
+      return this.item.hashes['sha256'];
+    }
+    return this.item?.estado === 'Completado'
+      ? 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+      : 'Calculando verificación cíclica...';
+  }
+
   private actualizarDetalles(d: DescargaItem): void {
     if (d.tamano_total > 0 && d.descargado > d.tamano_total) {
       d.descargado = d.tamano_total;

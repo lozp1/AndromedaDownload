@@ -27,3 +27,4 @@ chrono = { version = "0.4", features = ["serde"] }
 sha2 = "0.10"
 md-5 = "0.10"
 rfd = "0.17.2"
+arboard = "3.4"

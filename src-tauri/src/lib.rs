@@ -12,8 +12,7 @@ use modelos::{
 };
 use motor_descarga::GestorDescargas;
 use tauri::window::{ProgressBarState, ProgressBarStatus};
-use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState};
-use tauri::menu::{Menu, MenuItem};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButtonState};
 
 #[tauri::command]
 async fn iniciar_descarga(
@@ -54,6 +53,18 @@ async fn pausar_descarga(id: String, gestor: State<'_, Arc<GestorDescargas>>) ->
 async fn reanudar_descarga(id: String, gestor: State<'_, Arc<GestorDescargas>>) -> Result<(), String> {
     gestor.reanudar(&id).await;
     Ok(())
+}
+
+#[tauri::command]
+fn leer_portapapeles() -> Result<String, String> {
+    let mut clipboard = arboard::Clipboard::new().map_err(|e| e.to_string())?;
+    clipboard.get_text().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn escribir_portapapeles(texto: String) -> Result<(), String> {
+    let mut clipboard = arboard::Clipboard::new().map_err(|e| e.to_string())?;
+    clipboard.set_text(texto).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -566,109 +577,34 @@ pub fn run() {
                     });
                 }
 
-                let acerca_i = MenuItem::with_id(app, "acerca_de", "Acerca de", true, None::<&str>)?;
-                let ayuda_i = MenuItem::with_id(app, "guia", "Ayuda", true, None::<&str>)?;
-                let open_i = MenuItem::with_id(app, "open", "Abrir Andromeda", true, None::<&str>)?;
-                let panel_i = MenuItem::with_id(app, "tray_panel", "Mostrar Panel", true, None::<&str>)?;
-                let ajustes_i = MenuItem::with_id(app, "ajustes", "Ajustes", true, None::<&str>)?;
-                let quit_i = MenuItem::with_id(app, "quit", "Salir", true, None::<&str>)?;
-
-                let menu = Menu::with_items(app, &[
-                    &acerca_i,
-                    &ayuda_i,
-                    &open_i,
-                    &panel_i,
-                    &ajustes_i,
-                    &quit_i,
-                ])?;
-
-                let _gestor_menu = gestor_setup.clone();
                 let mut tray_builder = TrayIconBuilder::with_id("tray_andromeda")
-                    .menu(&menu)
-                    .tooltip("Andromeda Download Suite - En espera")
+                    .tooltip("Andromeda Download Suite")
                     .show_menu_on_left_click(false)
-                    .on_menu_event(move |app, event| {
-                        match event.id.as_ref() {
-                            "acerca_de" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                    let _ = window.emit("abrir_acerca_de", ());
-                                }
-                            }
-                            "guia" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                    let _ = window.emit("abrir_guia", ());
-                                }
-                            }
-                            "open" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                }
-                            }
-                            "tray_panel" => {
-                                if let Some(win) = app.get_webview_window("tray_flyout") {
-                                    if win.is_visible().unwrap_or(false) {
-                                        let _ = win.hide();
-                                    } else {
-                                        if let Ok(Some(monitor)) = win.current_monitor() {
-                                            let screen = monitor.size();
-                                            let scale = monitor.scale_factor();
-                                            let w = (380.0 * scale) as i32;
-                                            let h = (520.0 * scale) as i32;
-                                            let x = monitor.position().x + screen.width as i32 - w - (18.0 * scale) as i32;
-                                            let y = monitor.position().y + screen.height as i32 - h - (54.0 * scale) as i32;
-                                            let _ = win.set_position(tauri::Position::Physical(tauri::PhysicalPosition { x, y }));
-                                        }
-                                        let _ = win.show();
-                                        let _ = win.set_focus();
-                                    }
-                                }
-                            }
-                            "ajustes" => {
-                                if let Some(window) = app.get_webview_window("main") {
-                                    let _ = window.show();
-                                    let _ = window.unminimize();
-                                    let _ = window.set_focus();
-                                    let _ = window.emit("abrir_ajustes", ());
-                                }
-                            }
-                            "quit" => {
-                                app.exit(0);
-                            }
-                            _ => {}
-                        }
-                    })
-                .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event {
-                        let app = tray.app_handle();
-                        if let Some(window) = app.get_webview_window("main") {
-                            if let Ok(is_min) = window.is_minimized() {
-                                if is_min {
-                                    let _ = window.unminimize();
-                                    let _ = window.show();
-                                    let _ = window.set_focus();
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event {
+                            let app = tray.app_handle();
+                            if let Some(win) = app.get_webview_window("tray_flyout") {
+                                if win.is_visible().unwrap_or(false) {
+                                    let _ = win.hide();
                                 } else {
-                                    let _ = window.show();
-                                    let _ = window.set_focus();
+                                    if let Ok(Some(monitor)) = win.current_monitor() {
+                                        let screen = monitor.size();
+                                        let scale = monitor.scale_factor();
+                                        let w = (380.0 * scale) as i32;
+                                        let h = (520.0 * scale) as i32;
+                                        let x = monitor.position().x + screen.width as i32 - w - (18.0 * scale) as i32;
+                                        let y = monitor.position().y + screen.height as i32 - h - (54.0 * scale) as i32;
+                                        let _ = win.set_position(tauri::Position::Physical(tauri::PhysicalPosition { x, y }));
+                                    }
+                                    let _ = win.show();
+                                    let _ = win.set_focus();
                                 }
-                            } else {
-                                let _ = window.show();
-                                let _ = window.set_focus();
                             }
                         }
-                    }
-                });
+                    });
 
             if let Some(icon) = app.default_window_icon() {
                 tray_builder = tray_builder.icon(icon.clone());
@@ -706,7 +642,9 @@ pub fn run() {
             conmutar_cola_tarea,
             cerrar_tray_flyout,
             mostrar_ventana_principal,
-            gestionar_sistema_tray
+            gestionar_sistema_tray,
+            leer_portapapeles,
+            escribir_portapapeles
         ])
         .run(tauri::generate_context!())
         .expect("error while running andromeda application");

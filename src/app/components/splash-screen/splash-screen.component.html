@@ -11,14 +11,14 @@
     <div class="ambient-orb ambient-orb-1"></div>
     <div class="ambient-orb ambient-orb-2"></div>
 
-      <div style="position:relative;z-index:1;">
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between;height:100%;box-sizing:border-box;padding-top:14px;">
         <!-- Encabezado con Logo Oficial Squircle de Andromeda -->
-        <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:8px;">
-          <div style="width:56px;height:56px;border-radius:14px;background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.25);">
-            <img src="assets/img/logo_brand_squircle.png" width="42" height="42" alt="Andromeda Brand Squircle">
+        <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:6px;">
+          <div style="width:62px;height:62px;border-radius:16px;background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(59,130,246,0.25);">
+            <img src="assets/img/logo_brand_squircle.png" width="46" height="46" alt="Andromeda Brand Squircle">
           </div>
           <div>
-            <div style="font-size:18pt;font-weight:900;color:var(--text-primary);letter-spacing:1px;">
+            <div style="font-size:20pt;font-weight:900;color:var(--text-primary);letter-spacing:1.5px;">
               ANDROMEDA
             </div>
             <div style="font-size:8.5pt;font-weight:800;color:#3B82F6;letter-spacing:4px;margin-top:2px;">
@@ -28,10 +28,10 @@
         </div>
 
         <!-- Divisor Degradado Calibrado -->
-        <div style="width:100%;height:1.5px;background:linear-gradient(90deg, transparent, #3B82F6 15%, #25D366 85%, transparent);margin:18px 0 20px 0;"></div>
+        <div style="width:100%;height:1.5px;background:linear-gradient(90deg, transparent, #3B82F6 15%, #25D366 85%, transparent);margin:16px 0 22px 0;"></div>
 
         <!-- Lista de Atributos con Iconos SVG Estilo Acerca de -->
-        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;">
           
           <!-- Fila 1: Motor Rust -->
           <div style="display:grid;grid-template-columns:130px 1fr;align-items:center;gap:14px;">
@@ -74,15 +74,18 @@
           </div>
         </div>
 
-        <!-- Barra de Progreso Neón con Gradiente Cyan-Verde -->
-        <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;position:relative;">
-          <div [style.width.%]="progress" style="height:100%;background:linear-gradient(90deg, #3B82F6, #25D366);border-radius:99px;transition:width 0.35s ease;box-shadow:0 0 10px rgba(37,211,102,0.5);"></div>
-        </div>
+        <!-- Zona Inferior: Barra de Progreso y Pie Legal -->
+        <div>
+          <!-- Barra de Progreso Neón con Gradiente Cyan-Verde -->
+          <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;position:relative;">
+            <div [style.width.%]="progress" style="height:100%;background:linear-gradient(90deg, #3B82F6, #25D366);border-radius:99px;transition:width 0.35s ease;box-shadow:0 0 10px rgba(37,211,102,0.5);"></div>
+          </div>
 
-        <!-- Pie Legal y Estado del Motor -->
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;color:var(--text-muted);margin-top:14px;font-weight:500;">
-          <span>{{ i18n.t('splash_footer') || 'Andromeda Core Engine © 2026' }}</span>
-          <span style="color:#25D366;font-weight:700;letter-spacing:0.5px;">{{ i18n.t('splash_engine_tag') || 'PRO MOTOR ACTIVE' }}</span>
+          <!-- Pie Legal y Estado del Motor -->
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;color:var(--text-muted);margin-top:14px;font-weight:500;">
+            <span>{{ i18n.t('splash_footer') || 'Andromeda Core Engine © 2026' }}</span>
+            <span style="color:#25D366;font-weight:700;letter-spacing:0.5px;">{{ i18n.t('splash_engine_tag') || 'PRO MOTOR ACTIVE' }}</span>
+          </div>
         </div>
       </div>
     </div>

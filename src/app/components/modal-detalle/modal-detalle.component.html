@@ -43,124 +43,119 @@
         </div>
       </div>
 
-      <!-- Cuadrícula 2x2 de Gráficos Estratégicos -->
-      <div class="charts-grid-2x2">
-        <!-- 1. Osciloscopio -->
-        <div class="chart-card">
-          <span class="chart-title">OSCILOSCOPIO DE VELOCIDAD</span>
-          <div style="flex:1;position:relative;width:100%;height:100%;min-height:75px;">
-            <svg viewBox="0 0 320 80" style="width:100%;height:100%;" preserveAspectRatio="none" id="svg-det-osci">
-              <line x1="0" y1="20" x2="320" y2="20" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
-              <line x1="0" y1="40" x2="320" y2="40" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
-              <line x1="0" y1="60" x2="320" y2="60" stroke="var(--border-subtle)" stroke-width="0.5" stroke-dasharray="3,3"/>
-              <path [attr.d]="osciPath" fill="none" stroke="#10E761" stroke-width="2.2"></path>
-              <circle cx="320" [attr.cy]="osciDotY" r="3" fill="#FFF" stroke="#10E761" stroke-width="1.5"></circle>
-            </svg>
+      <!-- Panel Principal: Integridad Criptográfica, Almacenamiento & Origen del Archivo -->
+      <div class="chart-card" style="display:flex;flex-direction:column;gap:14px;padding:18px 22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-subtle);padding-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span style="font-size:8.5pt;font-weight:800;color:var(--text-primary);letter-spacing:0.5px;">
+              INTEGRIDAD CRIPTOGRÁFICA &amp; ALMACENAMIENTO LOCAL
+            </span>
           </div>
-        </div>
-
-        <!-- 2. Chunks 32 Sockets (16x2) -->
-        <div class="chart-card">
-          <span class="chart-title">CHUNKS PARALELOS (32 SOCKETS)</span>
-          <div class="chunks-matrix-grid">
-            <div *ngFor="let c of chunksGrid" 
-                 class="chunk-cell"
-                 [style.background-color]="c.completed ? 'var(--accent-green)' : (c.active ? 'var(--accent-cyan)' : 'var(--border-subtle)')">
-            </div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:4px;">
-            <span style="color:var(--accent-green);">■ Descargado</span>
-            <span style="color:var(--accent-cyan);">■ Activo</span>
-            <span style="color:var(--border-subtle);">■ Pendiente</span>
-          </div>
-        </div>
-
-        <!-- 3. Parámetros de Red y Protocolo Tokio -->
-        <div class="chart-card" style="display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;">
-          <span class="chart-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>PROTOCOLO &amp; RANGOS HTTP</span>
-            <span class="tremor-delta-badge green" style="font-size:6.5pt;">DIRECT I/O</span>
+          <span class="tremor-delta-badge green" style="font-size:7pt;letter-spacing:0.5px;">
+            ● {{ item?.estado === 'Completado' ? 'FICHERO VERIFICADO' : 'TRANSACCIÓN SEGURA' }}
           </span>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:6px;font-size:7.5pt;">
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CONEXIÓN:</span>
-              <span style="color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-weight:600;">{{ item?.soporta_rangos ? 'HTTP Range 206 OK' : 'Monohilo Estándar' }}</span>
-            </div>
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CANALES ACTIVOS:</span>
-              <span style="color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-weight:700;">{{ item?.conexiones || 16 }} Sockets Tokio</span>
-            </div>
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">LATENCIA RTT:</span>
-              <span style="color:var(--accent-green);font-family:'JetBrains Mono',monospace;font-weight:700;">~12 ms (Keep-Alive)</span>
-            </div>
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">BUFFER ASÍNCRONO:</span>
-              <span style="color:var(--text-primary);font-family:'JetBrains Mono',monospace;">Zero-Copy 8 MB</span>
-            </div>
-          </div>
-          <div style="margin-top:6px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:6px;padding:5px 8px;font-size:7pt;color:var(--accent-cyan);">
-            ⚡ Pipeline multiplexado con reparto dinámico de fragmentos
-          </div>
         </div>
 
-        <!-- 4. Integridad Criptográfica y Almacenamiento -->
-        <div class="chart-card" style="display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;">
-          <span class="chart-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>INTEGRIDAD &amp; ALMACENAMIENTO</span>
-            <span class="tremor-delta-badge green" style="font-size:6.5pt;">SHA-256 OK</span>
-          </span>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:7.5pt;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div>
-                <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CATEGORÍA:</span>
-                <span style="color:var(--text-primary);font-weight:600;">{{ item?.categoria || 'Descargas' }}</span>
-              </div>
-              <div>
-                <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">EXTENSIÓN:</span>
-                <span style="color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-weight:800;">{{ getExtension(item?.nombre) }}</span>
-              </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;">
+          <!-- 1. Nombre Completo -->
+          <div>
+            <span style="color:var(--text-muted);display:block;font-size:7pt;font-weight:800;letter-spacing:0.5px;margin-bottom:3px;">NOMBRE DE ARCHIVO:</span>
+            <div style="color:var(--text-primary);font-size:8.5pt;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" [title]="item?.nombre">
+              {{ item?.nombre }}
             </div>
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">FECHA DE REGISTRO:</span>
-              <span style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:7pt;">{{ item?.fecha_creacion || '—' }}</span>
-            </div>
-            <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">RUTA DESTINO LOCAL:</span>
-              <span style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:7pt;word-break:break-all;" [title]="item?.ruta_destino">
-                {{ item?.ruta_destino || 'Directorio por defecto' }}
+          </div>
+
+          <!-- 2. Categoría y Extensión -->
+          <div>
+            <span style="color:var(--text-muted);display:block;font-size:7pt;font-weight:800;letter-spacing:0.5px;margin-bottom:3px;">CATEGORÍA &amp; EXTENSIÓN:</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="cat-badge" style="font-size:7.2pt;">{{ item?.categoria || 'General' }}</span>
+              <span class="ext-badge" style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;font-weight:800;color:var(--accent-cyan);padding:1px 7px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:4px;">
+                {{ getExtension(item?.nombre) }}
               </span>
             </div>
           </div>
-          <div style="margin-top:6px;background:rgba(16,231,97,0.06);border:1px solid rgba(16,231,97,0.25);border-radius:6px;padding:5px 8px;font-size:7pt;color:var(--accent-green);display:flex;align-items:center;gap:6px;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            <span>Verificación cíclica de hashes activa</span>
+
+          <!-- 3. Ruta Local en Disco -->
+          <div style="grid-column:1 / -1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <span style="color:var(--text-muted);font-size:7pt;font-weight:800;letter-spacing:0.5px;">UBICACIÓN LOCAL EN DISCO:</span>
+              <div style="display:flex;gap:6px;">
+                <button type="button" class="btn-micro-action" (click)="copiarTexto(item?.ruta_destino, 'Ruta de archivo')">Copiar Ruta</button>
+                <button type="button" class="btn-micro-action" (click)="abrirCarpeta()">Abrir Carpeta</button>
+              </div>
+            </div>
+            <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:7.5pt;color:var(--text-secondary);word-break:break-all;" [title]="item?.ruta_destino">
+              {{ item?.ruta_destino || 'Directorio por defecto' }}
+            </div>
+          </div>
+
+          <!-- 4. URL de Descarga Original -->
+          <div style="grid-column:1 / -1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <span style="color:var(--text-muted);font-size:7pt;font-weight:800;letter-spacing:0.5px;">ENLACE DE DESCARGA ORIGINAL:</span>
+              <button type="button" class="btn-micro-action" (click)="copiarTexto(item?.url, 'Enlace URL')">Copiar Enlace</button>
+            </div>
+            <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:7.5pt;color:var(--accent-cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" [title]="item?.url">
+              {{ item?.url }}
+            </div>
+          </div>
+
+          <!-- 5. Fecha de Creación -->
+          <div>
+            <span style="color:var(--text-muted);display:block;font-size:7pt;font-weight:800;letter-spacing:0.5px;margin-bottom:3px;">FECHA DE REGISTRO:</span>
+            <div style="color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:8pt;font-weight:600;">
+              {{ item?.fecha_creacion || '—' }}
+            </div>
+          </div>
+
+          <!-- 6. Arquitectura Tokio -->
+          <div>
+            <span style="color:var(--text-muted);display:block;font-size:7pt;font-weight:800;letter-spacing:0.5px;margin-bottom:3px;">ARQUITECTURA DE CANALES:</span>
+            <div style="color:var(--accent-green);font-family:'JetBrains Mono',monospace;font-size:8pt;font-weight:700;">
+              {{ item?.conexiones || 16 }} Sockets Tokio Multiplexados (Zero-Copy)
+            </div>
+          </div>
+
+          <!-- 7. Hash Criptográfico SHA-256 -->
+          <div style="grid-column:1 / -1;margin-top:2px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+              <span style="color:var(--text-muted);font-size:7pt;font-weight:800;letter-spacing:0.5px;">CHECKSUM SHA-256 (INTEGRIDAD DE FICHERO):</span>
+              <button type="button" class="btn-micro-action" (click)="copiarTexto(getSha256(), 'Checksum SHA-256')">Copiar Hash</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1px solid rgba(16,231,97,0.25);border-radius:6px;padding:7px 10px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.2" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:7.2pt;color:var(--accent-green);letter-spacing:0.5px;word-break:break-all;">
+                {{ getSha256() }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-footer" style="display:flex;align-items:center;gap:10px;">
-      <!-- Botón de Transporte Físico Dinámico -->
-      <button *ngIf="item?.estado === 'Descargando'" class="ep133-btn ep133-pausar" (click)="pausar()" [title]="i18n.t('btn_pausar')">
-        <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-      </button>
+      <!-- Controles de Transporte (Sólo durante la descarga / pausa / reanudación) -->
+      <ng-container *ngIf="item?.estado !== 'Completado'">
+        <button *ngIf="item?.estado === 'Descargando'" class="ep133-btn ep133-pausar" (click)="pausar()" [title]="i18n.t('btn_pausar')">
+          <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
 
-      <button *ngIf="item?.estado === 'Pausado' || item?.estado === 'Programada' || item?.estado === 'Pendiente' || item?.estado === 'Detenido'" class="ep133-btn ep133-reanudar" (click)="reanudar()" [title]="i18n.t('btn_reanudar')">
+        <button *ngIf="item?.estado === 'Pausado' || item?.estado === 'Programada' || item?.estado === 'Pendiente' || item?.estado === 'Detenido'" class="ep133-btn ep133-reanudar" (click)="reanudar()" [title]="i18n.t('btn_reanudar')">
+          <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+
+        <span style="font-size:7pt;font-weight:800;color:var(--text-muted);letter-spacing:0.8px;margin-left:4px;">
+          CONTROL DE DESCARGA
+        </span>
+      </ng-container>
+
+      <!-- Si está completado y NO es un documento -->
+      <button *ngIf="item?.estado === 'Completado' && item?.categoria !== 'Documentos'" class="ep133-btn ep133-reanudar" (click)="abrirArchivo()" title="Abrir / Ejecutar Archivo">
         <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </button>
-
-      <button *ngIf="item?.estado === 'Completado'" class="ep133-btn ep133-reanudar" (click)="abrirArchivo()" title="Abrir / Ejecutar Archivo">
-        <svg width="18" height="18" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </button>
-
-      <span style="font-size:7pt;font-weight:800;color:var(--text-muted);letter-spacing:0.8px;margin-left:4px;">
-        CONTROL DE DESCARGA
-      </span>
 
       <div style="flex:1;"></div>
-      <button *ngIf="item?.estado === 'Completado'" class="btn-uiverse-gaurav type1 btn-uiverse-primary" (click)="abrirArchivo()" style="min-width:130px;" title="Abrir y reproducir multimedia">
-        <span class="btn-txt">▶ REPRODUCIR</span>
-      </button>
       <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="abrirCarpeta()">
         <span class="btn-txt">{{ i18n.t('btn_abrir_carpeta') }}</span>
       </button>

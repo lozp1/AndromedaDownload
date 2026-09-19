@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { DescargaItem } from '../../models/download.model';
 import { DownloadService } from '../../services/download.service';
+import { TauriService } from '../../services/tauri.service';
 
 @Component({
   selector: 'app-context-menu',
@@ -22,7 +23,10 @@ export class ContextMenuComponent {
     return e > s;
   }
 
-  constructor(private downloadService: DownloadService) {}
+  constructor(
+    private downloadService: DownloadService,
+    private tauriService: TauriService
+  ) {}
 
   @HostListener('document:click')
   onDocumentClick(): void {
@@ -127,7 +131,7 @@ export class ContextMenuComponent {
         const e = input.selectionEnd ?? 0;
         if (e > s) {
           const sel = input.value.substring(s, e);
-          await navigator.clipboard.writeText(sel);
+          await this.tauriService.escribirPortapapeles(sel);
           input.setRangeText('', s, e, 'end');
           input.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -138,13 +142,13 @@ export class ContextMenuComponent {
         const e = input.selectionEnd ?? 0;
         const sel = e > s ? input.value.substring(s, e) : input.value;
         if (sel) {
-          await navigator.clipboard.writeText(sel);
+          await this.tauriService.escribirPortapapeles(sel);
         }
         break;
       }
       case 'pegar': {
         try {
-          const texto = await navigator.clipboard.readText();
+          const texto = await this.tauriService.leerPortapapeles();
           if (texto) {
             const s = input.selectionStart ?? input.value.length;
             const e = input.selectionEnd ?? input.value.length;
@@ -158,7 +162,7 @@ export class ContextMenuComponent {
       }
       case 'pegar_plano': {
         try {
-          let texto = await navigator.clipboard.readText();
+          let texto = await this.tauriService.leerPortapapeles();
           if (texto) {
             texto = texto.replace(/[\r\n\t]+/g, ' ').trim();
             const s = input.selectionStart ?? input.value.length;

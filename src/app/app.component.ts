@@ -197,6 +197,37 @@ export class AppComponent implements OnInit {
     }
   }
 
+  @HostListener('window:keydown', ['$event'])
+  public onWindowKeydown(e: KeyboardEvent): void {
+    // 1. Bloquear búsqueda nativa del navegador (Ctrl+F, F3) y comandos no deseados (Ctrl+P, Ctrl+U)
+    if (
+      ((e.ctrlKey || e.metaKey) && ['f', 'F', 'p', 'P', 'u', 'U'].includes(e.key)) ||
+      e.key === 'F3'
+    ) {
+      e.preventDefault();
+      return;
+    }
+
+    // 2. Atajo Ctrl + N: Abrir modal de Nueva Descarga
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N')) {
+      e.preventDefault();
+      this.openNewModal();
+      return;
+    }
+
+    // 3. Atajo Ctrl + A: Seleccionar todas las descargas de la tabla (si no está en un campo de texto)
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) {
+      const activeEl = document.activeElement;
+      const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+      if (!isInput) {
+        e.preventDefault();
+        const allIds = this.downloadService.getCurrentDownloads().map(d => d.id);
+        this.downloadService.setSelectedIds(new Set(allIds));
+        return;
+      }
+    }
+  }
+
   public closeContextMenu(): void {
     this.isContextMenuOpen = false;
     this.contextMenuItem = null;

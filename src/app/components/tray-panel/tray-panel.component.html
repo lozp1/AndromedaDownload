@@ -3,9 +3,9 @@
     <!-- Header del Mini-Panel -->
     <div class="tray-flyout-header">
       <div class="tray-brand">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-        </svg>
+        <div style="width:26px;height:26px;border-radius:7px;background:rgba(59,130,246,0.12);border:1.2px solid rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(59,130,246,0.25);flex-shrink:0;">
+          <img src="assets/img/logo_brand_squircle.png" width="18" height="18" alt="Andromeda">
+        </div>
         <div>
           <div class="tray-brand-title">ANDROMEDA QUICK PANEL</div>
           <div class="tray-brand-sub">CONTROL DE BANDEJA & TAREAS</div>
@@ -13,8 +13,10 @@
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
         <span class="tremor-delta-badge green" style="font-size:6.5pt;letter-spacing:0.5px;">● EN VIVO</span>
-        <button class="tray-close-btn" (click)="cerrar()" title="Cerrar Panel">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button class="win-btn close" (click)="cerrar()" title="Cerrar Panel" style="width:28px;height:24px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:4px;transition:all 0.15s ease;">
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <path d="M 0,0 L 10,10 M 10,0 L 0,10" fill="none" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -81,19 +83,19 @@
       </ng-template>
     </div>
 
-    <!-- Botones de Acción Rápida EP-133 de Andromeda -->
-    <div class="tray-ep133-bar">
-      <button class="ep133-btn ep133-nueva" (click)="abrirNuevaDescarga()" title="Nueva Descarga Turbo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <!-- Botones de Acción Rápida Redondeados Estilo Acerca de / Andromeda Suite -->
+    <div class="tray-quick-actions-bar">
+      <button class="quick-circle-btn nueva" (click)="abrirNuevaDescarga()" title="Nueva Descarga Turbo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
-      <button class="ep133-btn ep133-pausar" (click)="pausarTodo()" title="Pausar Todas las Descargas">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <button class="quick-circle-btn pausar" (click)="pausarTodo()" title="Pausar Todas las Descargas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
-      <button class="ep133-btn ep133-reanudar" (click)="reanudarTodo()" title="Reanudar Todas las Descargas">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <button class="quick-circle-btn reanudar" (click)="reanudarTodo()" title="Reanudar Todas las Descargas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </button>
-      <button class="ep133-btn ep133-detener" (click)="abrirCarpetaDescargas()" title="Abrir Carpeta de Descargas">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="quick-circle-btn carpeta" (click)="abrirCarpetaDescargas()" title="Abrir Carpeta de Descargas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
       </button>
@@ -108,13 +110,16 @@
         <span>Ayuda</span>
       </button>
       <button class="tray-sys-btn" (click)="abrirSuite()" title="Abrir Ventana Principal de Andromeda">
-        <span>Abrir Andromeda</span>
+        <span>Abrir Suite</span>
       </button>
       <button class="tray-sys-btn" (click)="mostrarPanel()" title="Mostrar Panel Principal de Descargas">
-        <span>Mostrar Panel</span>
+        <span>Panel</span>
       </button>
       <button class="tray-sys-btn" (click)="abrirAjustes()" title="Configuración y Ajustes">
         <span>Ajustes</span>
+      </button>
+      <button class="tray-sys-btn danger" (click)="salirApp()" title="Cerrar y Salir de Andromeda">
+        <span>Salir</span>
       </button>
     </div>
   </div>
