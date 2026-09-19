@@ -45,17 +45,12 @@
 
             // 1. Caso YouTube
             if (host.includes("youtube.com") || host.includes("youtu.be")) {
-                // Caso 1a: Estamos en la página del video (/watch o /shorts o /playlist)
-                if (window.location.pathname.includes("/watch") || window.location.pathname.includes("/shorts") || window.location.pathname.includes("/playlist")) {
+                // Caso 1a: Estamos en la página del video (/watch o /shorts)
+                if (window.location.pathname.includes("/watch") || window.location.pathname.includes("/shorts")) {
                     const searchParams = new URLSearchParams(window.location.search);
                     const vParam = searchParams.get("v");
-                    const listParam = searchParams.get("list");
-                    if (vParam && listParam) {
-                        urlVideo = `https://www.youtube.com/watch?v=${vParam}&list=${listParam}`;
-                    } else if (vParam) {
+                    if (vParam) {
                         urlVideo = `https://www.youtube.com/watch?v=${vParam}`;
-                    } else if (listParam) {
-                        urlVideo = `https://www.youtube.com/playlist?list=${listParam}`;
                     } else if (window.location.pathname.includes("/shorts/")) {
                         const parts = window.location.pathname.split("/shorts/");
                         const shortId = parts[1] ? parts[1].split("/")[0].split("?")[0] : "";
@@ -66,8 +61,7 @@
 
                     const ytTitle = document.querySelector("h1.ytd-watch-metadata yt-formatted-string") ||
                                     document.querySelector("h1.title") ||
-                                    document.querySelector(".ytd-video-primary-info-renderer h1") ||
-                                    document.querySelector("ytd-playlist-header-renderer #text");
+                                    document.querySelector(".ytd-video-primary-info-renderer h1");
                     if (ytTitle && ytTitle.innerText.trim()) {
                         titulo = ytTitle.innerText.trim();
                     }
@@ -79,19 +73,14 @@
 
                     if (card) {
                         const enlace = card.querySelector(
-                            "a#thumbnail[href*='watch'], a#thumbnail[href*='shorts'], a#thumbnail[href*='playlist'], a#video-title-link, a#video-title[href*='watch'], a[href*='/watch?v='], a[href*='/shorts/'], a[href*='/playlist?list=']"
+                            "a#thumbnail[href*='watch'], a#thumbnail[href*='shorts'], a#video-title-link, a#video-title[href*='watch'], a[href*='/watch?v='], a[href*='/shorts/']"
                         );
                         if (enlace && enlace.href) {
                             try {
                                 const parsed = new URL(enlace.href, window.location.origin);
                                 const v = parsed.searchParams.get("v");
-                                const list = parsed.searchParams.get("list");
-                                if (v && list) {
-                                    urlVideo = `https://www.youtube.com/watch?v=${v}&list=${list}`;
-                                } else if (v) {
+                                if (v) {
                                     urlVideo = `https://www.youtube.com/watch?v=${v}`;
-                                } else if (list) {
-                                    urlVideo = `https://www.youtube.com/playlist?list=${list}`;
                                 } else {
                                     urlVideo = enlace.href;
                                 }

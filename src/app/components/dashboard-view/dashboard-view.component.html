@@ -28,7 +28,7 @@
   <!-- 4 Kodezi-Style KPI Cards con Sparklines Vectoriales y Bordes de Neón Calibrados -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
     <!-- KPI 1: ROI / Tiempo Recuperado -->
-    <div class="tremor-kpi-card" data-tour="kpi-roi" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;min-width:0;overflow:hidden;">
+    <div class="tremor-kpi-card" data-tour="kpi-roi" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;overflow:hidden;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="display:flex;align-items:center;gap:8px;">
           <div class="kpi-icon-badge green" title="Tiempo Recuperado / ROI">
@@ -45,16 +45,16 @@
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
-        <div style="min-width:0;overflow:hidden;">
-          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.6rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ getTiempoLimpio(telemetry?.tiempo_total_ahorrado_str) }}</div>
-          <div style="font-size:7.2pt;color:var(--accent-green);font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px;white-space:nowrap;">
+        <div style="min-width:0;flex:1;">
+          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.45rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ getTiempoAhorradoLimpio() }}</div>
+          <div style="font-size:7.2pt;color:var(--accent-green);font-weight:700;margin-top:4px;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
             <span>▲ {{ telemetry?.multiplicador_promedio_str || '1.0x' }} {{ i18n.t('dash_card_acel') || 'más veloz' }}</span>
           </div>
         </div>
 
         <!-- Micro Sparkline SVG Esmeralda -->
-        <div style="width:70px;height:30px;flex-shrink:0;">
+        <div style="width:74px;height:32px;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
             <path d="M 0,26 Q 24,24 48,10 T 74,6" fill="none" stroke="var(--accent-green)" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
@@ -67,7 +67,7 @@
     </div>
 
     <!-- KPI 2: Ancho de Banda Actual -->
-    <div class="tremor-kpi-card" data-tour="kpi-throughput" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;min-width:0;overflow:hidden;">
+    <div class="tremor-kpi-card" data-tour="kpi-throughput" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;overflow:hidden;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="display:flex;align-items:center;gap:8px;">
           <div class="kpi-icon-badge cyan" title="Ancho de Banda / Throughput TCP">
@@ -84,13 +84,13 @@
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
-        <div style="min-width:0;overflow:hidden;">
-          <div class="tremor-kpi-metric" [style.color]="semaforoThroughput.col" style="font-size:1.6rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.velocidad_global || '0.00 MB/s' }}</div>
-          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Pico: {{ telemetry?.velocidad_pico_str || '0 B/s' }} • TCP Live</div>
+        <div style="min-width:0;flex:1;">
+          <div class="tremor-kpi-metric" [style.color]="semaforoThroughput.col" style="font-size:1.45rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.velocidad_global || '0.00 MB/s' }}</div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Pico: {{ telemetry?.velocidad_pico_str || '0 B/s' }} • TCP Live</div>
         </div>
 
         <!-- Micro Sparkline SVG Cyan/Throughput -->
-        <div style="width:70px;height:30px;flex-shrink:0;">
+        <div style="width:74px;height:32px;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
             <path d="M 0,20 Q 18,30 36,12 T 74,8" fill="none" [attr.stroke]="semaforoThroughput.sparkCol" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
@@ -103,7 +103,7 @@
     </div>
 
     <!-- KPI 3: Sockets Activos -->
-    <div class="tremor-kpi-card" data-tour="kpi-sockets" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;min-width:0;overflow:hidden;">
+    <div class="tremor-kpi-card" data-tour="kpi-sockets" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;overflow:hidden;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="display:flex;align-items:center;gap:8px;">
           <div class="kpi-icon-badge amber" title="Canales Multi-Socket Tokio">
@@ -124,13 +124,13 @@
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
-        <div style="min-width:0;overflow:hidden;">
-          <div class="tremor-kpi-metric" style="color:var(--accent-amber);font-size:1.6rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.sockets_activos || 0 }} <span style="font-size:10pt;color:var(--text-muted);font-weight:600;">/ {{ telemetry?.max_sockets || 32 }}</span></div>
-          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ i18n.t('dash_tokio_sliding') || 'Canales Multiconexión' }}</div>
+        <div style="min-width:0;flex:1;">
+          <div class="tremor-kpi-metric" style="color:var(--accent-amber);font-size:1.45rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.sockets_activos || 0 }} <span style="font-size:10pt;color:var(--text-muted);font-weight:600;">/ {{ telemetry?.max_sockets || 32 }}</span></div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ i18n.t('dash_tokio_sliding') || 'Canales Multiconexión' }}</div>
         </div>
 
         <!-- Micro Sparkline SVG Ámbar -->
-        <div style="width:70px;height:30px;flex-shrink:0;">
+        <div style="width:74px;height:32px;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
             <path d="M 0,16 Q 24,6 48,22 T 74,10" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
@@ -143,7 +143,7 @@
     </div>
 
     <!-- KPI 4: Tráfico Transferido / Salud -->
-    <div class="tremor-kpi-card" data-tour="kpi-health" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;min-width:0;overflow:hidden;">
+    <div class="tremor-kpi-card" data-tour="kpi-health" style="padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;height:125px;box-sizing:border-box;overflow:hidden;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="display:flex;align-items:center;gap:8px;">
           <div class="kpi-icon-badge blue" title="Volumen de Tráfico y Datos">
@@ -162,21 +162,21 @@
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;">
-        <div style="min-width:0;overflow:hidden;">
-          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.6rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.total_transferido_str || '0 B' }}</div>
-          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.completadas || 0 }} {{ i18n.t('dash_files_unit') || 'archivos' }} • CRC32 OK</div>
+        <div style="min-width:0;flex:1;">
+          <div class="tremor-kpi-metric" style="color:var(--text-primary);font-size:1.45rem;margin:0;letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.total_transferido_str || '0 B' }}</div>
+          <div style="font-size:7.2pt;color:var(--text-secondary);font-weight:600;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ telemetry?.completadas || 0 }} {{ i18n.t('dash_files_unit') || 'archivos' }} • CRC32 OK</div>
         </div>
 
         <!-- Micro Sparkline SVG Azul/Gris -->
-        <div style="width:70px;height:30px;flex-shrink:0;">
+        <div style="width:74px;height:32px;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 74 32" style="width:100%;height:100%;">
             <path d="M 0,28 L 22,18 L 44,22 L 74,8" fill="none" stroke="#64748B" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
         </div>
       </div>
 
-      <div style="width:100%;height:3px;background:rgba(96,165,250,0.12);border-radius:99px;margin-top:8px;overflow:hidden;">
-        <div [style.width.%]="semaforoSalud.barPct" style="height:100%;background:#60A5FA;border-radius:99px;transition:width 0.4s ease;"></div>
+      <div style="width:100%;height:3px;background:rgba(100,116,139,0.15);border-radius:99px;margin-top:8px;overflow:hidden;">
+        <div [style.width.%]="semaforoSalud.barPct" style="height:100%;background:#64748B;border-radius:99px;transition:width 0.4s ease;"></div>
       </div>
     </div>
   </div>

@@ -1175,8 +1175,8 @@ async fn descargar_stream_multimedia(
     let mut ultimo_porcentaje = 0.0f64;
     let mut ultimo_tamano = tamano_total;
     let mut ultimo_error_str = String::new();
-    let mut stream_num: u32 = 1;
-    let mut ultimo_raw_pct = 0.0f64;
+    let mut stream_num = 1usize;
+    let mut stream1_alcanzo_fin = false;
 
     loop {
         if handle.pausado.load(Ordering::SeqCst) {
@@ -1219,17 +1219,12 @@ async fn descargar_stream_multimedia(
             } => {
                 match linea_res {
                     Ok(Some(linea)) => {
-                        // Detectar cambio de stream (video -> audio) o post-procesamiento
-                        if linea.contains("[download]") && linea.contains("Destination:") {
-                            if stream_num == 1 && ultimo_raw_pct > 30.0 {
-                                stream_num = 2;
-                            }
-                        }
-                        if linea.contains("[Merger]") || linea.contains("[Fixup") || linea.contains("[ExtractAudio]") {
-                            ultimo_porcentaje = ultimo_porcentaje.max(99.5);
+                        // Detección de etapas de mezcla/merging
+                        if linea.contains("[Merger]") || linea.contains("[ExtractAudio]") || linea.contains("Merging formats") {
+                            ultimo_porcentaje = ultimo_porcentaje.max(99.0);
                             let mut it = handle.item.write().await;
-                            it.progreso = ultimo_porcentaje;
-                            it.velocidad = "Ensamblando...".to_string();
+                            it.progreso = 99.0;
+                            it.velocidad = "Procesando...".to_string();
                         }
 
                         // Parsear progreso de yt-dlp: "[download]  25.4% of ~  24.34MiB at  3.50MiB/s ETA 00:05"
@@ -1238,18 +1233,19 @@ async fn descargar_stream_multimedia(
                                 if let Some(pos_start) = linea[..pos_pct].rfind(|c: char| c.is_whitespace() || c == ']') {
                                     let pct_str = linea[pos_start + 1..pos_pct].trim();
                                     if let Ok(p) = pct_str.parse::<f64>() {
-                                        if stream_num == 1 && ultimo_raw_pct > 65.0 && p < 30.0 {
+                                        if p >= 98.0 {
+                                            stream1_alcanzo_fin = true;
+                                        } else if stream1_alcanzo_fin && p < 20.0 && stream_num == 1 {
+                                            // Inicia el segundo stream (pista de audio)
                                             stream_num = 2;
                                         }
-                                        ultimo_raw_pct = p;
-                                        let pct_escalado = if stream_num == 1 {
+
+                                        let prog_global = if stream_num == 1 {
                                             (p * 0.85).clamp(0.0, 85.0)
                                         } else {
-                                            (85.0 + p * 0.14).clamp(85.0, 99.2)
+                                            (85.0 + (p * 0.14)).clamp(85.0, 99.0)
                                         };
-                                        if pct_escalado > ultimo_porcentaje {
-                                            ultimo_porcentaje = pct_escalado;
-                                        }
+                                        ultimo_porcentaje = prog_global.max(ultimo_porcentaje).clamp(0.0, 99.5);
                                     }
                                 }
                             }

@@ -44,6 +44,9 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isDraggingScrollbar = false;
+  private draggingScrollTarget: HTMLElement | null = null;
+
   ngOnInit(): void {
     this.updateColors();
     this.themeSub = this.downloadService.settingsObservable.subscribe(() => {
@@ -57,9 +60,15 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
       document.addEventListener('pointermove', this.onMouseMove, { capture: true, passive: true });
       window.addEventListener('dragover', this.onMouseMove, { capture: true, passive: true });
       window.addEventListener('pointerdown', this.onPointerDown, { capture: true, passive: true });
+      document.addEventListener('pointerdown', this.onPointerDown, { capture: true, passive: true });
       window.addEventListener('pointerup', this.onPointerUp, { capture: true, passive: true });
-      window.addEventListener('scroll', this.onScroll, { capture: true, passive: true });
+      document.addEventListener('pointerup', this.onPointerUp, { capture: true, passive: true });
+      window.addEventListener('mouseup', this.onPointerUp, { capture: true, passive: true });
+      document.addEventListener('mouseup', this.onPointerUp, { capture: true, passive: true });
+      window.addEventListener('wheel', this.onWheel, { capture: true, passive: true });
+      document.addEventListener('wheel', this.onWheel, { capture: true, passive: true });
       document.addEventListener('scroll', this.onScroll, { capture: true, passive: true });
+      window.addEventListener('scroll', this.onScroll, { capture: true, passive: true });
       window.addEventListener('mouseleave', this.onMouseLeave);
       window.addEventListener('mouseenter', this.onMouseEnter);
 
@@ -67,8 +76,6 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
       this.animateCircles();
     });
   }
-
-  private isDraggingScrollbar = false;
 
   private updateColors(): void {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -85,9 +92,15 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     document.removeEventListener('pointermove', this.onMouseMove, { capture: true } as any);
     window.removeEventListener('dragover', this.onMouseMove, { capture: true } as any);
     window.removeEventListener('pointerdown', this.onPointerDown, { capture: true } as any);
+    document.removeEventListener('pointerdown', this.onPointerDown, { capture: true } as any);
     window.removeEventListener('pointerup', this.onPointerUp, { capture: true } as any);
-    window.removeEventListener('scroll', this.onScroll, { capture: true } as any);
+    document.removeEventListener('pointerup', this.onPointerUp, { capture: true } as any);
+    window.removeEventListener('mouseup', this.onPointerUp, { capture: true } as any);
+    document.removeEventListener('mouseup', this.onPointerUp, { capture: true } as any);
+    window.removeEventListener('wheel', this.onWheel, { capture: true } as any);
+    document.removeEventListener('wheel', this.onWheel, { capture: true } as any);
     document.removeEventListener('scroll', this.onScroll, { capture: true } as any);
+    window.removeEventListener('scroll', this.onScroll, { capture: true } as any);
     window.removeEventListener('mouseleave', this.onMouseLeave);
     window.removeEventListener('mouseenter', this.onMouseEnter);
 
@@ -96,49 +109,62 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onPointerDown = (e: PointerEvent | MouseEvent) => {
-    this.coords.x = e.clientX;
-    this.coords.y = e.clientY;
-    this.isHidden = false;
-    // Si el clic ocurrió cerca del borde derecho o inferior (zona de scrollbar)
-    if (e.clientX >= window.innerWidth - 24 || e.clientY >= window.innerHeight - 24) {
-      this.isDraggingScrollbar = true;
-    }
-  };
-
-  private onPointerUp = () => {
-    this.isDraggingScrollbar = false;
-  };
-
   private onMouseMove = (e: MouseEvent | PointerEvent) => {
     this.coords.x = e.clientX;
     this.coords.y = e.clientY;
     this.isHidden = false;
   };
 
+  private onPointerDown = (e: MouseEvent | PointerEvent) => {
+    this.coords.x = e.clientX;
+    this.coords.y = e.clientY;
+    this.isHidden = false;
+
+    // Detectar si se hizo clic en el riel de una barra vertical
+    let el = e.target as HTMLElement | null;
+    while (el && el !== document.body) {
+      if (el.scrollHeight > el.clientHeight) {
+        const rect = el.getBoundingClientRect();
+        if (e.clientX >= rect.right - 24 && e.clientX <= rect.right + 6) {
+          this.isDraggingScrollbar = true;
+          this.draggingScrollTarget = el;
+          break;
+        }
+      }
+      el = el.parentElement;
+    }
+  };
+
+  private onPointerUp = () => {
+    this.isDraggingScrollbar = false;
+    this.draggingScrollTarget = null;
+  };
+
+  private onWheel = (e: WheelEvent) => {
+    this.coords.x = e.clientX;
+    this.coords.y = e.clientY;
+    this.isHidden = false;
+  };
+
   private onScroll = (e: Event) => {
-    const target = e.target as HTMLElement;
-    if (this.isDraggingScrollbar && target && target.scrollHeight > target.clientHeight) {
+    const target = (e.target as HTMLElement) || this.draggingScrollTarget;
+    if (this.isDraggingScrollbar && target && target.getBoundingClientRect && target.scrollHeight > target.clientHeight) {
       const rect = target.getBoundingClientRect();
       const maxScroll = target.scrollHeight - target.clientHeight;
       if (maxScroll > 0) {
-        const pct = target.scrollTop / maxScroll;
-        // Interpolar suavemente el Y del cursor siguiendo el thumb
-        this.coords.y = rect.top + 20 + pct * Math.max(10, rect.height - 50);
+        const scrollRatio = target.scrollTop / maxScroll;
+        const visibleRatio = target.clientHeight / target.scrollHeight;
+        const thumbHeight = Math.max(24, visibleRatio * target.clientHeight);
+        const availableTrack = target.clientHeight - thumbHeight;
+        const thumbTop = rect.top + (scrollRatio * availableTrack);
+        this.coords.y = Math.round(thumbTop + (thumbHeight / 2));
+        this.coords.x = Math.round(rect.right - 6);
         this.isHidden = false;
       }
     }
   };
 
-  private onMouseLeave = (e?: MouseEvent) => {
-    // Si el usuario está arrastrando o presionando el botón, NO ocultar el cursor
-    if (this.isDraggingScrollbar || (e && e.buttons > 0)) {
-      return;
-    }
-    // Si la posición aún está dentro del área visible de la ventana, no ocultar (evita falso positivo en scrollbar)
-    if (e && e.clientX > 5 && e.clientX < window.innerWidth - 5 && e.clientY > 5 && e.clientY < window.innerHeight - 5) {
-      return;
-    }
+  private onMouseLeave = () => {
     this.isHidden = true;
   };
 

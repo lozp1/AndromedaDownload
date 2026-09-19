@@ -24,7 +24,7 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
   public columnWidths: { [key: string]: number } = {
     check: 40,
     nombre: 250,
-    ext: 60,
+    ext: 68,
     tamano: 130,
     progreso: 155,
     vel: 110,
@@ -33,24 +33,6 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
     cat: 100,
     fecha: 115
   };
-
-  public getNombreLimpio(nombre: string): string {
-    if (!nombre) return '';
-    const idx = nombre.lastIndexOf('.');
-    if (idx > 0 && idx > nombre.length - 8) {
-      return nombre.substring(0, idx);
-    }
-    return nombre;
-  }
-
-  public getExtensionArchivo(nombre: string): string {
-    if (!nombre) return '—';
-    const idx = nombre.lastIndexOf('.');
-    if (idx > 0 && idx > nombre.length - 8) {
-      return nombre.substring(idx + 1).toUpperCase();
-    }
-    return '—';
-  }
 
   private activeColKey: string | null = null;
   private startX: number = 0;
@@ -318,5 +300,31 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
     if (c.includes('doc')) return 'cat-documentos';
     if (c.includes('prog')) return 'cat-programas';
     return 'cat-otros';
+  }
+
+  public getNombreLimpio(nombre?: string): string {
+    if (!nombre) return '';
+    const clean = nombre.trim();
+    const lastDot = clean.lastIndexOf('.');
+    if (lastDot > 0 && lastDot < clean.length - 1) {
+      const ext = clean.substring(lastDot + 1);
+      if (ext.length <= 6 && /^[a-zA-Z0-9]+$/.test(ext)) {
+        return clean.substring(0, lastDot);
+      }
+    }
+    return clean;
+  }
+
+  public getExtension(nombre?: string): string {
+    if (!nombre) return '—';
+    const clean = nombre.trim();
+    const lastDot = clean.lastIndexOf('.');
+    if (lastDot > 0 && lastDot < clean.length - 1) {
+      const ext = clean.substring(lastDot + 1).toUpperCase();
+      if (ext.length <= 6 && /^[A-Z0-9]+$/.test(ext)) {
+        return ext;
+      }
+    }
+    return '—';
   }
 }

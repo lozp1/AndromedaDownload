@@ -5,7 +5,10 @@
     <div class="ambient-orb ambient-orb-2"></div>
     <div class="modal-header">
       <div class="modal-header-dot"></div>
-      <span class="modal-header-title">{{ item?.nombre || '⚡ DETALLES TÉCNICOS' }}</span>
+      <span class="modal-header-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:550px;">{{ getNombreLimpio(item?.nombre) || '⚡ DETALLES TÉCNICOS' }}</span>
+      <span *ngIf="getExtension(item?.nombre) !== '—'" class="ext-badge" style="font-family:'JetBrains Mono',monospace;font-size:7.5pt;font-weight:800;color:var(--accent-cyan);padding:2px 8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:5px;letter-spacing:0.5px;">
+        {{ getExtension(item?.nombre) }}
+      </span>
       <div class="traffic-lights" style="margin-left:auto;">
         <button class="traffic-btn traffic-close" (click)="cerrar()" title="Cerrar"></button>
       </div>
@@ -108,9 +111,19 @@
             <span class="tremor-delta-badge green" style="font-size:6.5pt;">SHA-256 OK</span>
           </span>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:7.5pt;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CATEGORÍA:</span>
+                <span style="color:var(--text-primary);font-weight:600;">{{ item?.categoria || 'Descargas' }}</span>
+              </div>
+              <div>
+                <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">EXTENSIÓN:</span>
+                <span style="color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;font-weight:800;">{{ getExtension(item?.nombre) }}</span>
+              </div>
+            </div>
             <div>
-              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">CATEGORÍA / TIPO:</span>
-              <span style="color:var(--text-primary);font-weight:600;">{{ item?.categoria || 'Descargas' }} • Stream Multihilo</span>
+              <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">FECHA DE REGISTRO:</span>
+              <span style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;font-size:7pt;">{{ item?.fecha_creacion || '—' }}</span>
             </div>
             <div>
               <span style="color:var(--text-muted);display:block;font-size:6.8pt;font-weight:700;">RUTA DESTINO LOCAL:</span>

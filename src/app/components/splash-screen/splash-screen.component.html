@@ -1,42 +1,89 @@
-<div class="splash-backdrop" *ngIf="visible" [class.fade-out]="isFadingOut" (click)="closeOnBackdrop($event)">
-  <div class="splash-card" (click)="$event.stopPropagation()">
-    <!-- Barra de acento superior sutil Office-style -->
-    <div class="splash-top-accent"></div>
+<div class="splash-backdrop" *ngIf="visible" [class.fade-out]="isFadingOut">
+  <div class="about-3d-wrap">
+    <div class="about-card"
+         [class.is-hovered]="isHovered"
+         [style.transform]="cardTransform"
+         (mousemove)="onMouseMove($event)"
+         (mouseenter)="onMouseEnter()"
+         (mouseleave)="onMouseLeave()"
+         style="width:530px;max-width:92vw;padding:34px 38px;border-radius:16px;background:var(--bg-card);border:1.5px solid var(--border-subtle);box-shadow:0 24px 60px rgba(0,0,0,0.85), 0 0 30px rgba(24,119,242,0.15);position:relative;overflow:hidden;">
+      
+      <!-- Ambient Floating Glowing Spheres -->
+      <div class="ambient-orb ambient-orb-1"></div>
+      <div class="ambient-orb ambient-orb-2"></div>
 
-    <!-- Botón de cerrar para modo On-Demand -->
-    <button *ngIf="isOnDemand" class="splash-close-btn" (click)="cerrar()" title="Cerrar Splash">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-
-    <div class="splash-content">
-      <!-- Sección de Marca / Logotipo -->
-      <div class="splash-brand-row">
-        <div class="splash-logo-wrapper">
-          <img src="assets/img/logo_brand_squircle.png" class="splash-logo-img" alt="Andromeda">
-        </div>
-        <div class="splash-brand-text">
-          <div class="splash-app-title">Andromeda Download</div>
-          <div class="splash-app-subtitle">{{ i18n.t('splash_subtitle') }}</div>
-        </div>
-      </div>
-
-      <!-- Sección Inferior: Estado de Carga y Barra Shimmer -->
-      <div class="splash-bottom-section">
-        <div class="splash-status-row">
-          <span class="splash-dot"></span>
-          <span class="splash-status-text">{{ currentStatus }}</span>
+      <div style="position:relative;z-index:1;">
+        <!-- Encabezado con Logo Oficial Squircle de Andromeda -->
+        <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:56px;height:56px;border-radius:14px;background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,0.25);">
+            <img src="assets/img/logo_brand_squircle.png" width="42" height="42" alt="Andromeda Brand Squircle">
+          </div>
+          <div>
+            <div style="font-size:18pt;font-weight:900;color:var(--text-primary);letter-spacing:1px;">
+              ANDROMEDA
+            </div>
+            <div style="font-size:8.5pt;font-weight:800;color:#3B82F6;letter-spacing:4px;margin-top:2px;">
+              DOWNLOAD SUITE
+            </div>
+          </div>
         </div>
 
-        <div class="splash-progress-track">
-          <div class="splash-progress-fill" [style.width.%]="progress"></div>
+        <!-- Divisor Degradado Calibrado -->
+        <div style="width:100%;height:1.5px;background:linear-gradient(90deg, transparent, #3B82F6 15%, #25D366 85%, transparent);margin:18px 0 20px 0;"></div>
+
+        <!-- Lista de Atributos con Iconos SVG Estilo Acerca de -->
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+          
+          <!-- Fila 1: Motor Rust -->
+          <div style="display:grid;grid-template-columns:130px 1fr;align-items:center;gap:14px;">
+            <span style="color:var(--text-muted);font-size:7.5pt;font-weight:800;letter-spacing:0.8px;text-align:left;">MOTOR</span>
+            <div style="display:flex;align-items:center;gap:8px;color:var(--text-primary);font-size:9.5pt;font-weight:400;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <line x1="9" y1="1" x2="9" y2="4"></line>
+                <line x1="15" y1="1" x2="15" y2="4"></line>
+                <line x1="9" y1="20" x2="9" y2="23"></line>
+                <line x1="15" y1="20" x2="15" y2="23"></line>
+                <line x1="20" y1="9" x2="23" y2="9"></line>
+                <line x1="20" y1="14" x2="23" y2="14"></line>
+                <line x1="1" y1="9" x2="4" y2="9"></line>
+                <line x1="1" y1="14" x2="4" y2="14"></line>
+              </svg>
+              <span>{{ i18n.t('about_engine_val') || 'Rust Tokio Asynchronous I/O (32 Sockets)' }}</span>
+            </div>
+          </div>
+
+          <!-- Fila 2: Versión del Sistema -->
+          <div style="display:grid;grid-template-columns:130px 1fr;align-items:center;gap:14px;">
+            <span style="color:var(--text-muted);font-size:7.5pt;font-weight:800;letter-spacing:0.8px;text-align:left;">VERSIÓN</span>
+            <div style="display:flex;align-items:center;gap:8px;color:var(--text-primary);font-size:9.5pt;font-weight:400;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>{{ i18n.t('about_version_val') || '1.0.0 Pro Suite • 64-bit Architecture' }}</span>
+            </div>
+          </div>
+
+          <!-- Fila 3: Estado de Inicialización -->
+          <div style="display:grid;grid-template-columns:130px 1fr;align-items:center;gap:14px;">
+            <span style="color:var(--text-muted);font-size:7.5pt;font-weight:800;letter-spacing:0.8px;text-align:left;">INICIALIZACIÓN</span>
+            <div style="display:flex;align-items:center;gap:8px;color:var(--text-primary);font-size:9.5pt;font-weight:500;">
+              <span class="splash-dot"></span>
+              <span style="color:var(--accent-green, #10E761);font-weight:600;">{{ currentStatus }}</span>
+            </div>
+          </div>
         </div>
 
-        <div class="splash-legal-row">
-          <span>{{ i18n.t('splash_footer') }}</span>
-          <span class="splash-engine-tag">{{ i18n.t('splash_engine_tag') }}</span>
+        <!-- Barra de Progreso Neón con Gradiente Cyan-Verde -->
+        <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;position:relative;">
+          <div [style.width.%]="progress" style="height:100%;background:linear-gradient(90deg, #3B82F6, #25D366);border-radius:99px;transition:width 0.35s ease;box-shadow:0 0 10px rgba(37,211,102,0.5);"></div>
+        </div>
+
+        <!-- Pie Legal y Estado del Motor -->
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;color:var(--text-muted);margin-top:14px;font-weight:500;">
+          <span>{{ i18n.t('splash_footer') || 'Andromeda Core Engine © 2026' }}</span>
+          <span style="color:#25D366;font-weight:700;letter-spacing:0.5px;">{{ i18n.t('splash_engine_tag') || 'PRO MOTOR ACTIVE' }}</span>
         </div>
       </div>
     </div>

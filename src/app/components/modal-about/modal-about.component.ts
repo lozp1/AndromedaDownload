@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { I18nService } from '../../services/i18n.service';
-import { DownloadService } from '../../services/download.service';
 
 @Component({
   selector: 'app-modal-about',
@@ -22,12 +21,7 @@ export class ModalAboutComponent {
   public cardTransform: string = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0)';
   public isHovered: boolean = false;
 
-  constructor(public i18n: I18nService, private downloadService: DownloadService) {}
-
-  public verSplash(): void {
-    this.cerrar();
-    this.downloadService.triggerSplash(true);
-  }
+  constructor(public i18n: I18nService) {}
 
   public onMouseMove(e: MouseEvent): void {
     const card = e.currentTarget as HTMLElement;

@@ -15,9 +15,9 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
   public descargasActivas: DescargaItem[] = [];
   private sub: Subscription | null = null;
 
-  public getTiempoLimpio(str: string | undefined): string {
+  public getTiempoLimpio(str: string | undefined | null): string {
     if (!str) return '0 s';
-    return str.replace(/ahorrados|ahorrado/gi, '').trim();
+    return str.replace(/\s*ahorrados?/gi, '').trim();
   }
 
   constructor(private downloadService: DownloadService) {

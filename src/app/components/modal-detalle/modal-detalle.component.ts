@@ -104,6 +104,32 @@ export class ModalDetalleComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  public getNombreLimpio(nombre?: string): string {
+    if (!nombre) return '';
+    const clean = nombre.trim();
+    const lastDot = clean.lastIndexOf('.');
+    if (lastDot > 0 && lastDot < clean.length - 1) {
+      const ext = clean.substring(lastDot + 1);
+      if (ext.length <= 6 && /^[a-zA-Z0-9]+$/.test(ext)) {
+        return clean.substring(0, lastDot);
+      }
+    }
+    return clean;
+  }
+
+  public getExtension(nombre?: string): string {
+    if (!nombre) return '—';
+    const clean = nombre.trim();
+    const lastDot = clean.lastIndexOf('.');
+    if (lastDot > 0 && lastDot < clean.length - 1) {
+      const ext = clean.substring(lastDot + 1).toUpperCase();
+      if (ext.length <= 6 && /^[A-Z0-9]+$/.test(ext)) {
+        return ext;
+      }
+    }
+    return '—';
+  }
+
   private actualizarDetalles(d: DescargaItem): void {
     if (d.tamano_total > 0 && d.descargado > d.tamano_total) {
       d.descargado = d.tamano_total;

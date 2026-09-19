@@ -102,11 +102,6 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getTiempoLimpio(str: string | undefined): string {
-    if (!str) return '0m 0s';
-    return str.replace(/ahorrados|ahorrado/gi, '').trim();
-  }
-
   public modoSimulacion: boolean = true;
   private simInterval: any = null;
   private simBuffer: number[] = [];
@@ -301,5 +296,10 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     const browserRefNorm = Math.min(1.0, (2.5 * 1024 * 1024) / maxVal);
     const browserY = h - (browserRefNorm * (h - 10));
     this.chartPathBrowser = `M0,${browserY} L${w},${browserY}`;
+  }
+
+  public getTiempoAhorradoLimpio(): string {
+    const s = this.telemetry?.tiempo_total_ahorrado_str || '0m 0s';
+    return s.replace(/\s*ahorrados?/gi, '').trim();
   }
 }

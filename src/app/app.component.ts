@@ -15,7 +15,6 @@ export class AppComponent implements OnInit {
   public isDetailModalOpen: boolean = false;
   public selectedDetailTaskId: string | null = null;
   public isAboutModalOpen: boolean = false;
-  public isSplashOnDemand: boolean = false;
 
   // Modales de Confirmación Animados
   public isConfirmModalOpen: boolean = false;
@@ -87,21 +86,35 @@ export class AppComponent implements OnInit {
       this.isTrayPanelOpen = open;
     });
 
-    this.downloadService.splashObservable.subscribe(open => {
-      this.isSplashOnDemand = open;
-      this.cdr.detectChanges();
-    });
-
     // Escuchar eventos desde la bandeja del sistema de Windows y la extensión web
+    const procesarDescargaEntrante = async (p?: { url?: string; nombre?: string }, standalone: boolean = false) => {
+      const url = (p?.url || '').trim();
+      const nombre = p?.nombre || '';
+      if (standalone) {
+        this.isStandaloneMode = true;
+      }
+      const isPl = url.includes('list=') || url.includes('playlist');
+      if (isPl) {
+        this.downloadService.mostrarToast('🎬 Lista de Reproducción Detectada', 'Analizando videos y metadatos de la lista...', 'info');
+        try {
+          const res = await this.downloadService.sondearPlaylist(url);
+          if (res && res.ok && res.items && res.items.length > 0) {
+            this.downloadService.triggerLoteModal(true, res);
+            return;
+          }
+        } catch (e) {
+          console.warn('Error al sondear playlist entrante:', e);
+        }
+      }
+      this.downloadService.triggerNuevaDescargaModal(true, url, nombre);
+    };
+
     this.tauriService.listen<{ url?: string; nombre?: string }>('abrir_nueva_descarga', (event) => {
-      const p = event?.payload;
-      this.downloadService.triggerNuevaDescargaModal(true, p?.url || '', p?.nombre || '');
+      procesarDescargaEntrante(event?.payload, false);
     });
 
     this.tauriService.listen<{ url?: string; nombre?: string }>('abrir_nueva_descarga_standalone', (event) => {
-      const p = event?.payload;
-      this.isStandaloneMode = true;
-      this.downloadService.triggerNuevaDescargaModal(true, p?.url || '', p?.nombre || '');
+      procesarDescargaEntrante(event?.payload, true);
     });
 
     this.tauriService.listen('toggle_tray_panel', () => {
@@ -167,11 +180,6 @@ export class AppComponent implements OnInit {
   }
 
   public async onSplashFinished(): Promise<void> {
-    if (this.isSplashOnDemand) {
-      this.isSplashOnDemand = false;
-      this.cdr.detectChanges();
-      return;
-    }
     this.isAppReady = true;
     this.cdr.detectChanges();
     try {

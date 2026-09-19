@@ -14,7 +14,7 @@
         "label": "main",
         "title": "Andromeda Download",
         "width": 600,
-        "height": 380,
+        "height": 540,
         "minWidth": 500,
         "minHeight": 300,
         "resizable": false,

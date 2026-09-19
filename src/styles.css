@@ -1206,30 +1206,9 @@ app-ajustes-view {
     display: inline-block;
 }
 
-.progress-bar-bg {
-    height: 7px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-[data-theme="light"] .progress-bar-bg,
-[data-theme="white"] .progress-bar-bg {
-    background: #E2E8F0;
-    border-color: #CBD5E1;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #0284C7, #38BDF8);
-    border-radius: 999px;
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 .progress-bar-fill.completed {
-    background: linear-gradient(90deg, #059669, #10E761) !important;
-    box-shadow: 0 0 8px rgba(16, 231, 97, 0.35) !important;
+    background: var(--accent-green) !important;
+    box-shadow: 0 0 8px rgba(16, 231, 97, 0.3) !important;
 }
 .status-descargando {
     background: rgba(16, 231, 97, 0.12);
@@ -2518,13 +2497,27 @@ select.form-input option {
     padding: 16px 18px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    justify-content: space-between;
+    height: 125px;
+    min-height: 125px;
+    max-height: 125px;
+    box-sizing: border-box;
+    overflow: hidden;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
     transition: border-color 0.2s, transform 0.2s;
 }
 .tremor-kpi-card:hover {
     border-color: var(--accent-cyan, #38BDF8);
     transform: translateY(-2px);
+}
+
+.tremor-kpi-metric {
+    font-size: 1.45rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tremor-kpi-title {

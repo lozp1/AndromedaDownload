@@ -367,7 +367,7 @@ async fn cerrar_ventana(window: Window) -> Result<(), String> {
 async fn set_splash_mode(window: Window) -> Result<(), String> {
     let _ = window.set_resizable(false);
     let _ = window.set_min_size(Some(tauri::Size::Logical(tauri::LogicalSize { width: 500.0, height: 300.0 })));
-    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 600.0, height: 380.0 }));
+    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 600.0, height: 540.0 }));
     let _ = window.center();
     let _ = window.show();
     Ok(())
