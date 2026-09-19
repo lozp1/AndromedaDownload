@@ -1401,8 +1401,22 @@ app-ajustes-view {
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-    overflow: hidden;
+    overflow: visible;
     animation: modalPopIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-nueva-card .modal-header {
+    border-top-left-radius: var(--radius-modal);
+    border-top-right-radius: var(--radius-modal);
+}
+
+.modal-nueva-card .modal-body {
+    overflow: visible;
+}
+
+.modal-nueva-card .modal-footer {
+    border-bottom-left-radius: var(--radius-modal);
+    border-bottom-right-radius: var(--radius-modal);
 }
 
 .modal-formats-floating-card {

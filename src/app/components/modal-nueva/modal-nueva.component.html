@@ -2,7 +2,7 @@
   <div class="about-3d-wrap" (click)="$event.stopPropagation()">
     <div class="modal-nueva-layout">
     <!-- Tarjeta Principal del Formulario Fijo -->
-    <div class="modal-nueva-card" style="position:relative;">
+    <div class="modal-nueva-card" style="position:relative;overflow:visible !important;">
       <!-- Ambient Floating Glowing Spheres -->
       <div class="ambient-orb ambient-orb-1"></div>
       <div class="ambient-orb ambient-orb-2"></div>
@@ -13,7 +13,7 @@
           <button class="traffic-btn traffic-close" (click)="cerrarModal()" title="Cerrar"></button>
         </div>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="overflow:visible !important;">
         <!-- Barra Informativa para Volver a la Lista de Reproducción -->
         <div *ngIf="downloadService.loteEnCola.length > 0 && downloadService.activePlaylistData" 
              style="display:flex;align-items:center;justify-content:space-between;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;">
@@ -86,10 +86,10 @@
         </div>
 
         <!-- Categoría (Dropdown Customizado para Preservar Cursor) y Conexiones -->
-        <div class="form-row" style="position:relative;overflow:visible;">
-          <div class="form-group" style="flex:1;position:relative;">
+        <div class="form-row" style="position:relative;overflow:visible;z-index:99999;">
+          <div class="form-group" style="flex:1;position:relative;overflow:visible;">
             <label class="form-label">{{ i18n.t('lbl_cat') }}</label>
-            <div class="form-input" (click)="toggleCatDropdown()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:38px;">
+            <div class="form-input custom-cat-trigger" (click)="toggleCatDropdown(); $event.stopPropagation()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:38px;">
               <span style="font-weight:600;display:flex;align-items:center;gap:6px;font-size:8pt;">
                 <span [ngSwitch]="categoria">
                   <span *ngSwitchCase="'Videos'">🎬</span>
@@ -111,11 +111,11 @@
             <div *ngIf="isCatDropdownOpen" 
                  class="custom-cat-dropdown" 
                  (click)="$event.stopPropagation()"
-                 style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-card);border:1.5px solid var(--border-subtle);border-radius:10px;padding:6px;box-shadow:0 14px 35px rgba(0,0,0,0.85);z-index:999999;display:flex;flex-direction:column;gap:2px;">
+                 style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-card);border:1.5px solid var(--border-accent, #38BDF8);border-radius:10px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,0.95), 0 0 20px rgba(56,189,248,0.25);z-index:999999;display:flex;flex-direction:column;gap:2px;">
               <div *ngFor="let cat of categoriasDisponibles" 
                    (click)="seleccionarCategoria(cat.id)"
-                   style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:8pt;font-weight:600;cursor:pointer;color:var(--text-primary);transition:all 0.15s ease;"
-                   [style.background]="categoria === cat.id ? 'rgba(56,189,248,0.15)' : 'transparent'"
+                   style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;font-size:8pt;font-weight:600;cursor:pointer;color:var(--text-primary);transition:all 0.15s ease;"
+                   [style.background]="categoria === cat.id ? 'rgba(56,189,248,0.18)' : 'transparent'"
                    [style.color]="categoria === cat.id ? 'var(--accent-cyan)' : 'var(--text-primary)'">
                 <span>{{ cat.icon }}</span>
                 <span>{{ cat.nombre }}</span>

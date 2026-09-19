@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { DownloadService } from '../../services/download.service';
 import { I18nService } from '../../services/i18n.service';
 import { TauriService } from '../../services/tauri.service';
@@ -84,6 +84,16 @@ export class ModalNuevaDescargaComponent implements OnInit {
   public seleccionarCategoria(cat: DownloadCategory): void {
     this.categoria = cat;
     this.isCatDropdownOpen = false;
+  }
+
+  @HostListener('document:pointerdown', ['$event'])
+  public onGlobalPointerDown(event: MouseEvent): void {
+    if (this.isCatDropdownOpen) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.custom-cat-dropdown') && !target.closest('.custom-cat-trigger')) {
+        this.isCatDropdownOpen = false;
+      }
+    }
   }
 
   // Media & Video Stream Intelligence (YouTube, Vimeo, etc. — SaveFrom Style)
