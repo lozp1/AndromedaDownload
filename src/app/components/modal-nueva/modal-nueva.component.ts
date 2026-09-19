@@ -120,6 +120,13 @@ export class ModalNuevaDescargaComponent implements OnInit {
     return this.selectedQualities.size;
   }
 
+  public get conteoCola(): number {
+    if (this.downloadService.loteEnCola && this.downloadService.loteEnCola.length > 0) {
+      return this.downloadService.loteEnCola.length;
+    }
+    return this.isMediaStream && this.selectedFormatsCount > 1 ? this.selectedFormatsCount : 0;
+  }
+
   public get filteredMediaQualities(): {
     label: string;
     val: string;
@@ -336,7 +343,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
     const isYt = trimmed.includes('youtube.com') || trimmed.includes('youtu.be');
     const isPl = trimmed.includes('list=') || trimmed.includes('playlist');
 
-    if (isPl && (!this.notificacionPlaylistMostrada || this.ultimaUrlPlaylistNotificada !== trimmed)) {
+    if (isPl && (!this.downloadService.loteEnCola || this.downloadService.loteEnCola.length === 0) && (!this.notificacionPlaylistMostrada || this.ultimaUrlPlaylistNotificada !== trimmed)) {
       this.notificacionPlaylistMostrada = true;
       this.ultimaUrlPlaylistNotificada = trimmed;
       this.downloadService.showToastWithAction(
@@ -535,6 +542,28 @@ export class ModalNuevaDescargaComponent implements OnInit {
 
   public async iniciar(autoIniciar: boolean = true): Promise<void> {
     if (this.enviando) return;
+
+    // Si proviene de selección por lotes / playlist
+    if (this.downloadService.loteEnCola && this.downloadService.loteEnCola.length > 0) {
+      const lote = [...this.downloadService.loteEnCola];
+      this.downloadService.loteEnCola = [];
+      if (this.carpetaDestino) {
+        lote.forEach(it => {
+          if (!it.carpeta || it.carpeta === 'C:\\Descargas') {
+            it.carpeta = this.carpetaDestino;
+          }
+        });
+      }
+      this.enviando = true;
+      try {
+        await this.downloadService.iniciarDescargasLote(lote, autoIniciar);
+      } finally {
+        this.enviando = false;
+        this.cerrarModal();
+      }
+      return;
+    }
+
     if (!this.url.trim()) return;
 
     this.enviando = true;
@@ -650,6 +679,7 @@ export class ModalNuevaDescargaComponent implements OnInit {
 
   public cerrarModal(): void {
     this.enviando = false;
+    this.downloadService.loteEnCola = [];
     this.url = '';
     this.nombre = '';
     this.tamanoStr = 'Esperando URL...';

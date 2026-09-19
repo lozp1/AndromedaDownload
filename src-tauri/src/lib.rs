@@ -378,6 +378,10 @@ async fn cerrar_ventana(window: Window) -> Result<(), String> {
 
 #[tauri::command]
 async fn set_splash_mode(window: Window) -> Result<(), String> {
+    let _ = window.unmaximize();
+    let _ = window.set_resizable(false);
+    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 540.0, height: 500.0 }));
+    let _ = window.center();
     let _ = window.show();
     Ok(())
 }
@@ -385,6 +389,9 @@ async fn set_splash_mode(window: Window) -> Result<(), String> {
 #[tauri::command]
 async fn set_main_mode(window: Window) -> Result<(), String> {
     let _ = window.set_resizable(true);
+    let _ = window.set_min_size(Some(tauri::Size::Logical(tauri::LogicalSize { width: 980.0, height: 660.0 })));
+    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 1220.0, height: 820.0 }));
+    let _ = window.center();
     let _ = window.show();
     let _ = window.set_focus();
     Ok(())
@@ -419,44 +426,44 @@ async fn actualizar_menu_tray(
 
     let (def_acerca, def_ayuda, def_abrir, def_panel, def_ajustes, def_salir) = match id_lang {
         "en" => (
-            "ℹ️ About Andromeda",
-            "❓ Help & Guide",
-            "🚀 Open Andromeda",
-            "📊 Show Quick Panel",
-            "⚙️ Settings",
-            "❌ Exit",
+            "About Andromeda",
+            "Help & Guide",
+            "Open Andromeda",
+            "Show Quick Panel",
+            "Settings",
+            "Exit",
         ),
         "ru" => (
-            "ℹ️ О программе",
-            "❓ Справка",
-            "🚀 Открыть Andromeda",
-            "📊 Показать панель",
-            "⚙️ Настройки",
-            "❌ Выход",
+            "О программе",
+            "Справка",
+            "Открыть Andromeda",
+            "Показать панель",
+            "Настройки",
+            "Выход",
         ),
         "de" => (
-            "ℹ️ Über Andromeda",
-            "❓ Hilfe",
-            "🚀 Andromeda öffnen",
-            "📊 Panel anzeigen",
-            "⚙️ Einstellungen",
-            "❌ Beenden",
+            "Über Andromeda",
+            "Hilfe",
+            "Andromeda öffnen",
+            "Panel anzeigen",
+            "Einstellungen",
+            "Beenden",
         ),
         "fr" => (
-            "ℹ️ À propos",
-            "❓ Aide",
-            "🚀 Ouvrir Andromeda",
-            "📊 Afficher le panneau",
-            "⚙️ Paramètres",
-            "❌ Quitter",
+            "À propos",
+            "Aide",
+            "Ouvrir Andromeda",
+            "Afficher le panneau",
+            "Paramètres",
+            "Quitter",
         ),
         _ => (
-            "ℹ️ Acerca de",
-            "❓ Ayuda",
-            "🚀 Abrir Andromeda",
-            "📊 Mostrar Panel",
-            "⚙️ Ajustes",
-            "❌ Salir",
+            "Acerca de",
+            "Ayuda",
+            "Abrir Andromeda",
+            "Mostrar Panel",
+            "Ajustes",
+            "Salir",
         ),
     };
 
@@ -559,12 +566,12 @@ pub fn run() {
                     });
                 }
 
-                let acerca_i = MenuItem::with_id(app, "acerca_de", "ℹ️ Acerca de", true, None::<&str>)?;
-                let ayuda_i = MenuItem::with_id(app, "guia", "❓ Ayuda", true, None::<&str>)?;
-                let open_i = MenuItem::with_id(app, "open", "🚀 Abrir Andromeda", true, None::<&str>)?;
-                let panel_i = MenuItem::with_id(app, "tray_panel", "📊 Mostrar Panel", true, None::<&str>)?;
-                let ajustes_i = MenuItem::with_id(app, "ajustes", "⚙️ Ajustes", true, None::<&str>)?;
-                let quit_i = MenuItem::with_id(app, "quit", "❌ Salir", true, None::<&str>)?;
+                let acerca_i = MenuItem::with_id(app, "acerca_de", "Acerca de", true, None::<&str>)?;
+                let ayuda_i = MenuItem::with_id(app, "guia", "Ayuda", true, None::<&str>)?;
+                let open_i = MenuItem::with_id(app, "open", "Abrir Andromeda", true, None::<&str>)?;
+                let panel_i = MenuItem::with_id(app, "tray_panel", "Mostrar Panel", true, None::<&str>)?;
+                let ajustes_i = MenuItem::with_id(app, "ajustes", "Ajustes", true, None::<&str>)?;
+                let quit_i = MenuItem::with_id(app, "quit", "Salir", true, None::<&str>)?;
 
                 let menu = Menu::with_items(app, &[
                     &acerca_i,

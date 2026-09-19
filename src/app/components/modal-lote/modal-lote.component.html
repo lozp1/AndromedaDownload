@@ -134,19 +134,6 @@
           </div>
         </div>
 
-        <!-- Resumen de Configuración Activa del Registro Inspeccionado -->
-        <div class="inspector-active-cfg-bar">
-          <span class="active-cfg-badge fmt" [title]="'Formato asignado: ' + getFormatoVideo(actual.id)">
-            🎬 {{ getFormatoVideo(actual.id).toUpperCase() }}
-          </span>
-          <span class="active-cfg-badge" [class.included]="estaSeleccionado(actual.id)" [class.excluded]="!estaSeleccionado(actual.id)">
-            {{ estaSeleccionado(actual.id) ? '✔ INCLUIDO' : '✖ EXCLUIDO' }}
-          </span>
-          <span class="active-cfg-badge dir" [title]="carpetaDestino">
-            📁 {{ carpetaDestino.length > 24 ? ('...' + carpetaDestino.slice(-20)) : carpetaDestino }}
-          </span>
-        </div>
-
         <!-- Configuración Específica del Video -->
         <div class="inspector-fields">
           <div class="form-group">

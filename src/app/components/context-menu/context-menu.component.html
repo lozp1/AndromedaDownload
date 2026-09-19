@@ -79,8 +79,55 @@
     </button>
   </ng-container>
 
+  <!-- Modo 3: Menú de Entrada de Texto (Inputs y Textareas) -->
+  <ng-container *ngIf="targetInput">
+    <div class="ctx-header">
+      <span class="ctx-title" style="letter-spacing:0.5px;color:var(--text-muted);">EDICIÓN & PORTAPAPELES</span>
+    </div>
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutarInput('deshacer')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+      <span>Deshacer</span>
+      <span class="ctx-shortcut">Ctrl+Z</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutarInput('cortar')" [disabled]="!tieneSeleccion">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+      <span>Cortar</span>
+      <span class="ctx-shortcut">Ctrl+X</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutarInput('copiar')" [disabled]="!tieneSeleccion">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <span>Copiar</span>
+      <span class="ctx-shortcut">Ctrl+C</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutarInput('pegar')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+      <span>Pegar</span>
+      <span class="ctx-shortcut">Ctrl+V</span>
+    </button>
+
+    <button class="ctx-item" (click)="ejecutarInput('pegar_plano')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <span>Pegar texto sin formato</span>
+    </button>
+
+    <div class="ctx-divider"></div>
+
+    <button class="ctx-item" (click)="ejecutarInput('seleccionar_todo')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      <span>Seleccionar todo</span>
+      <span class="ctx-shortcut">Ctrl+A</span>
+    </button>
+  </ng-container>
+
   <!-- Modo 2: Menú Global en Área Vacía -->
-  <ng-container *ngIf="!item">
+  <ng-container *ngIf="!item && !targetInput">
     <div class="ctx-header">
       <span class="ctx-title" style="letter-spacing:0.5px;color:var(--text-muted);">ACCIONES GLOBALES</span>
     </div>

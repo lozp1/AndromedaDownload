@@ -617,6 +617,7 @@ export class DownloadService {
   // --- Gestor de Lotes y Listas de Reproducción ---
   public isLoteModalOpen: boolean = false;
   public activePlaylistData: PlaylistProbeResult | null = null;
+  public loteEnCola: ItemLoteDescarga[] = [];
 
   public triggerLoteModal(open: boolean, playlistData?: PlaylistProbeResult): void {
     this.isLoteModalOpen = open;

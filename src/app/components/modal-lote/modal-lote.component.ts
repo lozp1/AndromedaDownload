@@ -188,8 +188,13 @@ export class ModalLoteComponent implements OnInit, OnChanges {
       }
     }
 
-    await this.downloadService.iniciarDescargasLote(payload, true);
+    this.downloadService.loteEnCola = payload;
     this.estaProcesando = false;
+    const plUrl = payload[0]?.url || '';
+    const plTitle = this.playlistData.titulo || payload[0]?.titulo || '';
     this.cerrarModal();
+
+    // Abrir modal nueva descarga reflejando los elementos seleccionados en la cola
+    this.downloadService.triggerNuevaDescargaModal(true, plUrl, plTitle);
   }
 }

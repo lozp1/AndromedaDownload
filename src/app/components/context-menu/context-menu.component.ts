@@ -11,8 +11,16 @@ export class ContextMenuComponent {
   @Input() x: number = 0;
   @Input() y: number = 0;
   @Input() item: DescargaItem | null = null;
+  @Input() targetInput: HTMLInputElement | HTMLTextAreaElement | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() openDetail = new EventEmitter<string>();
+
+  public get tieneSeleccion(): boolean {
+    if (!this.targetInput) return false;
+    const s = this.targetInput.selectionStart ?? 0;
+    const e = this.targetInput.selectionEnd ?? 0;
+    return e > s;
+  }
 
   constructor(private downloadService: DownloadService) {}
 
@@ -98,6 +106,74 @@ export class ContextMenuComponent {
         case 'ir_ajustes':
           this.downloadService.setView('ajustes');
           break;
+      }
+    }
+  }
+
+  public async ejecutarInput(accion: string): Promise<void> {
+    const input = this.targetInput;
+    this.close.emit();
+    if (!input) return;
+
+    input.focus();
+
+    switch (accion) {
+      case 'deshacer': {
+        document.execCommand('undo');
+        break;
+      }
+      case 'cortar': {
+        const s = input.selectionStart ?? 0;
+        const e = input.selectionEnd ?? 0;
+        if (e > s) {
+          const sel = input.value.substring(s, e);
+          await navigator.clipboard.writeText(sel);
+          input.setRangeText('', s, e, 'end');
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        break;
+      }
+      case 'copiar': {
+        const s = input.selectionStart ?? 0;
+        const e = input.selectionEnd ?? 0;
+        const sel = e > s ? input.value.substring(s, e) : input.value;
+        if (sel) {
+          await navigator.clipboard.writeText(sel);
+        }
+        break;
+      }
+      case 'pegar': {
+        try {
+          const texto = await navigator.clipboard.readText();
+          if (texto) {
+            const s = input.selectionStart ?? input.value.length;
+            const e = input.selectionEnd ?? input.value.length;
+            input.setRangeText(texto, s, e, 'end');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        } catch (err) {
+          document.execCommand('paste');
+        }
+        break;
+      }
+      case 'pegar_plano': {
+        try {
+          let texto = await navigator.clipboard.readText();
+          if (texto) {
+            texto = texto.replace(/[\r\n\t]+/g, ' ').trim();
+            const s = input.selectionStart ?? input.value.length;
+            const e = input.selectionEnd ?? input.value.length;
+            input.setRangeText(texto, s, e, 'end');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        } catch (err) {
+          document.execCommand('paste');
+        }
+        break;
+      }
+      case 'seleccionar_todo': {
+        input.select();
+        break;
       }
     }
   }

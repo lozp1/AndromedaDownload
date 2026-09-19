@@ -8,13 +8,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(6, 9, 19, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: transparent !important;
   z-index: 999999;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease;
   user-select: none;
   overflow: hidden;
@@ -28,11 +26,12 @@
 }
 
 .splash-main-card {
-  width: 530px !important;
-  max-width: 92vw !important;
-  min-width: unset !important;
-  max-height: unset !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   padding: 34px 38px !important;
   border-radius: 16px !important;
   background: var(--bg-card, #0E1526) !important;

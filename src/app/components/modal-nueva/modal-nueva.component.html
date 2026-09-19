@@ -208,9 +208,9 @@
         <button class="btn-uiverse-gaurav type1 btn-uiverse-secondary" (click)="iniciar(false)" [disabled]="enviando">
           <span class="btn-txt">{{ i18n.t('btn_cola') }}</span>
         </button>
-        <!-- Burbuja de Notificación Uiverse con Conteo de Formatos Seleccionados (Fuera del botón para no ser recortada) -->
-        <span *ngIf="isMediaStream && selectedFormatsCount > 1" class="btn-notification-badge">
-          {{ selectedFormatsCount }}
+        <!-- Burbuja de Notificación Uiverse con Conteo (Formatos Seleccionados o Lote Playlist) -->
+        <span *ngIf="conteoCola > 0" class="btn-notification-badge">
+          {{ conteoCola }}
         </span>
       </div>
       <button class="btn-uiverse-gaurav type1 btn-uiverse-primary" (click)="iniciar(true)" [disabled]="enviando" style="min-width:140px;">

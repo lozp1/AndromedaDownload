@@ -387,11 +387,24 @@
 }
 
 :host-context([data-theme="white"]) .inspector-divider,
-:host-context([data-theme="light"]) .inspector-divider,
+:host-context([data-theme="light"]) .inspector-divider {
+  background: #E2E8F0 !important;
+}
+
 :host-context([data-theme="white"]) .inspector-footer,
 :host-context([data-theme="light"]) .inspector-footer {
-  border-color: #E2E8F0 !important;
-  background: #E2E8F0 !important;
+  border-top-color: #E2E8F0 !important;
+  background: transparent !important;
+}
+
+:host-context([data-theme="white"]) .inspector-dot,
+:host-context([data-theme="light"]) .inspector-dot {
+  background: #CBD5E1 !important;
+}
+
+:host-context([data-theme="white"]) .inspector-dot.active,
+:host-context([data-theme="light"]) .inspector-dot.active {
+  background: #0284C7 !important;
 }
 
 :host-context([data-theme="white"]) .guide-top-banner,

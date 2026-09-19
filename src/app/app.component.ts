@@ -146,22 +146,29 @@ export class AppComponent implements OnInit {
     });
   }
 
+  public contextMenuTargetInput: HTMLInputElement | HTMLTextAreaElement | null = null;
+
   @HostListener('window:contextmenu', ['$event'])
   public onGlobalContextMenu(e: MouseEvent): void {
     const target = e.target as HTMLElement;
 
-    // Si el usuario hace clic derecho sobre un input, textarea o contenido editable,
-    // NO interceptar con menú custom; permitir el menú contextual nativo de Windows.
-    if (
-      target.tagName === 'INPUT' ||
-      target.tagName === 'TEXTAREA' ||
-      target.isContentEditable ||
-      target.closest('input, textarea, [contenteditable="true"]')
-    ) {
+    // Si el usuario hace clic derecho sobre un input o textarea,
+    // mostrar el menú contextual personalizado de Andromeda para inputs (Cortar, Copiar, Pegar, etc.)
+    const inputTarget = target.closest('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
+    if (inputTarget) {
+      e.preventDefault();
+      this.contextMenuTargetInput = inputTarget;
+      this.contextMenuItem = null;
+      const menuWidth = 240;
+      const menuHeight = 270;
+      this.contextMenuX = Math.min(e.clientX, window.innerWidth - menuWidth - 12);
+      this.contextMenuY = Math.min(e.clientY, window.innerHeight - menuHeight - 12);
+      this.isContextMenuOpen = true;
       return;
     }
 
     e.preventDefault();
+    this.contextMenuTargetInput = null;
 
     const downloadRow = target.closest('[data-download-id]') as HTMLElement;
 
@@ -193,6 +200,7 @@ export class AppComponent implements OnInit {
   public closeContextMenu(): void {
     this.isContextMenuOpen = false;
     this.contextMenuItem = null;
+    this.contextMenuTargetInput = null;
   }
 
   public closeTour(): void {
