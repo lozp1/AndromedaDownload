@@ -698,7 +698,7 @@ export class DownloadService {
   }
 
   public async limpiarCompletadas(): Promise<void> {
-    const completadas = this.descargas$.value.filter(d => d.estado === 'Completado').map(d => d.id);
+    const completadas = this.descargas$.value.filter(d => d.estado === 'Completado' || d.estado === 'Eliminado').map(d => d.id);
     if (completadas.length > 0) {
       await this.eliminar(completadas, false);
       this.mostrarToast('Historial Limpio', `Se eliminaron ${completadas.length} descargas completadas.`);

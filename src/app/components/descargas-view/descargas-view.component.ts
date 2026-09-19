@@ -249,7 +249,7 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
       if (q && !nom.includes(q)) return false;
 
       if (f === 'Descargando') return est.includes('descarg') || est.includes('progreso');
-      if (f === 'Completadas') return est.includes('complet');
+      if (f === 'Completadas') return est.includes('complet') || est.includes('elimin');
       if (f === 'Pausadas') return est.includes('paus') || est.includes('deten');
       if (f === 'Programadas') return est.includes('program') || est.includes('cola');
       if (f === 'Error') return est.includes('error') || est.includes('fall');
@@ -294,7 +294,7 @@ export class DescargasViewComponent implements OnInit, OnDestroy {
     if (e.includes('descarg') || e.includes('progreso')) return 'status-descargando';
     if (e.includes('complet')) return 'status-completada';
     if (e.includes('elimin')) return 'status-eliminado';
-    if (e.includes('paus')) return 'status-pausada';
+    if (e.includes('paus') || e.includes('deten')) return 'status-pausada';
     if (e.includes('program')) return 'status-programada';
     if (e.includes('error') || e.includes('fall')) return 'status-error';
     return 'status-pausada';

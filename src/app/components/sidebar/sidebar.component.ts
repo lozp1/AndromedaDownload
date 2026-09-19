@@ -86,8 +86,8 @@ export class SidebarComponent implements OnInit {
       const cat = (d.categoria || '').toLowerCase();
 
       if (est.includes('descarg') || est.includes('progreso')) c.descargando++;
-      else if (est.includes('complet')) c.completadas++;
-      else if (est.includes('paus')) c.pausadas++;
+      else if (est.includes('complet') || est.includes('elimin')) c.completadas++;
+      else if (est.includes('paus') || est.includes('deten')) c.pausadas++;
       else if (est.includes('program') || est.includes('cola')) c.programadas++;
       else if (est.includes('error') || est.includes('fall')) c.error++;
 

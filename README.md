@@ -155,38 +155,6 @@ Si esta herramienta te ha sido de utilidad para tu trabajo o estudio, considera 
 
 ---
 
-## 👨‍💻 Acerca del Desarrollador / Lead Engineer
-
-<div align="center">
-  <a href="https://github.com/lozp1">
-    <img src="https://github.com/lozp1.png" width="130px" style="border-radius: 50%; border: 3px solid #38BDF8; box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);" alt="Franco Paolo López Gálvez" />
-  </a>
-  <h3 style="margin-top: 12px; margin-bottom: 2px; font-size: 1.4em;">Franco Paolo López Gálvez</h3>
-  <p style="color: #38BDF8; font-size: 1.05em; font-weight: 700;">Software Engineer • High-Performance Systems & Desktop Architecture • Guatemala 🇬🇹</p>
-
-  <p style="max-width: 680px; line-height: 1.6; color: #94A3B8; font-size: 0.95em;">
-    Ingeniero de software especializado en el desarrollo de aplicaciones de escritorio de alto rendimiento, concurrencia multi-hilo y experiencias de usuario de calibre profesional. Creador y arquitecto de <b>Andromeda Download Suite</b>, unificando la velocidad y seguridad de <b>Rust</b> con la elegancia reactiva de <b>Angular 19</b>.
-  </p>
-
-  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 15px 0;">
-    <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" />
-    <img src="https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
-    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-    <img src="https://img.shields.io/badge/Tauri_v2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white" />
-    <img src="https://img.shields.io/badge/Tokio_Async-000000?style=for-the-badge&logo=tokio&logoColor=white" />
-    <img src="https://img.shields.io/badge/Win32_API-0078D6?style=for-the-badge&logo=windows&logoColor=white" />
-  </div>
-
-  <p style="margin-top: 15px;">
-    <a href="https://github.com/lozp1"><b>🐙 GitHub (@lozp1)</b></a> &nbsp;•&nbsp;
-    <a href="https://linkedin.com/in/franco-lopez"><b>💼 LinkedIn</b></a> &nbsp;•&nbsp;
-    <a href="mailto:francopaolo_lg@outlook.com"><b>📧 francopaolo_lg@outlook.com</b></a> &nbsp;•&nbsp;
-    <a href="https://github.com/lozp1?tab=repositories"><b>🚀 Ver más proyectos</b></a>
-  </p>
-</div>
-
----
-
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia **MIT** - consulta el archivo [LICENSE](LICENSE) para más detalles.

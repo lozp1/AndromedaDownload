@@ -96,7 +96,19 @@ impl GestorDescargas {
         if path.exists() {
             if let Ok(data) = std::fs::read_to_string(&path) {
                 if let Ok(items) = serde_json::from_str::<Vec<DescargaItem>>(&data) {
-                    return items;
+                    // Si el usuario eliminó manualmente los archivos en Windows Explorer, no recargar tareas huérfanas
+                    return items
+                        .into_iter()
+                        .filter(|it| {
+                            if it.estado == "Eliminado" {
+                                return false;
+                            }
+                            if it.estado == "Completado" && !std::path::Path::new(&it.ruta_destino).exists() {
+                                return false;
+                            }
+                            true
+                        })
+                        .collect();
                 }
             }
         }
@@ -109,7 +121,9 @@ impl GestorDescargas {
             let map = self.tareas.read().await;
             for h in map.values() {
                 let it = h.item.read().await;
-                lista.push(it.clone());
+                if it.estado != "Eliminado" {
+                    lista.push(it.clone());
+                }
             }
         }
         let path = Self::obtener_ruta_descargas_db();
@@ -1042,7 +1056,6 @@ async fn ejecutar_descarga(handle: Arc<TareaDescargaHandle>, client: reqwest::Cl
 
 fn obtener_ruta_ffmpeg() -> Option<String> {
     let candidates = [
-        "C:\\Users\\f.paolo\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\imageio_ffmpeg\\binaries\\ffmpeg-win-x86_64-v7.1.exe",
         "ffmpeg.exe",
         "ffmpeg",
     ];

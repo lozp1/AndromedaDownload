@@ -55,10 +55,10 @@ export class ModalExploradorComponent implements OnChanges {
     } catch {
       // Fallback
       this.rutasSistema = {
-        escritorio: 'C:\\Users\\f.paolo\\Desktop',
-        descargas: 'C:\\Users\\f.paolo\\Downloads',
-        documentos: 'C:\\Users\\f.paolo\\Documents',
-        videos: 'C:\\Users\\f.paolo\\Videos'
+        escritorio: 'C:\\Users\\Public\\Desktop',
+        descargas: 'C:\\Descargas',
+        documentos: 'C:\\Documentos',
+        videos: 'C:\\Videos'
       };
     }
   }

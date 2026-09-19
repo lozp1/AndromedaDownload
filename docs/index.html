@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andromeda Download Suite — Gestor de Descargas de Alto Rendimiento</title>
+  <meta name="description" content="Andromeda Download Suite: Gestor de descargas de alto rendimiento para Windows impulsado por Rust Tokio & Angular 19. Multi-hilo, sin anuncios y 100% código abierto.">
+  <link rel="icon" type="image/png" href="assets/logo_brand_squircle.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #060913;
+      --bg-surface: #0B1120;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --border: rgba(56, 189, 248, 0.18);
+      --border-strong: rgba(56, 189, 248, 0.4);
+      --cyan: #38BDF8;
+      --green: #10E761;
+      --purple: #A855F7;
+      --amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(16, 231, 97, 0.08) 0%, transparent 45%);
+      background-attachment: fixed;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    
+    /* Navigation Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(6, 9, 19, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+    }
+    .logo-badge img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .btn-nav-gh {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: #FFF;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .btn-nav-gh:hover {
+      background: rgba(56,189,248,0.15);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(56,189,248,0.25);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 100px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-size: 3.6rem;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #38BDF8 80%, #10E761 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 38px;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284C7, #0369A1);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1.05rem;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4), 0 0 25px rgba(56, 189, 248, 0.3);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(2, 132, 199, 0.6), 0 0 35px rgba(56, 189, 248, 0.45);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid var(--border);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+    .tech-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .tech-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Showcase Card */
+    .showcase-card {
+      margin: 40px auto 80px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85), 0 0 50px rgba(56, 189, 248, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .app-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .traffic-dots { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot.r { background: #EF4444; }
+    .dot.y { background: #F59E0B; }
+    .dot.g { background: #10E761; }
+    .status-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* Grid Features */
+    .section-title {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .section-title h2 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 100px;
+    }
+    .feat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+    .feat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyan);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.15);
+    }
+    .feat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--cyan);
+    }
+    .feat-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .feat-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Architecture / Stats Banner */
+    .stats-banner {
+      background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(16,231,97,0.06));
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+      text-align: center;
+      margin-bottom: 100px;
+    }
+    .stat-box h4 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+    .stat-box p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Donations Section */
+    .donations-card {
+      background: radial-gradient(circle at center, rgba(56,189,248,0.12) 0%, rgba(11,17,32,0.8) 100%);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      margin-bottom: 100px;
+    }
+    .donations-card h3 {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .donations-card p {
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 32px;
+      font-size: 1.05rem;
+    }
+    .donate-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-donate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+    .btn-donate.paypal {
+      background: #0070BA;
+      color: white;
+    }
+    .btn-donate.coffee {
+      background: #FFDD00;
+      color: #000;
+    }
+    .btn-donate.gh {
+      background: #24292F;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-donate:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    footer a { color: var(--cyan); }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1.05rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="container nav-wrap">
+      <div class="logo-badge">
+        <img src="assets/logo_brand_squircle.png" alt="Andromeda Logo">
+        <span>ANDROMEDA</span>
+      </div>
+      <div class="nav-links">
+        <a href="#caracteristicas">Características</a>
+        <a href="#rendimiento">Rendimiento</a>
+        <a href="#descargar">Descargar</a>
+        <a href="#donar">Donar</a>
+        <a href="https://github.com/lozp1/AndromedaDownload" target="_blank" class="btn-nav-gh">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="tag-badge">⚡ ANDROMEDA ENGINE 64-BIT • RUST + ANGULAR 19</div>
+      <h1>El Gestor de Descargas<br>Definitivo para Windows</h1>
+      <p>Aceleración extrema multi-hilo con Tokio I/O asíncrono, detección inteligente de medios, telemetría ROI en tiempo real y una interfaz cyber-oscura sin publicidad.</p>
+      
+      <div class="hero-actions" id="descargar">
+        <a href="https://github.com/lozp1/AndromedaDownload/releases/latest" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar para Windows (64-bit)
+        </a>
+        <a href="https://github.com/lozp1/AndromedaDownload" target="_blank" class="btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          Ver Código en GitHub
+        </a>
+      </div>
+
+      <div class="tech-strip">
+        <div class="tech-pill"><span>🦀</span> Rust Tokio</div>
+        <div class="tech-pill"><span>⚡</span> 32 Canales HTTP</div>
+        <div class="tech-pill"><span>📦</span> Angular 19 Standalone</div>
+        <div class="tech-pill"><span>🛡️</span> 100% Sin Publicidad</div>
+        <div class="tech-pill"><span>🪟</span> Windows 10 / 11</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Performance Stats Banner -->
+  <section class="container" id="rendimiento">
+    <div class="stats-banner">
+      <div class="stat-box">
+        <h4>32x</h4>
+        <p>Sockets Tokio Simultáneos</p>
+      </div>
+      <div class="stat-box">
+        <h4>&lt;35 MB</h4>
+        <p>Consumo de Memoria RAM</p>
+      </div>
+      <div class="stat-box">
+        <h4>5.2x</h4>
+        <p>Aceleración Promedio vs Navegador</p>
+      </div>
+      <div class="stat-box">
+        <h4>0 Ads</h4>
+        <p>Software 100% Libre y Ético</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="container" id="caracteristicas">
+    <div class="section-title">
+      <h2>Ingeniería de Descargas sin Concesiones</h2>
+      <p>Diseñado para usuarios exigentes que buscan máxima velocidad y control total.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>Segmentación Multi-Canal Tokio</h3>
+        <p>Divide los archivos en hasta 32 partes descargadas concurrentemente mediante sockets asíncronos en Rust, saturando tu ancho de banda disponible sin congelamientos.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <h3>Detección de Video & Audio</h3>
+        <p>Soporte integrado para listas de reproducción y videos de YouTube, Vimeo y redes sociales. Elige calidad desde 144p hasta 4K UHD o extrae pistas de audio MP3 a 320 kbps.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <h3>Andromeda Quick Panel</h3>
+        <p>Mini-panel flyout flotante en la bandeja del sistema de Windows. Supervisa transferencias en vivo, pausa o reanuda con botones táctiles EP-133 sin abrir la ventana principal.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Programador Obsidian</h3>
+        <p>Programa descargas pesadas durante la madrugada o en horarios de menor demanda con el selector de calendario y reloj visual Obsidian integrado.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Verificación Criptográfica</h3>
+        <p>Calcula y verifica checksums SHA-256 de los archivos descargados para garantizar que la descarga no haya sufrido corrupción en tránsito ni alteraciones.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        </div>
+        <h3>Privacidad Absoluta</h3>
+        <p>Cero telemetría externa, cero recolectores de datos, cero anuncios intrusivos y cero bloatware. Todo el procesamiento se realiza localmente en tu máquina.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donations Section -->
+  <section class="container" id="donar">
+    <div class="donations-card">
+      <h3>☕ Apoya el Software Libre y Abierto</h3>
+      <p>Andromeda Download Suite es un proyecto independiente desarrollado para ofrecer una alternativa moderna y gratuita. Si este software te ahorra tiempo y dinero, tu donación ayuda a mantenerlo activo y actualizado.</p>
+      
+      <div class="donate-buttons">
+        <a href="https://paypal.me/francopaololg" target="_blank" class="btn-donate paypal">
+          💳 Donar con PayPal
+        </a>
+        <a href="https://buymeacoffee.com" target="_blank" class="btn-donate coffee">
+          ☕ Buy Me a Coffee
+        </a>
+        <a href="https://github.com/sponsors/lozp1" target="_blank" class="btn-donate gh">
+          💖 GitHub Sponsors
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p style="margin-bottom: 8px;"><b>Andromeda Download Suite</b> © 2026. Distribuido bajo Licencia <a href="https://github.com/lozp1/AndromedaDownload/blob/main/LICENSE" target="_blank">MIT</a>.</p>
+      <p style="color: #64748B; font-size: 0.8rem;">Construido con Rust Tokio, Tauri v2 & Angular 19 por <a href="https://github.com/lozp1" target="_blank">@lozp1</a>.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
