@@ -593,14 +593,15 @@ pub fn run() {
                                     if let Ok(Some(monitor)) = win.current_monitor() {
                                         let screen = monitor.size();
                                         let scale = monitor.scale_factor();
-                                        let w = (380.0 * scale) as i32;
-                                        let h = (520.0 * scale) as i32;
+                                        let w = (410.0 * scale) as i32;
+                                        let h = (540.0 * scale) as i32;
                                         let x = monitor.position().x + screen.width as i32 - w - (18.0 * scale) as i32;
                                         let y = monitor.position().y + screen.height as i32 - h - (54.0 * scale) as i32;
                                         let _ = win.set_position(tauri::Position::Physical(tauri::PhysicalPosition { x, y }));
                                     }
                                     let _ = win.show();
                                     let _ = win.set_focus();
+                                    let _ = win.emit("tray_shown", ());
                                 }
                             }
                         }

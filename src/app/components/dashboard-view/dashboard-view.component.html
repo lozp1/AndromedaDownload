@@ -11,9 +11,11 @@
     </div>
     
     <div style="display:flex;align-items:center;gap:12px;">
+      <!-- Botón de Simulación Activa (Comentado temporalmente por solicitud del usuario)
       <button class="btn-uiverse-gaurav type1" [class.btn-uiverse-primary]="modoSimulacion" [class.btn-uiverse-secondary]="!modoSimulacion" style="height:32px;font-size:7.5pt;padding:0 12px;min-width:140px;" (click)="toggleSimulacion()" title="Alternar entre telemetría simulada y telemetría real">
         <span class="btn-txt">{{ modoSimulacion ? i18n.t('dash_simulacion_activa') : i18n.t('dash_telemetria_real') }}</span>
       </button>
+      -->
       
       <!-- Selector de Rango Temporal Estilo Tremor -->
       <div class="tremor-time-pills">
@@ -330,28 +332,51 @@
       </div>
     </div>
 
-    <!-- Matriz de Sockets Tremor Tracker Grid (32 Sockets Numerados y Concurrentes) -->
-    <div class="tremor-chart-card" data-tour="matrix-sockets" title="Matriz de 32 canales concurrentes para transferencia paralela">
+    <!-- Monitor Dinámico de Canales Tokio & Eficiencia de Red -->
+    <div class="tremor-chart-card" data-tour="matrix-sockets" title="Monitor de canales Tokio y salud del motor en tiempo real" style="display:flex;flex-direction:column;justify-content:space-between;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="tremor-chart-title">{{ i18n.t('matriz_sockets') }}</span>
-        <span style="font-size:7pt;color:var(--accent-green);font-weight:700;">CONEXIONES ACTIVAS</span>
+        <span class="tremor-chart-title">CANALES TOKIO & RENDIMIENTO</span>
+        <span style="font-size:7pt;color:var(--accent-green);font-weight:700;letter-spacing:0.5px;">● ASYNC I/O</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:14px 0;">
-        <div *ngFor="let s of socketsMatrix" 
-             style="height:26px;border-radius:5px;transition:all 0.2s;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:6.2pt;font-weight:800;"
-             [style.opacity]="s.opacity || 1"
-             [style.color]="s.active ? '#06130B' : 'var(--text-muted)'"
-             [style.background-color]="s.active ? 'var(--accent-green)' : 'var(--bg-surface)'"
-             [style.box-shadow]="s.active ? '0 0 10px rgba(37,211,102,0.45)' : 'none'"
-             [style.border]="s.active ? '1.5px solid var(--accent-green)' : '1px solid var(--border-subtle)'"
-             [title]="'Canal #' + (s.id + 1) + (s.active ? ': Activo en transferencia' : ': En espera')">
-          #{{ s.id + 1 < 10 ? '0' + (s.id + 1) : (s.id + 1) }}
+
+      <!-- Métricas Clave de Canales y Salud del Motor -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 8px 0;">
+        <div style="background:var(--bg-surface);padding:10px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <div style="font-size:6.8pt;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;">SOCKETS ACTIVOS</div>
+          <div style="font-size:12pt;font-weight:900;color:var(--accent-green);font-family:'JetBrains Mono',monospace;margin-top:2px;">
+            {{ telemetry?.sockets_activos || 0 }} <span style="font-size:8pt;color:var(--text-muted);font-weight:600;">/ {{ telemetry?.max_sockets || 32 }}</span>
+          </div>
+        </div>
+        <div style="background:var(--bg-surface);padding:10px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <div style="font-size:6.8pt;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;">PICO HISTÓRICO</div>
+          <div style="font-size:12pt;font-weight:900;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace;margin-top:2px;">
+            {{ telemetry?.velocidad_pico_str || '0.00 B/s' }}
+          </div>
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:8px;">
-        <span style="color:var(--accent-green);font-weight:700;">■ Activo</span>
-        <span style="color:var(--accent-cyan);">■ Conectando</span>
-        <span style="color:var(--text-muted);">■ En Espera</span>
+
+      <!-- Indicador Dinámico de Carga Multi-Canal (16 Segmentos con Iluminación Reactiva) -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:var(--text-secondary);margin-bottom:6px;">
+          <span>Distribución de Carga Multi-Hilos</span>
+          <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-green);font-weight:700;">
+            {{ ((telemetry?.sockets_activos || 0) / (telemetry?.max_sockets || 32) * 100).toFixed(0) }}% Capacidad
+          </span>
+        </div>
+        <div style="display:flex;gap:3px;height:18px;background:rgba(255,255,255,0.03);padding:3px;border-radius:6px;border:1px solid var(--border-subtle);">
+          <div *ngFor="let s of socketsMatrix.slice(0, 16); let idx = index" 
+               style="flex:1;border-radius:3px;transition:all 0.3s ease;"
+               [style.background]="s.active ? 'linear-gradient(180deg, #38BDF8, var(--accent-green))' : 'rgba(255,255,255,0.06)'"
+               [style.box-shadow]="s.active ? '0 0 6px rgba(56,189,248,0.5)' : 'none'"
+               [title]="'Hilo #' + (idx + 1) + (s.active ? ': Transferencia activa' : ': Disponible')">
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;font-size:7pt;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:8px;margin-top:10px;">
+        <span style="color:var(--accent-green);font-weight:700;">✔ Direct I/O Concurrente</span>
+        <span style="color:var(--accent-cyan);">Zero-Assemble Tokio</span>
+        <span style="color:var(--text-muted);">Memoria Libre</span>
       </div>
     </div>
   </div>

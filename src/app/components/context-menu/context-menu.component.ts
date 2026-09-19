@@ -28,6 +28,16 @@ export class ContextMenuComponent {
     private tauriService: TauriService
   ) {}
 
+  @HostListener('document:pointerdown', ['$event'])
+  onDocumentPointerDown(event: PointerEvent): void {
+    if (this.visible) {
+      const inside = (event.target as HTMLElement)?.closest?.('.context-menu-wrapper');
+      if (!inside) {
+        this.close.emit();
+      }
+    }
+  }
+
   @HostListener('document:click')
   onDocumentClick(): void {
     if (this.visible) {

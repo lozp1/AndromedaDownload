@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { DownloadService } from '../../services/download.service';
+import { TauriService } from '../../services/tauri.service';
 import { DescargaItem, GlobalTelemetry } from '../../models/download.model';
 import { Observable, Subscription } from 'rxjs';
 
@@ -14,13 +15,17 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
   public telemetry$: Observable<GlobalTelemetry>;
   public descargasActivas: DescargaItem[] = [];
   private sub: Subscription | null = null;
+  private pollTimer: any = null;
 
   public getTiempoLimpio(str: string | undefined | null): string {
     if (!str) return '0 s';
     return str.replace(/\s*ahorrados?/gi, '').trim();
   }
 
-  constructor(private downloadService: DownloadService) {
+  constructor(
+    private downloadService: DownloadService,
+    private tauriService: TauriService
+  ) {
     this.telemetry$ = this.downloadService.telemetryObservable;
   }
 
@@ -50,14 +55,37 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
       }
     });
 
+    // Actualización inmediata de telemetría y descargas
+    this.downloadService.actualizarTelemetria();
+
+    // Escuchar evento emitido por Rust cuando se muestra el panel desde la bandeja
+    this.tauriService.listen('tray_shown', () => {
+      this.downloadService.actualizarTelemetria();
+    });
+
+    window.addEventListener('focus', () => {
+      this.downloadService.actualizarTelemetria();
+    });
+
+    // Polling activo en el flyout mientras esté abierto
+    this.pollTimer = setInterval(() => {
+      this.downloadService.actualizarTelemetria();
+    }, 400);
+
     this.sub = this.downloadService.descargasObservable.subscribe(items => {
-      this.descargasActivas = items.filter(d => d.estado === 'Descargando' || d.estado === 'Pausado');
+      this.descargasActivas = items.filter(d => {
+        const est = (d.estado || '').toLowerCase();
+        return est.includes('descarg') || est.includes('progreso') || est.includes('paus') || est.includes('inici') || est.includes('cola') || est.includes('program');
+      });
     });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.themeSub?.unsubscribe();
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+    }
   }
 
   public cerrar(): void {

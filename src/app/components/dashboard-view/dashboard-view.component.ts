@@ -102,7 +102,7 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  public modoSimulacion: boolean = true;
+  public modoSimulacion: boolean = false;
   private simInterval: any = null;
   private simBuffer: number[] = [];
   private simBytes: number = 14.82 * 1024 * 1024 * 1024;
@@ -115,9 +115,9 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     public i18n: I18nService
   ) {
     for (let i = 0; i < 32; i++) {
-      this.socketsMatrix.push({ id: i, active: i < 28, opacity: 1 });
+      this.socketsMatrix.push({ id: i, active: false, opacity: 0.3 });
     }
-    // Inicializar buffer simulado de 60 segundos con ondulaciones hiper-realistas
+    // Inicializar buffer simulado
     for (let i = 0; i < 60; i++) {
       const base = 82 * 1024 * 1024;
       const variation = Math.sin(i * 0.35) * 8 * 1024 * 1024 + Math.cos(i * 0.7) * 4 * 1024 * 1024;
@@ -129,13 +129,7 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.downloadService.telemetryObservable.subscribe(t => {
         this.lastRealTelemetry = t;
-        if (t && t.activas > 0) {
-          // Si hay descargas reales activas, dar prioridad a los datos reales
-          this.modoSimulacion = false;
-          this.telemetry = t;
-          this.actualizarMatrizSockets(t.sockets_activos);
-          this.calcularSpeedDuel(t);
-        } else if (!this.modoSimulacion && t) {
+        if (t) {
           this.telemetry = t;
           this.actualizarMatrizSockets(t.sockets_activos);
           this.calcularSpeedDuel(t);
@@ -152,8 +146,9 @@ export class DashboardViewComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Iniciar ciclo de simulación para que el usuario pueda visualizar los gráficos en plena acción
-    this.iniciarSimulacion();
+    if (this.modoSimulacion) {
+      this.iniciarSimulacion();
+    }
   }
 
   ngOnDestroy(): void {

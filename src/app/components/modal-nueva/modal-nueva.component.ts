@@ -63,6 +63,29 @@ export class ModalNuevaDescargaComponent implements OnInit {
   public horaMinutos: string = '00';
   public horaPeriodo: 'AM' | 'PM' = 'PM';
 
+  // Custom Category Dropdown (mantiene estilo y cursor custom)
+  public isCatDropdownOpen: boolean = false;
+  public readonly categoriasDisponibles: { id: DownloadCategory; nombre: string; icon: string }[] = [
+    { id: 'Comprimidos', nombre: 'Comprimidos', icon: '📦' },
+    { id: 'Videos', nombre: 'Videos', icon: '🎬' },
+    { id: 'Documentos', nombre: 'Documentos', icon: '📄' },
+    { id: 'Programas', nombre: 'Programas', icon: '⚙️' },
+    { id: 'Música', nombre: 'Música', icon: '🎵' },
+    { id: 'Imágenes', nombre: 'Imágenes', icon: '🖼️' },
+    { id: 'Otros', nombre: 'Otros', icon: '📁' }
+  ];
+
+  public toggleCatDropdown(): void {
+    this.isCatDropdownOpen = !this.isCatDropdownOpen;
+    this.isCalendarOpen = false;
+    this.isTimePickerOpen = false;
+  }
+
+  public seleccionarCategoria(cat: DownloadCategory): void {
+    this.categoria = cat;
+    this.isCatDropdownOpen = false;
+  }
+
   // Media & Video Stream Intelligence (YouTube, Vimeo, etc. — SaveFrom Style)
   public isMediaStream: boolean = false;
   public mediaVideoTitle: string = '';
@@ -182,7 +205,18 @@ export class ModalNuevaDescargaComponent implements OnInit {
         this.downloadService.pendingNuevaDescargaNombre = '';
         this.notificacionPlaylistMostrada = false;
         this.ultimaUrlPlaylistNotificada = '';
-        setTimeout(() => this.onUrlInput(), 60);
+
+        // Si proviene de lote/playlist, categorizar según los formatos seleccionados
+        if (this.downloadService.loteEnCola && this.downloadService.loteEnCola.length > 0) {
+          const tieneAudio = this.downloadService.loteEnCola.some(it => {
+            const fmt = (it.formato || '').toLowerCase();
+            return fmt.includes('mp3') || fmt.includes('m4a') || fmt.includes('audio');
+          });
+          this.categoria = tieneAudio ? 'Música' : 'Videos';
+          this.isMediaStream = false;
+        } else {
+          setTimeout(() => this.onUrlInput(), 60);
+        }
       }
     });
 
@@ -398,6 +432,17 @@ export class ModalNuevaDescargaComponent implements OnInit {
     // Detección Inteligente de YouTube / Video Streaming
     const isYt = url.includes('youtube.com') || url.includes('youtu.be');
     if (isYt) {
+      if (this.downloadService.loteEnCola && this.downloadService.loteEnCola.length > 0) {
+        this.isMediaStream = false;
+        const tieneAudio = this.downloadService.loteEnCola.some(it => {
+          const fmt = (it.formato || '').toLowerCase();
+          return fmt.includes('mp3') || fmt.includes('m4a') || fmt.includes('audio');
+        });
+        this.categoria = tieneAudio ? 'Música' : 'Videos';
+        this.sondeoEnCurso = false;
+        this.estadoSondeo = `Lote listo: ${this.downloadService.loteEnCola.length} archivos ✓`;
+        return;
+      }
       this.isMediaStream = true;
       this.categoria = 'Videos';
       this.estadoSondeo = 'Detectando video y formatos disponibles...';

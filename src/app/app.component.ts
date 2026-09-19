@@ -61,6 +61,17 @@ export class AppComponent implements OnInit {
       this.tauriService.setSplashMode().catch(() => {});
     }
 
+    // Cerrar cualquier menú contextual abierto al hacer clic en cualquier lugar
+    window.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (this.isContextMenuOpen) {
+        const inside = (e.target as HTMLElement)?.closest?.('.context-menu-wrapper');
+        if (!inside) {
+          this.closeContextMenu();
+          this.cdr.detectChanges();
+        }
+      }
+    }, true);
+
     this.downloadService.activeViewObservable.subscribe(v => {
       this.activeView = v;
     });
@@ -224,6 +235,19 @@ export class AppComponent implements OnInit {
         const allIds = this.downloadService.getCurrentDownloads().map(d => d.id);
         this.downloadService.setSelectedIds(new Set(allIds));
         return;
+      }
+    }
+
+    // 4. Atajo Supr / Delete: Eliminar descargas seleccionadas (si no está editando texto)
+    if (e.key === 'Delete' || e.key === 'Del') {
+      const activeEl = document.activeElement;
+      const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || (activeEl as HTMLElement).isContentEditable);
+      if (!isInput) {
+        if (this.downloadService.getSelectedIds().size > 0) {
+          e.preventDefault();
+          this.downloadService.solicitarConfirmacionEliminar();
+          return;
+        }
       }
     }
   }

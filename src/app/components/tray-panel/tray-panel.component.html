@@ -1,14 +1,33 @@
 <div class="tray-flyout-overlay" *ngIf="visible" (click)="cerrar()">
   <div class="tray-flyout-card" (click)="$event.stopPropagation()">
-    <!-- Header del Mini-Panel -->
-    <div class="tray-flyout-header">
-      <div class="tray-brand">
-        <div style="width:26px;height:26px;border-radius:7px;background:rgba(59,130,246,0.12);border:1.2px solid rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(59,130,246,0.25);flex-shrink:0;">
-          <img src="assets/img/logo_brand_squircle.png" width="18" height="18" alt="Andromeda">
+    <!-- Ambient Floating Glowing Spheres -->
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+
+    <!-- Header del Mini-Panel con Mascota Robot de la Guía Interactiva -->
+    <div class="tray-flyout-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;position:relative;z-index:2;">
+      <div class="tray-brand" style="display:flex;align-items:center;gap:11px;">
+        <!-- Avatar Mascota Robot de la Guía Interactiva con Flotación Suave -->
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.15);border:1.5px solid rgba(59,130,246,0.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(59,130,246,0.3);flex-shrink:0;overflow:hidden;animation:floatingMascot 3s ease-in-out infinite;">
+          <svg class="avatar-robot-svg" viewBox="0 0 84 84" fill="none" style="width:30px;height:30px;">
+            <defs>
+              <linearGradient id="cloudGradTray" x1="12" y1="10" x2="72" y2="70" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#60A5FA"/>
+                <stop offset="45%" stop-color="#3B82F6"/>
+                <stop offset="100%" stop-color="#1D4ED8"/>
+              </linearGradient>
+            </defs>
+            <path d="M 22,54 C 12,54 6,45 8,36 C 9,28 16,23 23,24 C 25,14 34,7 44,8 C 53,9 60,16 61,25 C 68,25 76,31 76,40 C 76,48 70,54 62,54 Z" fill="url(#cloudGradTray)"/>
+            <rect x="23" y="24" width="38" height="26" rx="8" fill="#0B1120" stroke="#38BDF8" stroke-width="2"/>
+            <path d="M 31,34 L 35,37 L 31,40" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="47" y1="40" x2="55" y2="40" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="28" cy="54" rx="5" ry="4" fill="#60A5FA" stroke="#1D4ED8" stroke-width="1.5"/>
+            <ellipse cx="56" cy="54" rx="5" ry="4" fill="#60A5FA" stroke="#1D4ED8" stroke-width="1.5"/>
+          </svg>
         </div>
         <div>
-          <div class="tray-brand-title">ANDROMEDA QUICK PANEL</div>
-          <div class="tray-brand-sub">CONTROL DE BANDEJA & TAREAS</div>
+          <div style="font-size:9.5pt;font-weight:900;color:var(--text-primary);letter-spacing:0.8px;">ANDROMEDA QUICK PANEL</div>
+          <div style="font-size:6.8pt;font-weight:700;color:var(--accent-cyan);letter-spacing:1.5px;margin-top:1px;">CONTROL DE BANDEJA & TAREAS</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
@@ -22,7 +41,7 @@
     </div>
 
     <!-- Telemetría Resumida (Velocidad & Sockets) -->
-    <div class="tray-stats-grid">
+    <div class="tray-stats-grid" style="position:relative;z-index:2;">
       <div class="tray-stat-box">
         <span class="tray-stat-lbl">VELOCIDAD TOTAL</span>
         <span class="tray-stat-val cyan">{{ (telemetry$ | async)?.velocidad_global || '0.00 B/s' }}</span>
@@ -38,7 +57,7 @@
     </div>
 
     <!-- Lista Compacta de Descargas Activas -->
-    <div class="tray-downloads-section">
+    <div class="tray-downloads-section" style="position:relative;z-index:2;">
       <div class="tray-section-header">
         <span>DESCARGAS ACTIVAS ({{ descargasActivas.length }})</span>
       </div>
@@ -50,7 +69,7 @@
             <div class="tray-dl-meta">
               <span>{{ dl.velocidad }}</span>
               <span>•</span>
-              <span>{{ dl.progreso }}%</span>
+              <span>{{ dl.progreso.toFixed(1) }}%</span>
               <span *ngIf="dl.eta">• {{ dl.eta }}</span>
             </div>
           </div>
@@ -59,14 +78,14 @@
             <button class="tray-action-btn" *ngIf="dl.estado === 'Descargando'" (click)="pausar(dl.id)" title="Pausar">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
             </button>
-            <button class="tray-action-btn green" *ngIf="dl.estado === 'Pausado'" (click)="reanudar(dl.id)" title="Reanudar">
+            <button class="tray-action-btn green" *ngIf="dl.estado === 'Pausado' || dl.estado === 'Programada'" (click)="reanudar(dl.id)" title="Reanudar">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             </button>
           </div>
 
           <!-- Mini Barra de Progreso -->
           <div class="tray-dl-bar-bg">
-            <div class="tray-dl-bar-fill" [style.width.%]="dl.progreso" [class.paused]="dl.estado === 'Pausado'"></div>
+            <div class="tray-dl-bar-fill" [style.width.%]="dl.progreso" [class.paused]="dl.estado === 'Pausado' || dl.estado === 'Programada'"></div>
           </div>
         </div>
       </div>
@@ -83,44 +102,76 @@
       </ng-template>
     </div>
 
-    <!-- Botones de Acción Rápida Redondeados Estilo Acerca de / Andromeda Suite -->
-    <div class="tray-quick-actions-bar">
-      <button class="quick-circle-btn nueva" (click)="abrirNuevaDescarga()" title="Nueva Descarga Turbo">
+    <!-- Botones de Acción Rápida (Idénticos al Menú Principal: EP-133 Tactile) -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,0.02);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);position:relative;z-index:2;">
+      <button class="ep133-btn ep133-nueva" style="width:40px;height:40px;" (click)="abrirNuevaDescarga()" title="Nueva Descarga Turbo">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
-      <button class="quick-circle-btn pausar" (click)="pausarTodo()" title="Pausar Todas las Descargas">
+      <button class="ep133-btn ep133-pausar" style="width:40px;height:40px;" (click)="pausarTodo()" title="Pausar Todas las Descargas">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
-      <button class="quick-circle-btn reanudar" (click)="reanudarTodo()" title="Reanudar Todas las Descargas">
+      <button class="ep133-btn ep133-reanudar" style="width:40px;height:40px;" (click)="reanudarTodo()" title="Reanudar Todas las Descargas">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </button>
-      <button class="quick-circle-btn carpeta" (click)="abrirCarpetaDescargas()" title="Abrir Carpeta de Descargas">
+      <button class="ep133-btn ep133-detener" style="width:40px;height:40px;" (click)="abrirCarpetaDescargas()" title="Abrir Carpeta de Descargas">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
       </button>
     </div>
 
-    <!-- Barra de Gestión del Sistema Andromeda (Texto Exclusivo, Sin Iconos) -->
-    <div class="tray-system-bar">
-      <button class="tray-sys-btn" (click)="abrirAcercaDe()" title="Acerca de Andromeda">
+    <!-- Opciones del Sistema (Estilo Acerca de: Tipografía Limpia, Iconos SVG y Fondo Transparente Sin Recuadros) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;padding:12px 18px;background:transparent;position:relative;z-index:2;">
+      <a href="javascript:void(0)" (click)="abrirAcercaDe()" class="tray-clean-link" title="Acerca de Andromeda">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
         <span>Acerca de</span>
-      </button>
-      <button class="tray-sys-btn" (click)="abrirGuia()" title="Ayuda y Guía Interactiva">
+      </a>
+
+      <a href="javascript:void(0)" (click)="abrirGuia()" class="tray-clean-link" title="Ayuda y Guía Interactiva">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
         <span>Ayuda</span>
-      </button>
-      <button class="tray-sys-btn" (click)="abrirSuite()" title="Abrir Ventana Principal de Andromeda">
+      </a>
+
+      <a href="javascript:void(0)" (click)="abrirSuite()" class="tray-clean-link" title="Abrir Ventana Principal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+        </svg>
         <span>Abrir Suite</span>
-      </button>
-      <button class="tray-sys-btn" (click)="mostrarPanel()" title="Mostrar Panel Principal de Descargas">
-        <span>Panel</span>
-      </button>
-      <button class="tray-sys-btn" (click)="abrirAjustes()" title="Configuración y Ajustes">
+      </a>
+
+      <a href="javascript:void(0)" (click)="abrirAjustes()" class="tray-clean-link" title="Configuración y Ajustes">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
         <span>Ajustes</span>
-      </button>
-      <button class="tray-sys-btn danger" (click)="salirApp()" title="Cerrar y Salir de Andromeda">
-        <span>Salir</span>
-      </button>
+      </a>
+
+      <a href="javascript:void(0)" (click)="mostrarPanel()" class="tray-clean-link" title="Mostrar Panel Principal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7.5 12 13 22 7.5 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+        <span>Panel</span>
+      </a>
+
+      <a href="javascript:void(0)" (click)="salirApp()" class="tray-clean-link danger" title="Cerrar y Salir de Andromeda">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+          <line x1="12" y1="2" x2="12" y2="12"></line>
+        </svg>
+        <span style="color:#EF4444;font-weight:600;">Salir</span>
+      </a>
     </div>
   </div>
 </div>

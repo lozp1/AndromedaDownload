@@ -209,6 +209,10 @@ export class DownloadService {
     this.selectedIds$.next(ids);
   }
 
+  public getSelectedIds(): Set<string> {
+    return this.selectedIds$.value;
+  }
+
   // Polling de telemetría y actualización periódica (500ms)
   private iniciarPolling(): void {
     this.pollingSub = interval(500).subscribe(() => {
@@ -365,11 +369,20 @@ export class DownloadService {
   public async eliminar(ids?: string[], borrarArchivo: boolean = false): Promise<void> {
     this.audio.playClick();
     const targetIds = ids || Array.from(this.selectedIds$.value);
+    const count = targetIds.length;
     for (const id of targetIds) {
       await this.tauri.invoke('eliminar_descarga', { id, borrar_archivo: borrarArchivo, borrarArchivo });
     }
     this.clearSelection();
     await this.actualizarTelemetria();
+
+    if (count > 0) {
+      const titulo = count === 1 ? 'Descarga eliminada' : `${count} descargas eliminadas`;
+      const mensaje = borrarArchivo
+        ? (count === 1 ? 'Se eliminó el registro y el archivo del disco.' : `Se eliminaron ${count} registros y sus archivos del disco.`)
+        : (count === 1 ? 'Se eliminó el registro de la lista de descargas.' : `Se eliminaron ${count} registros de la lista.`);
+      this.showToast('info', titulo, mensaje);
+    }
   }
 
   public async sondearUrl(url: string): Promise<ProbeResult> {

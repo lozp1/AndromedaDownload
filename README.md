@@ -44,31 +44,59 @@
 
 ## 🏗️ Arquitectura del Sistema
 
+Andromeda Download Suite implementa un diseño desacoplado de alto rendimiento donde el frontend reactivo delega las operaciones intensivas de I/O a un motor nativo multi-hilo en Rust a través de IPC binario.
+
+```mermaid
+graph TD
+    subgraph GUI["🖥️ CAPA DE PRESENTACIÓN (FRONTEND)"]
+        UI["Angular 19 + TypeScript + Obsidian CSS"]
+        RX["RxJS Reactive State (Telemetría & Polling 400ms)"]
+        FLY["Quick Panel Tray Flyout (Direct OS Integration)"]
+    end
+
+    subgraph IPC["⚡ PUENTE DE COMUNICACIÓN TAURI v2"]
+        IPC_CMD["Comandos Nativos Invokes (iniciar, pausar, telemetría)"]
+        IPC_EVT["Event Streams (tray_shown, progress_tick)"]
+        CLIP["Win32 Clipboard API (Bypass de Sandbox Chromium)"]
+    end
+
+    subgraph CORE["🦀 NÚCLEO NATIVO RUST (BACKEND CONCURRENTE)"]
+        MGR["GestorDescargas (Arc & Mutex Thread-Safe)"]
+        QUEUE["Motor de Colas & Scheduler Asíncrono"]
+        WS["Servidor IPC Local (Extensión Chrome / Web Store)"]
+        TOKIO["Tokio Multi-Threaded Async Runtime (32 Workers)"]
+        HASHER["Stream Hasher SHA-256 en Tiempo Real"]
+        YTDLP["Extracción Multimedia yt-dlp + Metadata ID3 ffmpeg"]
+    end
+
+    subgraph OS["💾 CAPA DE SISTEMA & ALMACENAMIENTO"]
+        DIRECT_IO["Preasignación Zero-Assemble en Disco"]
+        WIN_TRAY["Bandeja del Sistema Windows (Win32 Shell Notify)"]
+        DISK["Almacenamiento Local (Archivos Finales Ensamblados al Vuelo)"]
+    end
+
+    UI --> RX
+    RX --> IPC_CMD
+    FLY --> IPC_CMD
+    IPC_CMD --> MGR
+    CLIP --> IPC_CMD
+    WS --> MGR
+    MGR --> QUEUE
+    QUEUE --> TOKIO
+    TOKIO --> HASHER
+    TOKIO --> YTDLP
+    TOKIO --> DIRECT_IO
+    DIRECT_IO --> DISK
+    MGR --> WIN_TRAY
+    TOKIO -.-> IPC_EVT
+    IPC_EVT -.-> RX
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                 INTERFAZ DE USUARIO (GUI)                   │
-│   Angular 13 • TypeScript • Tailwind/Obsidian CSS Engine    │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ Tauri v2 IPC Bridge
-┌──────────────────────────────▼──────────────────────────────┐
-│                    NÚCLEO NATIVO EN RUST                    │
-│                                                             │
-│  ┌──────────────────────┐        ┌───────────────────────┐  │
-│  │   Gestor de Tareas   │◄──────►│  Servidor IPC Local   │  │
-│  │  (Persistencia JSON) │        │ (Extensión Web / Chrome) │
-│  └──────────┬───────────┘        └───────────────────────┘  │
-│             │ Tokio Async Tasks                             │
-│  ┌──────────▼────────────────────────────────────────────┐  │
-│  │     Motor Multi-Socket HTTP Range & Zero-Assemble     │  │
-│  │        (Reqwest + Tokio + SHA-256 Stream Hasher)      │  │
-│  └──────────────────────────┬────────────────────────────┘  │
-└─────────────────────────────┼───────────────────────────────┘
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      SISTEMA DE ARCHIVOS                    │
-│            Escritura Directa Concurrente en Disco           │
-└─────────────────────────────────────────────────────────────┘
-```
+
+### Principios de Ingeniería Clave:
+1. **Zero-Assemble Pre-Allocation:** Preasignación de bloques de archivo antes de iniciar la transferencia. Cada hilo escribe directamente en su offset sin requerir uniones temporales que dupliquen el uso de disco.
+2. **Win32 Direct Clipboard Integration:** Lectura y escritura directa del portapapeles de Windows a nivel del kernel mediante `arboard`, esquivando el sandbox de WebView2 y eliminando cualquier diálogo de permisos del navegador.
+3. **Pipeline Multimedia Asíncrono:** Embebido automático de carátulas de alta resolución y metadatos ID3 en archivos de audio (MP3/M4A) vía `yt-dlp` y `ffmpeg`.
+4. **Sincronización Tray Flyout:** Comunicación en microsegundos entre la bandeja de Windows y la ventana flotante rápida mediante eventos reactivos nativos.
 
 ---
 
@@ -77,10 +105,9 @@
 | Atajo | Acción | Ámbito |
 | :--- | :--- | :--- |
 | <kbd>Ctrl</kbd> + <kbd>N</kbd> | Abrir formulario de **Nueva Descarga** | Global |
-| <kbd>Ctrl</kbd> + <kbd>A</kbd> | **Seleccionar todas** las descargas de la lista | Tabla Principal |
-| <kbd>Ctrl</kbd> + <kbd>F</kbd> | Bloqueado para evitar el buscador nativo del navegador | Global |
-| <kbd>Espacio</kbd> | Pausar / Reanudar descarga seleccionada | Menú Contextual |
-| <kbd>Supr</kbd> | Eliminar descarga seleccionada | Tabla Principal |
+| <kbd>Ctrl</kbd> + <kbd>A</kbd> | **Seleccionar todas** las descargas de la lista activa | Tabla Principal |
+| <kbd>Supr</kbd> / <kbd>Delete</kbd> | **Eliminar** descargas seleccionadas (con confirmación y notificación) | Tabla Principal |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> | Interceptado y anulado para evitar buscadores de página | Global |
 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | Pegar nativo vía Windows API (sin alertas del navegador) | Campos de Texto |
 
 ---
@@ -90,7 +117,7 @@
 ### Requisitos Previos
 - **Node.js** 18+ y **npm**
 - **Rust** 1.77+ con `cargo` instalado
-- Herramientas de C++ de Visual Studio (MSVC)
+- Herramientas de C++ de Visual Studio (MSVC Build Tools)
 - **Python** 3.10+ y `yt-dlp` (para descargas multimedia avanzadas)
 
 ### Pasos de Construcción
@@ -109,7 +136,7 @@ npm run build
 # 4. Compilar el binario nativo en modo Release con Tauri / Cargo
 cargo build --release --manifest-path src-tauri/Cargo.toml
 
-# El ejecutable compilado se encontrará en:
+# El ejecutable optimizado se encontrará en:
 # release/andromeda_download.exe
 ```
 
@@ -128,20 +155,35 @@ Si esta herramienta te ha sido de utilidad para tu trabajo o estudio, considera 
 
 ---
 
-## 👨‍💻 Desarrollador / Autor
+## 👨‍💻 Acerca del Desarrollador / Lead Engineer
 
-<table align="center">
-  <tr>
-    <td align="center">
-      <img src="https://github.com/lozp1.png" width="100px;" alt="Franco Lopez" style="border-radius:50%;"/><br />
-      <sub><b>Franco Paolo López Gálvez</b></sub><br />
-      <sub>Software Engineer • Guatemala 🇬🇹</sub><br />
-      <a href="https://github.com/lozp1">GitHub</a> •
-      <a href="https://linkedin.com/in/franco-lopez">LinkedIn</a> •
-      <a href="mailto:francopaolo_lg@outlook.com">Correo</a>
-    </td>
-  </tr>
-</table>
+<div align="center">
+  <a href="https://github.com/lozp1">
+    <img src="https://github.com/lozp1.png" width="130px" style="border-radius: 50%; border: 3px solid #38BDF8; box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);" alt="Franco Paolo López Gálvez" />
+  </a>
+  <h3 style="margin-top: 12px; margin-bottom: 2px; font-size: 1.4em;">Franco Paolo López Gálvez</h3>
+  <p style="color: #38BDF8; font-size: 1.05em; font-weight: 700;">Software Engineer • High-Performance Systems & Desktop Architecture • Guatemala 🇬🇹</p>
+
+  <p style="max-width: 680px; line-height: 1.6; color: #94A3B8; font-size: 0.95em;">
+    Ingeniero de software especializado en el desarrollo de aplicaciones de escritorio de alto rendimiento, concurrencia multi-hilo y experiencias de usuario de calibre profesional. Creador y arquitecto de <b>Andromeda Download Suite</b>, unificando la velocidad y seguridad de <b>Rust</b> con la elegancia reactiva de <b>Angular 19</b>.
+  </p>
+
+  <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 15px 0;">
+    <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" />
+    <img src="https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+    <img src="https://img.shields.io/badge/Tauri_v2-24C8D8?style=for-the-badge&logo=tauri&logoColor=white" />
+    <img src="https://img.shields.io/badge/Tokio_Async-000000?style=for-the-badge&logo=tokio&logoColor=white" />
+    <img src="https://img.shields.io/badge/Win32_API-0078D6?style=for-the-badge&logo=windows&logoColor=white" />
+  </div>
+
+  <p style="margin-top: 15px;">
+    <a href="https://github.com/lozp1"><b>🐙 GitHub (@lozp1)</b></a> &nbsp;•&nbsp;
+    <a href="https://linkedin.com/in/franco-lopez"><b>💼 LinkedIn</b></a> &nbsp;•&nbsp;
+    <a href="mailto:francopaolo_lg@outlook.com"><b>📧 francopaolo_lg@outlook.com</b></a> &nbsp;•&nbsp;
+    <a href="https://github.com/lozp1?tab=repositories"><b>🚀 Ver más proyectos</b></a>
+  </p>
+</div>
 
 ---
 

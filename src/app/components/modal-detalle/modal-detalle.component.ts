@@ -27,6 +27,55 @@ export class ModalDetalleComponent implements OnInit, OnChanges, OnDestroy {
   private subs: Subscription = new Subscription();
   private liveTimer: any = null;
 
+  public get taskList(): DescargaItem[] {
+    const selectedIds = this.downloadService.getSelectedIds();
+    const all = this.downloadService.getCurrentDownloads();
+    if (selectedIds && selectedIds.size > 1) {
+      return all.filter(d => selectedIds.has(d.id));
+    }
+    return all;
+  }
+
+  public get currentTaskIndex(): number {
+    if (!this.taskId) return 0;
+    const idx = this.taskList.findIndex(d => d.id === this.taskId);
+    return idx >= 0 ? idx : 0;
+  }
+
+  public get hasMultipleTasks(): boolean {
+    return this.taskList.length > 1;
+  }
+
+  public get canPrevTask(): boolean {
+    return this.currentTaskIndex > 0;
+  }
+
+  public get canNextTask(): boolean {
+    return this.currentTaskIndex < this.taskList.length - 1;
+  }
+
+  public prevTask(): void {
+    if (this.canPrevTask) {
+      const prev = this.taskList[this.currentTaskIndex - 1];
+      if (prev) {
+        this.taskId = prev.id;
+        this.item = prev;
+        this.actualizarDetalles(prev);
+      }
+    }
+  }
+
+  public nextTask(): void {
+    if (this.canNextTask) {
+      const next = this.taskList[this.currentTaskIndex + 1];
+      if (next) {
+        this.taskId = next.id;
+        this.item = next;
+        this.actualizarDetalles(next);
+      }
+    }
+  }
+
   constructor(
     public downloadService: DownloadService,
     public i18n: I18nService

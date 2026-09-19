@@ -51,7 +51,17 @@
         <div class="form-row">
           <div class="form-group" style="flex:1;">
             <label class="form-label">{{ i18n.t('lbl_nombre') }}</label>
-            <input type="text" class="form-input" [(ngModel)]="nombre" placeholder="archivo_descarga.iso">
+            <ng-container *ngIf="downloadService.loteEnCola && downloadService.loteEnCola.length > 0; else singleNameInput">
+              <div class="form-input" style="display:flex;align-items:center;justify-content:space-between;background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.3);height:38px;">
+                <span style="color:var(--accent-cyan);font-weight:700;font-size:7.8pt;display:inline-flex;align-items:center;gap:6px;">
+                  📦 Lote de {{ downloadService.loteEnCola.length }} archivos seleccionados
+                </span>
+                <span style="font-size:7pt;color:var(--text-muted);font-style:italic;">Configuración por catálogo</span>
+              </div>
+            </ng-container>
+            <ng-template #singleNameInput>
+              <input type="text" class="form-input" [(ngModel)]="nombre" placeholder="archivo_descarga.iso">
+            </ng-template>
           </div>
           <div class="form-group" style="width:200px;flex-shrink:0;">
             <label class="form-label">{{ i18n.t('lbl_tamano') }}</label>
@@ -75,19 +85,42 @@
           </div>
         </div>
 
-        <!-- Categoría y Conexiones -->
-        <div class="form-row">
-          <div class="form-group" style="flex:1;">
+        <!-- Categoría (Dropdown Customizado para Preservar Cursor) y Conexiones -->
+        <div class="form-row" style="position:relative;overflow:visible;">
+          <div class="form-group" style="flex:1;position:relative;">
             <label class="form-label">{{ i18n.t('lbl_cat') }}</label>
-            <select class="form-input" [(ngModel)]="categoria">
-              <option value="Comprimidos">Comprimidos</option>
-              <option value="Videos">Videos</option>
-              <option value="Documentos">Documentos</option>
-              <option value="Programas">Programas</option>
-              <option value="Música">Música</option>
-              <option value="Imágenes">Imágenes</option>
-              <option value="Otros">Otros</option>
-            </select>
+            <div class="form-input" (click)="toggleCatDropdown()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:38px;">
+              <span style="font-weight:600;display:flex;align-items:center;gap:6px;font-size:8pt;">
+                <span [ngSwitch]="categoria">
+                  <span *ngSwitchCase="'Videos'">🎬</span>
+                  <span *ngSwitchCase="'Música'">🎵</span>
+                  <span *ngSwitchCase="'Comprimidos'">📦</span>
+                  <span *ngSwitchCase="'Documentos'">📄</span>
+                  <span *ngSwitchCase="'Programas'">⚙️</span>
+                  <span *ngSwitchCase="'Imágenes'">🖼️</span>
+                  <span *ngSwitchDefault>📁</span>
+                </span>
+                {{ categoria }}
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" [style.transform]="isCatDropdownOpen ? 'rotate(180deg)' : 'none'" style="transition:transform 0.15s ease;">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+
+            <!-- Menú Desplegable Flotante Custom (Conserva Cursor y Estilo Andromeda) -->
+            <div *ngIf="isCatDropdownOpen" 
+                 class="custom-cat-dropdown" 
+                 (click)="$event.stopPropagation()"
+                 style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg-card);border:1.5px solid var(--border-subtle);border-radius:10px;padding:6px;box-shadow:0 14px 35px rgba(0,0,0,0.85);z-index:999999;display:flex;flex-direction:column;gap:2px;">
+              <div *ngFor="let cat of categoriasDisponibles" 
+                   (click)="seleccionarCategoria(cat.id)"
+                   style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:8pt;font-weight:600;cursor:pointer;color:var(--text-primary);transition:all 0.15s ease;"
+                   [style.background]="categoria === cat.id ? 'rgba(56,189,248,0.15)' : 'transparent'"
+                   [style.color]="categoria === cat.id ? 'var(--accent-cyan)' : 'var(--text-primary)'">
+                <span>{{ cat.icon }}</span>
+                <span>{{ cat.nombre }}</span>
+              </div>
+            </div>
           </div>
           <div class="form-group" style="flex:1;">
             <label class="form-label">{{ i18n.t('lbl_hilos') }}</label>
@@ -247,7 +280,7 @@
   </div>
 
   <!-- Panel Flotante de Formatos de Video/Audio (Estilo SaveFrom Flotando al Lado) -->
-  <div *ngIf="isMediaStream" class="modal-formats-floating-card">
+  <div *ngIf="isMediaStream && (!downloadService.loteEnCola || downloadService.loteEnCola.length === 0)" class="modal-formats-floating-card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
       <div *ngIf="mediaThumbnailUrl" style="width:68px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#000;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid var(--border-subtle);">
         <img [src]="mediaThumbnailUrl" alt="Thumbnail" style="width:100%;height:100%;object-fit:cover;">
