@@ -105,7 +105,7 @@ export class DownloadService {
     this.exitConfirm$.next();
   }
 
-  private settings$ = new BehaviorSubject<UserSettings>({
+  public settings$ = new BehaviorSubject<UserSettings>({
     conexiones_por_archivo: 16,
     limite_velocidad_kb: 0,
     reintentos_conexion: 3,
@@ -641,14 +641,53 @@ export class DownloadService {
     }
   }
 
-  public async iniciarDescargasLote(items: ItemLoteDescarga[]): Promise<number> {
+  public async iniciarDescargasLote(items: ItemLoteDescarga[], encolar: boolean = true): Promise<number> {
     try {
-      const creadas = await this.tauri.invoke<number>('iniciar_descargas_lote', { items });
-      this.mostrarToast('Descargas masivas iniciadas', `Se añadieron ${creadas} descargas a la cola.`);
+      const creadas = await this.tauri.invoke<number>('iniciar_descargas_lote', { items, encolar });
+      if (encolar) {
+        this.mostrarToast('Cola de descargas actualizada', `Se agregaron ${creadas} descargas a la cola.`);
+      } else {
+        this.mostrarToast('Descargas masivas iniciadas', `Se iniciaron ${creadas} descargas.`);
+      }
+      await this.actualizarTelemetria();
       return creadas;
     } catch (e) {
       this.mostrarToast('Error en descargas', `No se pudo iniciar el lote: ${e}`);
       return 0;
+    }
+  }
+
+  public async redescargar(id: string): Promise<void> {
+    this.audio.playClick();
+    try {
+      await this.tauri.invoke('redescargar_tarea', { id });
+      this.mostrarToast('Descarga Reiniciada', 'Se reinició la descarga desde cero.');
+      await this.actualizarTelemetria();
+    } catch (e) {
+      console.error('Error al redescargar:', e);
+    }
+  }
+
+  public async conmutarCola(id: string): Promise<void> {
+    this.audio.playClick();
+    try {
+      await this.tauri.invoke('conmutar_cola_tarea', { id });
+      await this.actualizarTelemetria();
+    } catch (e) {
+      console.error('Error al conmutar cola:', e);
+    }
+  }
+
+  public selectAll(): void {
+    const all = new Set(this.descargas$.value.map(d => d.id));
+    this.setSelectedIds(all);
+  }
+
+  public async limpiarCompletadas(): Promise<void> {
+    const completadas = this.descargas$.value.filter(d => d.estado === 'Completado').map(d => d.id);
+    if (completadas.length > 0) {
+      await this.eliminar(completadas, false);
+      this.mostrarToast('Historial Limpio', `Se eliminaron ${completadas.length} descargas completadas.`);
     }
   }
 

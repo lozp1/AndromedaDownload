@@ -340,7 +340,8 @@ export class TourMascotaComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     const cardWidth = 380;
-    const cardHeight = 240;
+    const cardEl = document.querySelector('.inspector-floating-card') as HTMLElement;
+    const cardHeight = cardEl ? Math.max(280, cardEl.offsetHeight) : 280;
     const margin = 18;
 
     let targetLeft = rect.right + margin;

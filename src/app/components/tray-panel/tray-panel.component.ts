@@ -24,7 +24,32 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
     this.telemetry$ = this.downloadService.telemetryObservable;
   }
 
+  private themeSub: Subscription | null = null;
+
   ngOnInit(): void {
+    // Sincronizar tema dinámico en la ventana del tray
+    const aplicarTema = (tema?: string) => {
+      if (!tema) {
+        tema = localStorage.getItem('andromeda_theme') || 'dark';
+      }
+      const ef = this.downloadService.resolverTemaEfectivo(tema);
+      document.documentElement.setAttribute('data-theme', ef);
+    };
+
+    aplicarTema();
+
+    this.themeSub = this.downloadService.settings$.subscribe(cfg => {
+      if (cfg && cfg.tema) {
+        aplicarTema(cfg.tema);
+      }
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'andromeda_theme' && e.newValue) {
+        document.documentElement.setAttribute('data-theme', e.newValue);
+      }
+    });
+
     this.sub = this.downloadService.descargasObservable.subscribe(items => {
       this.descargasActivas = items.filter(d => d.estado === 'Descargando' || d.estado === 'Pausado');
     });
@@ -32,6 +57,7 @@ export class TrayPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.themeSub?.unsubscribe();
   }
 
   public cerrar(): void {

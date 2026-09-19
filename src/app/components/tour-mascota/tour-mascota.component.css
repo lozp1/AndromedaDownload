@@ -210,6 +210,8 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(2, 132, 199, 0.2);
   z-index: 100001;
   pointer-events: auto;
+  box-sizing: border-box;
+  overflow: visible;
   transition: top 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
   animation: cardPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -338,11 +340,16 @@
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid #1E293B;
+  gap: 8px;
+  box-sizing: border-box;
 }
 
 .inspector-nav-dots {
   display: flex;
-  gap: 5px;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 250px;
 }
 
 .inspector-dot {
@@ -352,10 +359,11 @@
   background: #334155;
   transition: all 0.2s ease;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .inspector-dot.active {
-  width: 18px;
+  width: 16px;
   border-radius: 99px;
   background: #38BDF8;
 }

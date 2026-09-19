@@ -52,6 +52,12 @@ export class ContextMenuComponent {
           navigator.clipboard.writeText(this.item.id + '-sha256-verified');
           this.downloadService.showToast('info', 'Checksum Copiado', 'Hash verificado copiado al portapapeles');
           break;
+        case 'conmutar_cola':
+          this.downloadService.conmutarCola(this.item.id);
+          break;
+        case 'redescargar':
+          this.downloadService.redescargar(this.item.id);
+          break;
         case 'eliminar':
           this.downloadService.clearSelection();
           this.downloadService.toggleSelect(this.item.id);
@@ -62,6 +68,18 @@ export class ContextMenuComponent {
       switch (accion) {
         case 'nueva_descarga':
           this.downloadService.triggerNuevaDescargaModal(true);
+          break;
+        case 'reanudar_todas':
+          this.downloadService.reanudarTodas();
+          break;
+        case 'pausar_todas':
+          this.downloadService.pausarTodas();
+          break;
+        case 'seleccionar_todas':
+          this.downloadService.selectAll();
+          break;
+        case 'limpiar_completadas':
+          this.downloadService.limpiarCompletadas();
           break;
         case 'ir_dashboard':
           this.downloadService.setView('dashboard');

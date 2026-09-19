@@ -3597,55 +3597,44 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     font-size: 8pt;
 }
 
-.tray-action-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+.tray-ep133-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
     padding: 10px 14px;
     border-top: 1px solid var(--border-subtle);
     background: var(--bg-base);
 }
 
-.tray-action-grid .btn-uiverse-gaurav {
-    height: 38px;
-    min-width: unset;
-    width: 100%;
-    padding: 0 10px;
-    font-size: 8pt;
-    border-radius: 8px;
-}
-
-.tray-action-grid .btn-uiverse-gaurav .btn-txt {
-    gap: 6px;
-    font-size: 7.8pt;
-    font-weight: 700;
+.tray-ep133-bar .ep133-btn {
+    width: 48px;
+    height: 42px;
 }
 
 .tray-system-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 10px;
+    padding: 9px 6px;
     background: rgba(0, 0, 0, 0.4);
     border-top: 1px solid var(--border-subtle);
-    gap: 4px;
+    gap: 3px;
 }
 
 .tray-sys-btn {
     flex: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
     padding: 6px 2px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 6.8pt;
+    font-size: 7.2pt;
     font-weight: 600;
+    white-space: nowrap;
     transition: all 0.18s ease;
 }
 
@@ -3711,6 +3700,29 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 [data-theme="white"] .tray-footer-actions {
     background: #F1F5F9 !important;
     border-top: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .tray-ep133-bar,
+[data-theme="white"] .tray-ep133-bar {
+    background: #FFFFFF !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .tray-system-bar,
+[data-theme="white"] .tray-system-bar {
+    background: #F1F5F9 !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .tray-sys-btn,
+[data-theme="white"] .tray-sys-btn {
+    color: #475569 !important;
+}
+
+[data-theme="light"] .tray-sys-btn:hover,
+[data-theme="white"] .tray-sys-btn:hover {
+    background: #E2E8F0 !important;
+    color: #0F172A !important;
 }
 
 [data-theme="black"] .tray-flyout-card,
@@ -3789,7 +3801,7 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 .andromeda-context-menu {
     position: fixed;
     z-index: 100000;
-    width: 260px;
+    width: 275px;
     background: var(--bg-card);
     border: 1.5px solid var(--border-subtle);
     border-radius: 12px;
@@ -3817,7 +3829,7 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 160px;
+    max-width: 180px;
 }
 
 .ctx-divider {
@@ -4370,6 +4382,137 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     align-items: center;
     gap: 16px;
     background: rgba(0, 0, 0, 0.1);
+}
+
+.inspector-active-cfg-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 10px 0;
+    flex-wrap: wrap;
+}
+
+.active-cfg-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6.8pt;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.active-cfg-badge.fmt {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: var(--accent-cyan);
+}
+
+.active-cfg-badge.included {
+    background: rgba(16, 231, 97, 0.12);
+    border-color: rgba(16, 231, 97, 0.35);
+    color: var(--accent-green);
+}
+
+.active-cfg-badge.excluded {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: var(--accent-red);
+}
+
+.active-cfg-badge.dir {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-subtle);
+    color: var(--text-muted);
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Adaptación de Modal Lote a Tema Blanco / Light */
+[data-theme="light"] .modal-lote-card,
+[data-theme="white"] .modal-lote-card {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #CBD5E1 !important;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.12), 0 0 20px rgba(56, 189, 248, 0.08) !important;
+}
+
+[data-theme="light"] .modal-lote-toolbar,
+[data-theme="white"] .modal-lote-toolbar {
+    background: #F8FAFC !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .modal-lote-list-container,
+[data-theme="white"] .modal-lote-list-container {
+    background: #FFFFFF !important;
+    border-right: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .modal-lote-item-row,
+[data-theme="white"] .modal-lote-item-row {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .modal-lote-item-row:hover,
+[data-theme="white"] .modal-lote-item-row:hover {
+    background: #EEF2F6 !important;
+    border-color: #38BDF8 !important;
+}
+
+[data-theme="light"] .modal-lote-item-row.active,
+[data-theme="white"] .modal-lote-item-row.active {
+    background: #DCFCE7 !important;
+    border-color: #16A34A !important;
+}
+
+[data-theme="light"] .modal-lote-inspector,
+[data-theme="white"] .modal-lote-inspector {
+    background: #F1F5F9 !important;
+}
+
+[data-theme="light"] .modal-lote-footer,
+[data-theme="white"] .modal-lote-footer {
+    background: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="light"] .nav-arrow-btn,
+[data-theme="white"] .nav-arrow-btn {
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .active-cfg-badge,
+[data-theme="white"] .active-cfg-badge {
+    background: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .active-cfg-badge.fmt,
+[data-theme="white"] .active-cfg-badge.fmt {
+    background: rgba(2, 132, 199, 0.1) !important;
+    border-color: rgba(2, 132, 199, 0.3) !important;
+    color: #0284C7 !important;
+}
+
+[data-theme="light"] .active-cfg-badge.included,
+[data-theme="white"] .active-cfg-badge.included {
+    background: rgba(22, 163, 74, 0.12) !important;
+    border-color: rgba(22, 163, 74, 0.3) !important;
+    color: #16A34A !important;
+}
+
+[data-theme="light"] .active-cfg-badge.dir,
+[data-theme="white"] .active-cfg-badge.dir {
+    background: #E2E8F0 !important;
+    border-color: #CBD5E1 !important;
+    color: #475569 !important;
 }
 
 /* Modo Ventana Flotante de Bandeja (Tray Flyout Window) */

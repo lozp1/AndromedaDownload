@@ -523,7 +523,7 @@ impl GestorDescargas {
         }
     }
 
-    pub async fn iniciar_descargas_lote(&self, items: Vec<ItemLoteDescarga>) -> Result<usize, String> {
+    pub async fn iniciar_descargas_lote(&self, items: Vec<ItemLoteDescarga>, encolar: bool) -> Result<usize, String> {
         let mut creadas = 0;
         for item in items {
             let ext = if item.formato.to_lowercase().contains("mp3") {
@@ -551,7 +551,7 @@ impl GestorDescargas {
                 Some(item.carpeta),
                 item.conexiones,
                 Some(cat),
-                false,
+                encolar,
                 None,
                 false,
                 None,
@@ -767,6 +767,50 @@ impl GestorDescargas {
         }
 
         self.tareas.write().await.remove(id);
+        self.guardar_descargas_disco().await;
+    }
+
+    pub async fn redescargar(&self, id: &str) {
+        if let Some(t) = self.tareas.read().await.get(id) {
+            t.pausado.store(false, Ordering::SeqCst);
+            t.cancelado.store(false, Ordering::SeqCst);
+            let ruta = {
+                let mut it = t.item.write().await;
+                it.descargado = 0;
+                it.progreso = 0.0;
+                it.estado = "Pendiente".to_string();
+                it.velocidad = "0.00 B/s".to_string();
+                it.velocidad_bps = 0.0;
+                it.error = None;
+                it.ruta_destino.clone()
+            };
+            let _ = std::fs::remove_file(&ruta);
+            let _ = std::fs::remove_file(format!("{}.part", &ruta));
+            let client = self.client.clone();
+            let handle = t.clone();
+            tokio::spawn(async move {
+                ejecutar_descarga(handle, client).await;
+            });
+        }
+        self.guardar_descargas_disco().await;
+    }
+
+    pub async fn conmutar_cola(&self, id: &str) {
+        if let Some(t) = self.tareas.read().await.get(id) {
+            let estado_actual = {
+                let it = t.item.read().await;
+                it.estado.clone()
+            };
+            if estado_actual == "Programada" {
+                self.reanudar(id).await;
+            } else if estado_actual != "Completado" {
+                t.pausado.store(true, Ordering::SeqCst);
+                let mut it = t.item.write().await;
+                it.estado = "Programada".to_string();
+                it.velocidad = "0.00 B/s".to_string();
+                it.velocidad_bps = 0.0;
+            }
+        }
         self.guardar_descargas_disco().await;
     }
 

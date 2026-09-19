@@ -46,6 +46,14 @@ export class AppComponent implements OnInit {
       this.isTrayMode = true;
       this.isAppReady = true;
       document.body.classList.add('tray-mode');
+      const savedTheme = localStorage.getItem('andromeda_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      this.downloadService.settings$.subscribe(cfg => {
+        if (cfg && cfg.tema) {
+          const t = this.downloadService.resolverTemaEfectivo(cfg.tema);
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      });
       return;
     }
 
@@ -140,9 +148,21 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:contextmenu', ['$event'])
   public onGlobalContextMenu(e: MouseEvent): void {
+    const target = e.target as HTMLElement;
+
+    // Si el usuario hace clic derecho sobre un input, textarea o contenido editable,
+    // NO interceptar con menú custom; permitir el menú contextual nativo de Windows.
+    if (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable ||
+      target.closest('input, textarea, [contenteditable="true"]')
+    ) {
+      return;
+    }
+
     e.preventDefault();
 
-    const target = e.target as HTMLElement;
     const downloadRow = target.closest('[data-download-id]') as HTMLElement;
 
     if (downloadRow) {
@@ -156,8 +176,8 @@ export class AppComponent implements OnInit {
       this.contextMenuItem = null;
     }
 
-    const menuWidth = 260;
-    const menuHeight = this.contextMenuItem ? 320 : 230;
+    const menuWidth = 270;
+    const menuHeight = this.contextMenuItem ? 390 : 350;
     this.contextMenuX = Math.min(e.clientX, window.innerWidth - menuWidth - 12);
     this.contextMenuY = Math.min(e.clientY, window.innerHeight - menuHeight - 12);
     this.isContextMenuOpen = true;

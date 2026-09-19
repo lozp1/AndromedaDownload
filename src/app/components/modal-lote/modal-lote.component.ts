@@ -95,15 +95,11 @@ export class ModalLoteComponent implements OnInit, OnChanges {
   }
 
   public anteriorVideo(): void {
-    if (this.indiceInspeccionado > 0) {
-      this.indiceInspeccionado--;
-    }
+    this.seleccionarOffset(-1);
   }
 
   public siguienteVideo(): void {
-    if (this.playlistData?.items && this.indiceInspeccionado < this.playlistData.items.length - 1) {
-      this.indiceInspeccionado++;
-    }
+    this.seleccionarOffset(1);
   }
 
   public getVideoActual(): PlaylistItemProbe | null {
@@ -192,7 +188,7 @@ export class ModalLoteComponent implements OnInit, OnChanges {
       }
     }
 
-    await this.downloadService.iniciarDescargasLote(payload);
+    await this.downloadService.iniciarDescargasLote(payload, true);
     this.estaProcesando = false;
     this.cerrarModal();
   }

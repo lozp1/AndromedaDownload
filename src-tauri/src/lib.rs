@@ -93,9 +93,22 @@ async fn sondear_playlist(url: String, gestor: State<'_, Arc<GestorDescargas>>) 
 #[tauri::command]
 async fn iniciar_descargas_lote(
     items: Vec<ItemLoteDescarga>,
+    encolar: Option<bool>,
     gestor: State<'_, Arc<GestorDescargas>>,
 ) -> Result<usize, String> {
-    gestor.iniciar_descargas_lote(items).await
+    gestor.iniciar_descargas_lote(items, encolar.unwrap_or(true)).await
+}
+
+#[tauri::command]
+async fn redescargar_tarea(id: String, gestor: State<'_, Arc<GestorDescargas>>) -> Result<(), String> {
+    gestor.redescargar(&id).await;
+    Ok(())
+}
+
+#[tauri::command]
+async fn conmutar_cola_tarea(id: String, gestor: State<'_, Arc<GestorDescargas>>) -> Result<(), String> {
+    gestor.conmutar_cola(&id).await;
+    Ok(())
 }
 
 #[tauri::command]
@@ -365,10 +378,6 @@ async fn cerrar_ventana(window: Window) -> Result<(), String> {
 
 #[tauri::command]
 async fn set_splash_mode(window: Window) -> Result<(), String> {
-    let _ = window.set_resizable(false);
-    let _ = window.set_min_size(Some(tauri::Size::Logical(tauri::LogicalSize { width: 500.0, height: 300.0 })));
-    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 600.0, height: 540.0 }));
-    let _ = window.center();
     let _ = window.show();
     Ok(())
 }
@@ -376,9 +385,6 @@ async fn set_splash_mode(window: Window) -> Result<(), String> {
 #[tauri::command]
 async fn set_main_mode(window: Window) -> Result<(), String> {
     let _ = window.set_resizable(true);
-    let _ = window.set_min_size(Some(tauri::Size::Logical(tauri::LogicalSize { width: 980.0, height: 660.0 })));
-    let _ = window.set_size(tauri::Size::Logical(tauri::LogicalSize { width: 1220.0, height: 820.0 }));
-    let _ = window.center();
     let _ = window.show();
     let _ = window.set_focus();
     Ok(())
@@ -689,6 +695,8 @@ pub fn run() {
             actualizar_widget_barra_tareas,
             sondear_playlist,
             iniciar_descargas_lote,
+            redescargar_tarea,
+            conmutar_cola_tarea,
             cerrar_tray_flyout,
             mostrar_ventana_principal,
             gestionar_sistema_tray

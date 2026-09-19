@@ -317,7 +317,6 @@ export class ModalNuevaDescargaComponent implements OnInit {
     }
   }
 
-  public esPlaylistDetectada: boolean = false;
   public playlistSondeando: boolean = false;
   private notificacionPlaylistMostrada: boolean = false;
   private ultimaUrlPlaylistNotificada: string = '';
@@ -326,7 +325,6 @@ export class ModalNuevaDescargaComponent implements OnInit {
     if (this.timerSondeo) clearTimeout(this.timerSondeo);
     const trimmed = (this.url || '').trim();
     if (!trimmed) {
-      this.esPlaylistDetectada = false;
       this.playlistSondeando = false;
       this.notificacionPlaylistMostrada = false;
       this.ultimaUrlPlaylistNotificada = '';
@@ -337,7 +335,6 @@ export class ModalNuevaDescargaComponent implements OnInit {
     }
     const isYt = trimmed.includes('youtube.com') || trimmed.includes('youtu.be');
     const isPl = trimmed.includes('list=') || trimmed.includes('playlist');
-    this.esPlaylistDetectada = isPl;
 
     if (isPl && (!this.notificacionPlaylistMostrada || this.ultimaUrlPlaylistNotificada !== trimmed)) {
       this.notificacionPlaylistMostrada = true;
@@ -664,7 +661,6 @@ export class ModalNuevaDescargaComponent implements OnInit {
     this.isCalendarOpen = false;
     this.isTimePickerOpen = false;
     this.selectedQualities.clear();
-    this.esPlaylistDetectada = false;
     this.playlistSondeando = false;
     this.notificacionPlaylistMostrada = false;
     this.ultimaUrlPlaylistNotificada = '';

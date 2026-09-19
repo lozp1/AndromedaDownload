@@ -8,7 +8,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: transparent;
+  background: rgba(6, 9, 19, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   z-index: 999999;
   display: flex;
   align-items: center;
@@ -16,12 +18,45 @@
   transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s ease;
   user-select: none;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .splash-backdrop.fade-out {
   opacity: 0;
   transform: scale(0.98);
   pointer-events: none;
+}
+
+.splash-main-card {
+  width: 530px !important;
+  max-width: 92vw !important;
+  min-width: unset !important;
+  max-height: unset !important;
+  height: auto !important;
+  padding: 34px 38px !important;
+  border-radius: 16px !important;
+  background: var(--bg-card, #0E1526) !important;
+  border: 1.5px solid var(--border-subtle, #1E293B) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(24, 119, 242, 0.15) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+/* Temas Blanco / Claro */
+:host-context([data-theme="white"]) .splash-backdrop,
+:host-context([data-theme="light"]) .splash-backdrop {
+  background: rgba(241, 245, 249, 0.92) !important;
+}
+
+:host-context([data-theme="white"]) .splash-main-card,
+:host-context([data-theme="light"]) .splash-main-card {
+  background: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15), 0 0 30px rgba(37, 211, 102, 0.15) !important;
 }
 
 .splash-dot {
@@ -39,3 +74,4 @@
   0% { opacity: 0.4; transform: scale(0.9); }
   100% { opacity: 1; transform: scale(1.2); }
 }
+

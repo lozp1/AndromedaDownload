@@ -1,6 +1,7 @@
 <!-- MODAL: DESCARGA POR LOTES Y PLAYLISTS (modal-lote.ui) -->
 <div class="modal-overlay" *ngIf="visible" (click)="cerrarModal()">
-  <div class="modal-lote-card" (click)="$event.stopPropagation()">
+  <div class="about-3d-wrap" (click)="$event.stopPropagation()">
+    <div class="modal-lote-card">
     <!-- Ambient Floating Glowing Spheres -->
     <div class="ambient-orb ambient-orb-1"></div>
     <div class="ambient-orb ambient-orb-2"></div>
@@ -133,6 +134,19 @@
           </div>
         </div>
 
+        <!-- Resumen de Configuración Activa del Registro Inspeccionado -->
+        <div class="inspector-active-cfg-bar">
+          <span class="active-cfg-badge fmt" [title]="'Formato asignado: ' + getFormatoVideo(actual.id)">
+            🎬 {{ getFormatoVideo(actual.id).toUpperCase() }}
+          </span>
+          <span class="active-cfg-badge" [class.included]="estaSeleccionado(actual.id)" [class.excluded]="!estaSeleccionado(actual.id)">
+            {{ estaSeleccionado(actual.id) ? '✔ INCLUIDO' : '✖ EXCLUIDO' }}
+          </span>
+          <span class="active-cfg-badge dir" [title]="carpetaDestino">
+            📁 {{ carpetaDestino.length > 24 ? ('...' + carpetaDestino.slice(-20)) : carpetaDestino }}
+          </span>
+        </div>
+
         <!-- Configuración Específica del Video -->
         <div class="inspector-fields">
           <div class="form-group">
@@ -203,6 +217,7 @@
           </span>
         </button>
       </div>
+    </div>
     </div>
   </div>
 </div>
